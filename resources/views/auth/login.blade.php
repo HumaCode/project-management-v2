@@ -88,41 +88,36 @@
                     <p>Silakan masukkan kredensial Anda untuk melanjutkan</p>
                 </div>
 
-                <div class="alert-error" id="alertError" style="display:none">
+                <div class="alert-error" id="alertError" style="display:none; align-items: center; gap: 10px;">
                     <i class="bi bi-exclamation-triangle-fill"></i>
-                    <span id="alertMsg">Email atau password salah. Silakan coba lagi.</span>
+                    <span id="alertMsg"></span>
                 </div>
 
-                <form id="loginForm" novalidate>
+                <form method="POST" data-url="{{ route('login') }}" id="loginForm" novalidate>
+                    @csrf
                     <div class="field-group">
-                        <label class="field-label" for="email">Email Address</label>
+                        <label class="field-label" for="identitas">Email Address / Username</label>
                         <div class="input-wrap">
                             <i class="bi bi-envelope input-icon"></i>
-                            <input type="email" id="email" class="form-input" placeholder="nama@email.com"
-                                autocomplete="email" required />
+                            <input type="text" id="identitas" name="identitas" class="form-input"
+                                placeholder="nama@email.com" required />
                             <span class="input-line"></span>
                         </div>
                     </div>
+
                     <div class="field-group">
                         <label class="field-label" for="password">Password</label>
                         <div class="input-wrap">
                             <i class="bi bi-lock input-icon"></i>
-                            <input type="password" id="password" class="form-input" placeholder="Masukkan password"
-                                autocomplete="current-password" required />
-                            <button type="button" class="input-icon-right" id="togglePass"
-                                aria-label="Toggle password">
+                            <input type="password" id="password" name="password" class="form-input"
+                                placeholder="Masukkan password" required />
+                            <button type="button" class="input-icon-right" id="togglePass">
                                 <i class="bi bi-eye" id="eyeIcon"></i>
                             </button>
                             <span class="input-line"></span>
                         </div>
                     </div>
-                    <div class="d-flex align-items-center mb-4 field-group">
-                        <div class="check-group">
-                            <input type="checkbox" class="custom-check" id="remember" />
-                            <label class="check-label" for="remember">Ingat saya</label>
-                        </div>
-                        <a href="#" class="link-forgot">Lupa password?</a>
-                    </div>
+
                     <button type="submit" class="btn-login" id="btnLogin">
                         <span><i class="bi bi-box-arrow-in-right"></i> Masuk Sekarang</span>
                         <div class="spinner-ring">
@@ -135,6 +130,7 @@
                         </div>
                     </button>
                 </form>
+
 
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 

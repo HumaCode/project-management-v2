@@ -1,4 +1,13 @@
 <x-guest-layout>
+
+    @push('auth-css')
+        <link rel="stylesheet" href="{{ asset('assets/auth/css/register.css') }}">
+    @endpush
+
+    @push('auth-js')
+        <script src="{{ asset('assets/auth/js/register.js') }}"></script>
+    @endpush
+
     <div class="register-row row g-0 mx-auto">
 
         <!-- ── LEFT: Brand Panel ── -->

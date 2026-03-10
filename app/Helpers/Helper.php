@@ -1,6 +1,6 @@
 <?php
 
-use App\Models\Menu;
+use App\Models\Konfigurasi\Menu;
 use Illuminate\Support\Facades\Cache;
 
 if (!function_exists('tgl_indo')) {
@@ -52,26 +52,26 @@ if (!function_exists('tgl_indo')) {
 }
 
 
-// if (!function_exists('menus')) {
-//     function menus()
-//     {
-//         return Cache::rememberForever('menus', function () {
-//             return Menu::active()
-//                 ->orderBy('orders')
-//                 ->get()
-//                 ->groupBy('category');
-//         });
-//     }
-// }
+if (!function_exists('menus')) {
+    function menus()
+    {
+        return Cache::rememberForever('menus', function () {
+            return Menu::active()
+                ->orderBy('orders')
+                ->get()
+                ->groupBy('category');
+        });
+    }
+}
 
-// if (!function_exists('urlMenu')) {
-//     function urlMenu()
-//     {
-//         return Cache::rememberForever('urlMenu', function () {
-//             return Menu::active()
-//                 ->whereNotNull('url')
-//                 ->pluck('url')
-//                 ->toArray();
-//         });
-//     }
-// }
+if (!function_exists('urlMenu')) {
+    function urlMenu()
+    {
+        return Cache::rememberForever('urlMenu', function () {
+            return Menu::active()
+                ->whereNotNull('url')
+                ->pluck('url')
+                ->toArray();
+        });
+    }
+}

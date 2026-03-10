@@ -18,21 +18,21 @@ trait HasPermission
         'destroy'   => 'delete',
     ];
 
-    // public function callAction($method, $parameters)
-    // {
-    //     $action = Arr::get($this->abilities, $method);
+    public function callAction($method, $parameters)
+    {
+        $action = Arr::get($this->abilities, $method);
 
-    //     if (!$action) {
-    //         return parent::callAction($method, $parameters);
-    //     }
+        if (!$action) {
+            return parent::callAction($method, $parameters);
+        }
 
-    //     $staticPath = ltrim(request()->route()->getCompiled()->getStaticPrefix(), '/');
-    //     $urlMenu    = urlMenu();
+        $staticPath = ltrim(request()->route()->getCompiled()->getStaticPrefix(), '/');
+        $urlMenu    = urlMenu();
 
-    //     if (in_array($staticPath, $urlMenu)) {
-    //         $this->authorize("$action $staticPath");
-    //     }
+        if (in_array($staticPath, $urlMenu)) {
+            $this->authorize("$action $staticPath");
+        }
 
-    //     return parent::callAction($method, $parameters);
-    // }
+        return parent::callAction($method, $parameters);
+    }
 }

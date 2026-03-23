@@ -167,3 +167,41 @@ document.addEventListener("click", function (e) {
         userTrigger.classList.remove("open");
     }
 });
+
+/* ── FAB scroll to top ── */
+var fab = document.getElementById("fab");
+var scrollTicking = false;
+window.addEventListener(
+    "scroll",
+    function () {
+        if (!scrollTicking) {
+            requestAnimationFrame(function () {
+                fab.classList.toggle("visible", window.scrollY > 300);
+                scrollTicking = false;
+            });
+            scrollTicking = true;
+        }
+    },
+    {
+        passive: true,
+    },
+);
+
+function scrollToTop() {
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth",
+    });
+}
+
+/* ── Logout modal drain ── */
+var logoutModal = document.getElementById("logoutModal");
+logoutModal.addEventListener("show.bs.modal", function () {
+    var fill = document.getElementById("drainFill");
+    fill.classList.remove("go");
+    void fill.offsetWidth;
+    fill.classList.add("go");
+});
+logoutModal.addEventListener("hidden.bs.modal", function () {
+    document.getElementById("drainFill").classList.remove("go");
+});

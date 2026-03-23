@@ -7,11 +7,11 @@
         </div>
     </div>
     <nav class="sb-nav">
-        <div class="nav-section">Master</div>
         <a class="nav-link active" href="#" data-tip="Dashboard">
             <span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
+        <div class="nav-section">Master</div>
         <a class="nav-link" href="#" data-tip="Project">
             <span class="nav-icon"><i class="bi bi-kanban-fill"></i></span>
             <span class="nav-text">Project</span>

@@ -18,20 +18,20 @@
         </button>
         <div style="position:relative">
             <div class="user-trigger" id="userTrigger">
-                <div class="ut-av">BS</div>
+                <div class="ut-av">{{ user('initial') }}</div>
                 <div class="ut-info">
-                    <div class="ut-name">Budi Santoso</div>
-                    <div class="ut-email">budi@example.com</div>
+                    <div class="ut-name">{{ user('name') }}</div>
+                    <div class="ut-email">{{ user('email') }}</div>
                 </div>
                 <i class="bi bi-chevron-down ut-arrow"></i>
             </div>
             <div class="user-dropdown" id="userDropdown">
                 <div class="dd-header">
-                    <div class="dd-av">BS</div>
+                    <div class="dd-av">{{ user('initial') }}</div>
                     <div>
-                        <div class="dd-name">Budi Santoso</div>
-                        <div class="dd-email">budi@example.com</div>
-                        <span class="dd-role">ADMIN</span>
+                        <div class="dd-name">{{ user('name') }}</div>
+                        <div class="dd-email">{{ user('email') }}</div>
+                        <span class="dd-role">{{ user('role') }}</span>
                     </div>
                 </div>
                 <div class="dd-body">

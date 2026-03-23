@@ -63,10 +63,10 @@
     </nav>
     <div class="sb-footer">
         <div class="sb-user">
-            <div class="sb-av">BS</div>
+            <div class="sb-av">{{ user('initial') }}</div>
             <div class="sb-user-info">
-                <div class="uname">Budi Santoso</div>
-                <div class="urole">Admin</div>
+                <div class="uname">{{ user('name') }}</div>
+                <div class="urole">{{ user('role') }}</div>
             </div>
             <i class="bi bi-chevron-right sb-user-chevron"></i>
         </div>

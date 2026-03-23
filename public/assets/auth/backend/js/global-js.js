@@ -205,3 +205,38 @@ logoutModal.addEventListener("show.bs.modal", function () {
 logoutModal.addEventListener("hidden.bs.modal", function () {
     document.getElementById("drainFill").classList.remove("go");
 });
+
+$(document).ready(function () {
+    $(".btn-logout").on("click", function (e) {
+        e.preventDefault();
+
+        let $btn = $(this);
+        let $content = $btn.find("span");
+        $("#drainFill").css("width", "100%");
+
+        // 1. Ubah tampilan menjadi spinner
+        $btn.prop("disabled", true); // Mencegah double click
+        $content.html('<div class="logout-spinner"></div> Sedang proses...');
+
+        // 2. Tunggu 500ms (setengah detik) sebelum eksekusi AJAX
+        setTimeout(function () {
+            $.ajax({
+                url: "/logout",
+                type: "POST",
+                success: function (response) {
+                    // Berhasil logout, arahkan ke halaman login atau home
+                    window.location.href = "/login";
+                },
+                error: function (xhr) {
+                    // Jika ada error, kembalikan tombol ke semula
+                    console.error("Logout gagal:", xhr);
+                    $btn.prop("disabled", false);
+                    $content.html(
+                        '<i class="bi bi-box-arrow-right"></i> Ya, Logout Sekarang',
+                    );
+                    alert("Terjadi kesalahan. Silakan coba lagi.");
+                },
+            });
+        }, 500);
+    });
+});

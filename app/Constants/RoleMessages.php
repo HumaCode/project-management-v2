@@ -4,12 +4,12 @@ namespace App\Constants;
 
 class RoleMessages
 {
-    const TITLE                                 = 'Data Role';
-    const SUBTITLE                              = 'Kelola data role sistem SICANTING';
-    const FORMVIEW                              = 'pages.shield.roles.role-form';
-    const INDEXVIEW                             = 'pages.shield.roles.index';
+    const TITLE                                 = 'Role Management';
+    const SUBTITLE                              = 'Kelola data role sistem';
+    const FORMVIEW                              = 'pages.role-management.roles.role-form';
+    const INDEXVIEW                             = 'pages.role-management.roles.index';
 
-    const PAGINATIONURL                         = 'role.allPagination';
+    const PAGINATIONURL                         = 'roles.allPagination';
     const CREATEURL                             = 'roles.create';
     const EDITURL                               = 'roles.edit';
     const SHOWURL                               = 'roles.show';

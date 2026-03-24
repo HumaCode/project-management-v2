@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\RoleManagement\RoleController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -14,6 +15,11 @@ Route::middleware(['auth', 'verified'])->group(
             ->group(function () {
                 Route::get('/dashboard', 'index')->name('dashboard');
             });
+
+
+        // role
+        Route::get('roles/getAllPagination', [RoleController::class, 'getAllPaginated'])->name('roles.allPagination');
+        Route::resource('roles', RoleController::class);
     }
 );
 

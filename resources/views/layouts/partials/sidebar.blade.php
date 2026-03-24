@@ -28,8 +28,7 @@
                 {{-- Menu Items --}}
                 @foreach ($filtered as $menu)
                     <a href="{{ url($menu->url) }}"
-                        class="nav-link {{ request()->is($menu->url . '*') ? 'active' : '' }}"
-                        data-tip="{{ $menu->name }}">
+                        class="nav-link {{ request()->is($menu->url . '*') ? 'active' : '' }}">
 
                         <span class="nav-icon">
                             <i class="{{ $menu->icon }}"></i>
@@ -44,9 +43,9 @@
 
 
                         {{-- Logika Badge (Jika ada kolom badge_count di database, jika tidak abaikan baris ini) --}}
-                        @if (isset($menu->badge_count) && $menu->badge_count > 0)
+                        {{-- @if (isset($menu->badge_count) && $menu->badge_count > 0)
                             <span class="nav-badge">{{ $menu->badge_count }}</span>
-                        @endif
+                        @endif --}}
                     </a>
                 @endforeach
             @endif

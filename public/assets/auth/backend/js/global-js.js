@@ -140,18 +140,6 @@ window.addEventListener(
     },
 );
 
-/* ── Nav item click ── */
-document.querySelectorAll(".nav-link").forEach(function (link) {
-    link.addEventListener("click", function (e) {
-        e.preventDefault();
-        document
-            .querySelectorAll(".nav-link")
-            .forEach((l) => l.classList.remove("active"));
-        this.classList.add("active");
-        if (isMobile()) closeMobileSidebar();
-    });
-});
-
 /* ── User dropdown ── */
 const userTrigger = document.getElementById("userTrigger");
 const userDropdown = document.getElementById("userDropdown");

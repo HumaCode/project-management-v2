@@ -52,4 +52,17 @@ class Menu extends Model
     {
         return $query->where('is_active', 1);
     }
+
+    public function getCountAttribute()
+    {
+        // if ($this->url == 'project') {
+        //     return \App\Models\Project::count(); // Ambil jumlah asli dari tabel project
+        // }
+
+        // if ($this->url == 'dokumen') {
+        //     return \App\Models\Document::count();
+        // }
+
+        return null;
+    }
 }

@@ -12,7 +12,7 @@
                         dan Anda perlu login kembali untuk mengakses dashboard.</p>
                 </div>
                 <p style="font-size:13px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-person-circle"></i>
-                    Logged in as: <span style="color:var(--cyan)">budi@example.com</span></p>
+                    Logged in as: <span style="color:var(--cyan)">{{ user('email') }}</span></p>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn-cancel" data-bs-dismiss="modal">

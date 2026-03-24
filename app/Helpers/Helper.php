@@ -107,25 +107,29 @@ if (!function_exists('user')) {
 
 
 if (!function_exists('menus')) {
-    function menus()
+    function menus($grouped = true)
     {
-        return Cache::rememberForever('menus', function () {
+        // 1. Ambil data asli (flat) dari cache agar query hanya 1x
+        $allMenus = Cache::rememberForever('menus_data', function () {
             return Menu::active()
                 ->orderBy('orders')
-                ->get()
-                ->groupBy('category');
+                ->get();
         });
+
+        // 2. Jika minta grouped (untuk Sidebar), lakukan grouping di memori PHP
+        if ($grouped) {
+            return $allMenus->groupBy('category');
+        }
+
+        // 3. Jika tidak, kembalikan data flat (untuk urlMenu)
+        return $allMenus;
     }
 }
 
 if (!function_exists('urlMenu')) {
     function urlMenu()
     {
-        return Cache::rememberForever('urlMenu', function () {
-            return Menu::active()
-                ->whereNotNull('url')
-                ->pluck('url')
-                ->toArray();
-        });
+        // Panggil menus(false) untuk mendapatkan collection flat, bukan grouped
+        return menus(false)->whereNotNull('url')->pluck('url')->toArray();
     }
 }

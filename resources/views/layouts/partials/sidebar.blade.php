@@ -7,59 +7,51 @@
         </div>
     </div>
     <nav class="sb-nav">
-        <a class="nav-link active" href="#" data-tip="Dashboard">
+        <a class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}" href="{{ route('dashboard') }}">
             <span class="nav-icon"><i class="bi bi-grid-3x3-gap-fill"></i></span>
             <span class="nav-text">Dashboard</span>
         </a>
-        <div class="nav-section">Master</div>
-        <a class="nav-link" href="#" data-tip="Project">
-            <span class="nav-icon"><i class="bi bi-kanban-fill"></i></span>
-            <span class="nav-text">Project</span>
-            <span class="nav-badge">12</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Dokumen">
-            <span class="nav-icon"><i class="bi bi-folder2-open"></i></span>
-            <span class="nav-text">Dokumen</span>
-            <span class="nav-badge">48</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Catatan">
-            <span class="nav-icon"><i class="bi bi-journal-text"></i></span>
-            <span class="nav-text">Catatan</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Laporan PDF">
-            <span class="nav-icon"><i class="bi bi-file-earmark-pdf-fill"></i></span>
-            <span class="nav-text">Laporan PDF</span>
-        </a>
-        <div class="nav-divider"></div>
-        <div class="nav-section">Management</div>
-        <a class="nav-link" href="#" data-tip="Manajemen Tim">
-            <span class="nav-icon"><i class="bi bi-people-fill"></i></span>
-            <span class="nav-text">Manajemen Tim</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Kategori Dokumen">
-            <span class="nav-icon"><i class="bi bi-tags-fill"></i></span>
-            <span class="nav-text">Kategori Dokumen</span>
-        </a>
-        <div class="nav-divider"></div>
-        <div class="nav-section">Setting</div>
-        <a class="nav-link" href="#" data-tip="Manajemen User">
-            <span class="nav-icon"><i class="bi bi-person-badge-fill"></i></span>
-            <span class="nav-text">Manajemen User</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Role & Permission">
-            <span class="nav-icon"><i class="bi bi-shield-fill-check"></i></span>
-            <span class="nav-text">Role & Permission</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Notifikasi">
-            <span class="nav-icon"><i class="bi bi-bell-fill"></i></span>
-            <span class="nav-text">Notifikasi</span>
-            <span class="nav-badge"
-                style="background:rgba(255,77,109,.15);color:var(--err);border-color:rgba(255,77,109,.25)">3</span>
-        </a>
-        <a class="nav-link" href="#" data-tip="Pengaturan">
-            <span class="nav-icon"><i class="bi bi-gear-fill"></i></span>
-            <span class="nav-text">Pengaturan</span>
-        </a>
+
+
+        @foreach (menus() as $category => $items)
+            @php
+                // Filter menu berdasarkan permission user
+                $filtered = $items->filter(function ($menu) {
+                    return user('can', 'menu ' . $menu->url);
+                });
+            @endphp
+
+            @if ($filtered->count())
+                {{-- Category Section --}}
+                <div class="nav-section">{{ strtoupper($category) }}</div>
+
+                {{-- Menu Items --}}
+                @foreach ($filtered as $menu)
+                    <a href="{{ url($menu->url) }}"
+                        class="nav-link {{ request()->is($menu->url . '*') ? 'active' : '' }}"
+                        data-tip="{{ $menu->name }}">
+
+                        <span class="nav-icon">
+                            <i class="{{ $menu->icon }}"></i>
+                        </span>
+
+                        <span class="nav-text">{{ $menu->name }}</span>
+
+                        {{-- Jika ada hitungan (count), tampilkan badgenya --}}
+                        {{-- @if ($menu->count)
+                            <span class="nav-badge">{{ $menu->count }}</span>
+                        @endif --}}
+
+
+                        {{-- Logika Badge (Jika ada kolom badge_count di database, jika tidak abaikan baris ini) --}}
+                        @if (isset($menu->badge_count) && $menu->badge_count > 0)
+                            <span class="nav-badge">{{ $menu->badge_count }}</span>
+                        @endif
+                    </a>
+                @endforeach
+            @endif
+        @endforeach
+
     </nav>
     <div class="sb-footer">
         <div class="sb-user">

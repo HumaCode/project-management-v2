@@ -5,33 +5,24 @@
     @endpush
 
     @push('js')
-        <script>
-            /* ══ Select2 Init ══ */
-            $(document).ready(function() {
-
-                $('#selStatus').select2({
-                    minimumResultsForSearch: -1,
-                    dropdownAutoWidth: true,
-                    width: 'auto',
-                    dropdownParent: $('body'),
-                });
-            });
-        </script>
+        <script></script>
     @endpush
+
+
     <!-- Page Header -->
     <div class="pg-hd" data-aos="fade-down">
         <div class="pg-hd-left">
-            <div class="pg-ico"><i class="bi bi-shield-fill"></i></div>
+            <div class="pg-ico"><i class="{{ $icon }}"></i></div>
             <div>
                 <div class="pg-title">{{ $title }}</div>
-                <div class="pg-sub">{{ $title }}</div>
+                <div class="pg-sub">{{ $subtitle }}</div>
             </div>
         </div>
         <div class="pg-actions">
             <div class="bc d-none d-xl-flex">
                 <a href="dashboard.html"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
                 <span class="sep"><i class="bi bi-chevron-right"></i></span>
-                <span class="here">{{ $subtitle }}</span>
+                <span class="here">{{ $title }}</span>
             </div>
         </div>
     </div>
@@ -43,6 +34,7 @@
                 role</strong>, gunakan halaman <a href="role.html">Konfigurasi Akses Role <i class="bi bi-arrow-right"
                     style="font-size:10px"></i></a></p>
     </div>
+
 
     <!-- Stat Cards -->
     <div class="stat-row" data-aos="fade-up" data-aos-delay="40">
@@ -76,40 +68,28 @@
         </div>
     </div>
 
-    <!-- Toolbar -->
-    <div class="tbar" data-aos="fade-up" data-aos-delay="55">
+    <!-- Filter Toolbar -->
+    <div class="tbar" data-aos="fade-up" data-aos-delay="60">
         <div class="tbar-search">
             <i class="bi bi-search"></i>
-            <input type="text" placeholder="Cari nama atau slug role..." />
+            <input type="text" placeholder="Cari data..." />
         </div>
-        <div class="filter-wrap" style="display: flex; gap: 8px; align-items: center;">
-            <div style="flex: 1; min-width: 0;">
-                <select class="nsel" id="selStatus" style="width: 100%">
-                    <option value="">Semua Status</option>
-                    <option value="aktif">Aktif</option>
-                    <option value="nonaktif">Nonaktif</option>
-                </select>
-            </div>
-            <button class="btn-reset" title="Reset Filter" onclick="$('#selStatus').val('').trigger('change')">
-                <i class="bi bi-arrow-counterclockwise"></i>
-            </button>
-        </div>
+
+        <select class="nsel" style="min-width:128px">
+            <option value="all">Semua Status</option>
+            <option value="active">Aktif</option>
+            <option value="inactive">Tidak Aktif</option>
+        </select>
         <div class="tbar-right">
             <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
-                <span><i class="bi bi-shield-plus"></i><span class="d-none d-sm-inline"> Tambah</span></span>
+                <span><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline"> Tambah</span></span>
             </button>
         </div>
     </div>
 
     <!-- Table Card -->
-    <div class="tbl-card" data-aos="fade-up" data-aos-delay="70">
-        <div class="scroll-hint-mob"
-            style="display:none;align-items:center;gap:6px;padding:7px 14px;background:rgba(167,139,250,.03);border-bottom:1px solid var(--bd);font-family:var(--mono);font-size:11px;color:var(--muted)">
-            <i class="bi bi-arrow-right-short"
-                style="font-size:16px;color:var(--purple);animation:sh-arrow 1.4s ease-in-out infinite"></i>
-            Geser tabel ke kanan untuk melihat kolom lainnya
-        </div>
-        <div class="tbl-scroll-mob">
+    <div class="tbl-card" data-aos="fade-up" data-aos-delay="80">
+        <div class="table-responsive">
             <table class="dtbl">
                 <thead>
                     <tr>
@@ -130,12 +110,10 @@
                         <td class="td-no">01</td>
                         <td>
                             <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#7f1d1d,#ff4d6d)">A
-                                </div>
+                                <div class="role-av" style="background:linear-gradient(135deg,#7f1d1d,#ff4d6d)">A</div>
                                 <div class="role-info">
                                     <div class="role-nm">Admin</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i>
-                                        admin
+                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i> admin
                                     </div>
                                 </div>
                             </div>
@@ -384,12 +362,17 @@
                 </tbody>
             </table>
         </div>
+        <!-- Pagination -->
         <div class="tbl-foot">
-            <div class="tbl-info">Menampilkan <b>5</b> dari <b>5</b> role</div>
+            <div class="tbl-info">Menampilkan <b>8</b> dari <b>32</b> catatan</div>
             <div class="pag">
                 <button class="pb" disabled><i class="bi bi-chevron-left"></i></button>
                 <button class="pb active">1</button>
-                <button class="pb" disabled><i class="bi bi-chevron-right"></i></button>
+                <button class="pb">2</button>
+                <button class="pb">3</button>
+                <span class="pag-dot">&hellip;</span>
+                <button class="pb">4</button>
+                <button class="pb"><i class="bi bi-chevron-right"></i></button>
             </div>
         </div>
     </div>

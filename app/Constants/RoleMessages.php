@@ -19,6 +19,8 @@ class RoleMessages
 
     const TABLEID                               = 'table-role';
     const AKSES_PERMISSION                      = 'roles';
+    
+    const ICON                                  = 'bi bi-diagram-3-fill';
 
 
     const RETRIEVED_SUCCESS            = 'Role data berhasil diambil';

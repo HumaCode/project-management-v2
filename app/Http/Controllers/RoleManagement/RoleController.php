@@ -25,6 +25,7 @@ class RoleController extends Controller
     private string $updateUrl           = RoleMessages::UPDATEURL;
     private string $destroyUrl          = RoleMessages::DESTROYURL;
 
+    private string $icon                = RoleMessages::ICON;
     private string $dataUrl             = RoleMessages::PAGINATIONURL;
     private string $dataTableId         = RoleMessages::TABLEID;
     private string $aksesPermission     = RoleMessages::AKSES_PERMISSION;
@@ -53,6 +54,7 @@ class RoleController extends Controller
             'destroyUrl'        => route($this->destroyUrl, ['role' => '__ID__']),
             'dataUrl'           => route($this->dataUrl),
             'dataTableId'       => $this->dataTableId,
+            'icon'              => $this->icon,
             'permissionAkses'   => $this->aksesPermission,
         ];
 

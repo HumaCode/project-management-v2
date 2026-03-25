@@ -15,6 +15,7 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 
     <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/global.css') }}">
+    <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/sca.css') }}">
 
     @stack('css')
 </head>
@@ -39,10 +40,8 @@
 
 
             <!-- Page Content -->
-            <main class="page-body">
-
+            <main class="page-body" id="">
                 {{ $slot }}
-
             </main>
 
             {{-- footer --}}
@@ -60,6 +59,9 @@
         <div class="fab-inner"><i class="bi bi-chevron-up"></i></div>
         <div class="fab-tip">Kembali ke atas</div>
     </button>
+
+    <!-- MODAL CONTAINER — must be at body root to avoid z-index trapping -->
+    <div id="modal"></div>
 
     <!-- LOGOUT MODAL -->
     @include('layouts.partials.modal-logout')
@@ -80,6 +82,8 @@
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 
     <script src="{{ asset('assets/auth/backend/js/global-js.js') }}"></script>
+    <script src="{{ asset('assets/auth/backend/js/main.js') }}"></script>
+    <script src="{{ asset('assets/auth/backend/js/sca.js') }}"></script>
 
     @stack('js')
 </body>

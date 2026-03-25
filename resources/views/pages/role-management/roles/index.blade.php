@@ -5,7 +5,32 @@
     @endpush
 
     @push('js')
-        <script></script>
+        <script>
+            const dataTableId = "{{ $dataTableId }}";
+
+            handleAction(dataTableId, function() {
+                const $nameInput = $('#role_name');
+                const $slugInput = $('#role_slug');
+
+                // 1. Logika Auto Focus setelah modal benar-benar tampil
+                // Kita cari modal terdekat dari inputan tersebut
+                $('#role_name')?.focus();
+
+                // 2. Logika Auto Slug
+                $nameInput.on('input', function() {
+                    const title = $(this).val();
+                    const slug = title
+                        .toLowerCase()
+                        .replace(/[^\w ]+/g, '')
+                        .replace(/ +/g, '-');
+
+                    $slugInput.val(slug);
+                });
+            });
+
+            // Handle delete
+            handleDelete(dataTableId);
+        </script>
     @endpush
 
 
@@ -81,9 +106,9 @@
             <option value="inactive">Tidak Aktif</option>
         </select>
         <div class="tbar-right">
-            <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
+            <a href="{{ $createUrl }}" class="btn-add action">
                 <span><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline"> Tambah</span></span>
-            </button>
+            </a>
         </div>
     </div>
 

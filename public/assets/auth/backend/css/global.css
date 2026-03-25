@@ -111,14 +111,12 @@ a {
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        var(--cyan),
-        var(--blue),
-        var(--cyan),
-        transparent
-    );
+    background: linear-gradient(90deg,
+            transparent,
+            var(--cyan),
+            var(--blue),
+            var(--cyan),
+            transparent);
     background-size: 200% 100%;
     animation: bflow 4s linear infinite;
     z-index: 1;
@@ -174,14 +172,13 @@ a {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.25) 0%,
-        transparent 60%
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 255, 255, 0.25) 0%,
+            transparent 60%);
 }
 
 @keyframes logopulse {
+
     0%,
     100% {
         box-shadow: 0 0 16px rgba(0, 200, 255, 0.35);
@@ -289,11 +286,9 @@ a {
 }
 
 .nav-link.active {
-    background: linear-gradient(
-        135deg,
-        rgba(0, 114, 198, 0.2),
-        rgba(0, 200, 255, 0.1)
-    );
+    background: linear-gradient(135deg,
+            rgba(0, 114, 198, 0.2),
+            rgba(0, 200, 255, 0.1));
     color: var(--cyan);
     border: 1px solid rgba(0, 200, 255, 0.15);
 }
@@ -672,6 +667,7 @@ a {
 }
 
 @keyframes dping {
+
     0%,
     100% {
         transform: scale(1);
@@ -983,12 +979,10 @@ a {
     position: absolute;
     inset: 0;
     border-radius: 50%;
-    background: conic-gradient(
-        var(--cyan) 0deg,
-        var(--blue) 90deg,
-        rgba(0, 100, 160, 0.2) 200deg,
-        rgba(0, 100, 160, 0.2) 360deg
-    );
+    background: conic-gradient(var(--cyan) 0deg,
+            var(--blue) 90deg,
+            rgba(0, 100, 160, 0.2) 200deg,
+            rgba(0, 100, 160, 0.2) 360deg);
     animation: fspin 2.5s linear infinite;
 }
 
@@ -1141,12 +1135,10 @@ a {
     left: -100%;
     width: 60%;
     height: 2px;
-    background: linear-gradient(
-        90deg,
-        transparent,
-        rgba(255, 77, 109, 0.7),
-        transparent
-    );
+    background: linear-gradient(90deg,
+            transparent,
+            rgba(255, 77, 109, 0.7),
+            transparent);
     animation: mshim 2.2s 0.2s ease-in-out forwards;
     pointer-events: none;
     z-index: 1;
@@ -1284,11 +1276,9 @@ a {
 }
 
 .btn-logout {
-    background: linear-gradient(
-        135deg,
-        rgba(180, 30, 50, 0.9),
-        rgba(255, 77, 109, 0.85)
-    );
+    background: linear-gradient(135deg,
+            rgba(180, 30, 50, 0.9),
+            rgba(255, 77, 109, 0.85));
     border: 1px solid rgba(255, 77, 109, 0.35);
     color: #fff;
     font-family: var(--font);
@@ -1309,11 +1299,9 @@ a {
     content: "";
     position: absolute;
     inset: 0;
-    background: linear-gradient(
-        135deg,
-        rgba(255, 77, 109, 0.9),
-        rgba(200, 30, 60, 0.9)
-    );
+    background: linear-gradient(135deg,
+            rgba(255, 77, 109, 0.9),
+            rgba(200, 30, 60, 0.9));
     opacity: 0;
     transition: opacity var(--dur) var(--ease);
 }
@@ -1343,6 +1331,7 @@ a {
 }
 
 @media (max-width: 991.98px) {
+
     /*
       MOBILE SIDEBAR FIX
       ─────────────────────────────────────────
@@ -1437,6 +1426,7 @@ a {
 .select2-container {
     min-width: 120px;
 }
+
 .select2-container .select2-selection--single {
     height: 38px !important;
     background: rgba(0, 200, 255, 0.05) !important;
@@ -1450,16 +1440,15 @@ a {
         box-shadow 0.25s;
     outline: none !important;
 }
+
 .select2-container--default.select2-container--open .select2-selection--single,
-.select2-container--default.select2-container--focus
-    .select2-selection--single {
+.select2-container--default.select2-container--focus .select2-selection--single {
     border-color: rgba(167, 139, 250, 0.5) !important;
     background: rgba(167, 139, 250, 0.07) !important;
     box-shadow: 0 0 0 3px rgba(167, 139, 250, 0.1) !important;
 }
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__rendered {
+
+.select2-container--default .select2-selection--single .select2-selection__rendered {
     color: var(--txt) !important;
     font-family: var(--font) !important;
     font-size: 13px !important;
@@ -1467,37 +1456,32 @@ a {
     padding-left: 11px !important;
     padding-right: 30px !important;
 }
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__placeholder {
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
     color: var(--muted) !important;
 }
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__arrow {
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
     height: 36px !important;
     width: 28px !important;
     right: 4px !important;
     top: 0 !important;
 }
-.select2-container--default
-    .select2-selection--single
-    .select2-selection__arrow
-    b {
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
     border-color: var(--dim) transparent transparent transparent !important;
     border-width: 5px 4px 0 4px !important;
     transition:
         border-color 0.2s,
         transform 0.2s;
 }
-.select2-container--default.select2-container--open
-    .select2-selection--single
-    .select2-selection__arrow
-    b {
+
+.select2-container--default.select2-container--open .select2-selection--single .select2-selection__arrow b {
     border-color: var(--purple) transparent transparent transparent !important;
     transform: rotate(180deg);
     margin-top: -7px !important;
 }
+
 /* Dropdown panel */
 .select2-dropdown {
     background: #071528 !important;
@@ -1509,20 +1493,42 @@ a {
     animation: s2in 0.18s cubic-bezier(0.4, 0, 0.2, 1);
     overflow: hidden;
 }
+
 @keyframes s2in {
     from {
         opacity: 0;
         transform: translateY(-6px);
     }
+
     to {
         opacity: 1;
         transform: translateY(0);
     }
 }
-/* No search box karena minimumResultsForSearch:-1 */
+
+/* Search box styling */
 .select2-container--default .select2-search--dropdown {
-    display: none;
+    padding: 8px;
+    border-bottom: 1px solid rgba(167, 139, 250, 0.15);
 }
+
+.select2-container--default .select2-search--dropdown .select2-search__field {
+    background: rgba(0, 200, 255, 0.04);
+    border: 1px solid var(--bd);
+    border-radius: var(--rs);
+    color: var(--txt);
+    padding: 6px 10px;
+    font-size: 12.5px;
+    outline: none;
+    font-family: var(--font);
+    transition: border-color 0.25s, background 0.25s;
+}
+
+.select2-container--default .select2-search--dropdown .select2-search__field:focus {
+    border-color: rgba(0, 200, 255, 0.35);
+    background: rgba(0, 200, 255, 0.07);
+}
+
 .select2-results__options {
     padding: 5px !important;
     max-height: 200px;
@@ -1530,13 +1536,16 @@ a {
     scrollbar-width: thin;
     scrollbar-color: rgba(167, 139, 250, 0.2) transparent;
 }
+
 .select2-results__options::-webkit-scrollbar {
     width: 3px;
 }
+
 .select2-results__options::-webkit-scrollbar-thumb {
     background: rgba(167, 139, 250, 0.25);
     border-radius: 3px;
 }
+
 .select2-container--default .select2-results__option {
     color: var(--dim) !important;
     font-family: var(--font) !important;
@@ -1552,6 +1561,7 @@ a {
     align-items: center !important;
     gap: 8px !important;
 }
+
 .select2-container--default .select2-results__option::before {
     content: "";
     width: 6px;
@@ -1563,43 +1573,74 @@ a {
         background 0.15s,
         box-shadow 0.15s;
 }
+
 .select2-container--default .select2-results__option[aria-selected="true"] {
     background: rgba(167, 139, 250, 0.12) !important;
     color: var(--purple) !important;
 }
-.select2-container--default
-    .select2-results__option[aria-selected="true"]::before {
+
+.select2-container--default .select2-results__option[aria-selected="true"]::before {
     background: var(--purple) !important;
     box-shadow: 0 0 7px var(--purple) !important;
 }
-.select2-container--default
-    .select2-results__option--highlighted[aria-selected] {
+
+.select2-container--default .select2-results__option--highlighted[aria-selected] {
     background: rgba(167, 139, 250, 0.08) !important;
     color: var(--txt) !important;
 }
-.select2-container--default
-    .select2-results__option--highlighted[aria-selected]::before {
+
+.select2-container--default .select2-results__option--highlighted[aria-selected]::before {
     background: var(--dim) !important;
 }
+
 /* Warna dot per opsi */
 .opt-web::before {
     background: var(--cyan) !important;
     box-shadow: 0 0 6px rgba(0, 200, 255, 0.5) !important;
 }
+
 .opt-api::before {
     background: var(--purple) !important;
     box-shadow: 0 0 6px rgba(167, 139, 250, 0.5) !important;
 }
+
 .opt-aktif::before {
     background: var(--ok) !important;
     box-shadow: 0 0 6px rgba(0, 229, 160, 0.5) !important;
 }
+
 .opt-nonaktif::before {
     background: var(--muted) !important;
     box-shadow: none !important;
 }
+
 /* Semua (all) option */
 .opt-all::before {
     background: linear-gradient(135deg, var(--cyan), var(--purple)) !important;
     box-shadow: none !important;
+}
+
+/* ═══════════════════════════════════════
+     MODAL Z-INDEX FIX
+     #modal lives at <body> root level.
+     Must be above sidebar (z:300), topbar (z:100),
+     overlay (z:200), FAB (z:250).
+     Bootstrap .modal = 1055, .modal-backdrop = 1050.
+   ═══════════════════════════════════════ */
+#modal {
+    position: relative;
+    z-index: 1060;
+}
+
+#modal .modal {
+    z-index: 1055;
+}
+
+#modal .modal-backdrop {
+    z-index: 1050;
+}
+
+/* Select2 dropdown inside modal must sit above the modal dialog */
+#modal .select2-container--open .select2-dropdown {
+    z-index: 1070;
 }

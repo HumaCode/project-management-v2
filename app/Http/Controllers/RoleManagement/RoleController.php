@@ -5,31 +5,43 @@ namespace App\Http\Controllers\RoleManagement;
 use App\Constants\RoleMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RoleManagement\Role\RoleStoreRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\RoleResource;
 use App\Interface\RoleManagement\RoleRepositoryInterface;
+use App\Models\Shield\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
 class RoleController extends Controller
 {
-    private string $title               = RoleMessages::TITLE;
-    private string $subtitle            = RoleMessages::SUBTITLE;
-    private string $formView            = RoleMessages::FORMVIEW;
-    private string $indexView           = RoleMessages::INDEXVIEW;
+    private string $title = RoleMessages::TITLE;
 
-    private string $createUrl           = RoleMessages::CREATEURL;
-    private string $editUrl             = RoleMessages::EDITURL;
-    private string $showUrl             = RoleMessages::SHOWURL;
-    private string $storeUrl            = RoleMessages::STOREURL;
-    private string $updateUrl           = RoleMessages::UPDATEURL;
-    private string $destroyUrl          = RoleMessages::DESTROYURL;
+    private string $subtitle = RoleMessages::SUBTITLE;
 
-    private string $icon                = RoleMessages::ICON;
-    private string $dataUrl             = RoleMessages::PAGINATIONURL;
-    private string $dataTableId         = RoleMessages::TABLEID;
-    private string $aksesPermission     = RoleMessages::AKSES_PERMISSION;
+    private string $formView = RoleMessages::FORMVIEW;
 
+    private string $indexView = RoleMessages::INDEXVIEW;
+
+    private string $createUrl = RoleMessages::CREATEURL;
+
+    private string $editUrl = RoleMessages::EDITURL;
+
+    private string $showUrl = RoleMessages::SHOWURL;
+
+    private string $storeUrl = RoleMessages::STOREURL;
+
+    private string $updateUrl = RoleMessages::UPDATEURL;
+
+    private string $destroyUrl = RoleMessages::DESTROYURL;
+
+    private string $icon = RoleMessages::ICON;
+
+    private string $dataUrl = RoleMessages::PAGINATIONURL;
+
+    private string $dataTableId = RoleMessages::TABLEID;
+
+    private string $aksesPermission = RoleMessages::AKSES_PERMISSION;
 
     private RoleRepositoryInterface $roleRepository;
 
@@ -41,21 +53,21 @@ class RoleController extends Controller
     /**
      * Display a listing of the resource.
      */
-     public function index()
+    public function index()
     {
         // Gate::authorize('read ' . $this->aksesPermission);
 
         $data = [
-            'title'             => $this->title,
-            'subtitle'          => $this->subtitle,
-            'createUrl'         => route($this->createUrl),
-            'editUrl'           => route($this->editUrl, ['role' => '__ID__']),
-            'showUrl'           => route($this->showUrl, ['role' => '__ID__']),
-            'destroyUrl'        => route($this->destroyUrl, ['role' => '__ID__']),
-            'dataUrl'           => route($this->dataUrl),
-            'dataTableId'       => $this->dataTableId,
-            'icon'              => $this->icon,
-            'permissionAkses'   => $this->aksesPermission,
+            'title' => $this->title,
+            'subtitle' => $this->subtitle,
+            'createUrl' => route($this->createUrl),
+            'editUrl' => route($this->editUrl, ['role' => '__ID__']),
+            'showUrl' => route($this->showUrl, ['role' => '__ID__']),
+            'destroyUrl' => route($this->destroyUrl, ['role' => '__ID__']),
+            'dataUrl' => route($this->dataUrl),
+            'dataTableId' => $this->dataTableId,
+            'icon' => $this->icon,
+            'permissionAkses' => $this->aksesPermission,
         ];
 
         return view($this->indexView, $data);
@@ -63,12 +75,12 @@ class RoleController extends Controller
 
     public function getAllPaginated(Request $request)
     {
-        Gate::authorize('read ' . $this->aksesPermission);
+        Gate::authorize('read '.$this->aksesPermission);
 
         $request = $request->validate([
-            'search'        => 'nullable|string',
-            'status'        => 'nullable|string',
-            'row_per_page'  => 'required|integer'
+            'search' => 'nullable|string',
+            'status' => 'nullable|string',
+            'row_per_page' => 'required|integer',
         ]);
 
         try {
@@ -87,17 +99,28 @@ class RoleController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Role $role)
     {
-        //
+        return view($this->formView, [
+            'action' => route($this->storeUrl),
+            'data' => $role,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(RoleStoreRequest $request)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $role = $this->roleRepository->create($request);
+
+            return ResponseHelper::jsonResponse(true, RoleMessages::CREATED_SUCCESS, new RoleResource($role), 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**

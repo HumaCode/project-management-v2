@@ -5,7 +5,17 @@
     @endpush
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
         <script>
+            window.dataTableId = @json($dataTableId);
+            window.urlData = @json($dataUrl);
+            window.urlEdit = @json($editUrl);
+            window.urlShow = @json($showUrl);
+            window.urlDestroy = @json($destroyUrl);
+            window.canRead = @json(auth()->user()->can('read ' . $permissionAkses));
+            window.canUpdate = @json(auth()->user()->can('update ' . $permissionAkses));
+            window.canDelete = @json(auth()->user()->can('delete ' . $permissionAkses));
+
             const dataTableId = "{{ $dataTableId }}";
 
             handleAction(dataTableId, function() {
@@ -30,6 +40,333 @@
 
             // Handle delete
             handleDelete(dataTableId);
+        </script>
+
+        <script>
+            /* ============================================================
+                                                                                                                                                                                                                           TABLE STATE & CONFIGURATION
+                                                                                                                                                                                                                        ============================================================ */
+            const tableState = {
+                search: null,
+                status: null,
+                per_page: 10,
+                page: 1,
+                last_page: 1
+            };
+
+            let isLoading = false;
+
+            /* ============================================================
+               INITIAL LOAD
+            ============================================================ */
+            $(function() {
+                // Beri sedikit delay agar AOS animation atau transition selesai
+                setTimeout(() => {
+                    loadData();
+                }, 300);
+
+                // Inisialisasi Handler Global
+                handleAction(window.dataTableId, function() {
+                    // Callback khusus saat modal Role terbuka
+                    const $nameInput = $('#role_name');
+                    const $slugInput = $('#role_slug');
+
+                    // Auto Focus
+                    $nameInput.closest('.modal').one('shown.bs.modal', function() {
+                        $nameInput.trigger('focus');
+                    });
+
+                    // Auto Slug
+                    $nameInput.on('input', function() {
+                        const slug = $(this).val()
+                            .toLowerCase()
+                            .replace(/[^\w ]+/g, '')
+                            .replace(/ +/g, '-');
+                        $slugInput.val(slug);
+                    });
+                });
+
+                handleDelete(window.dataTableId);
+            });
+
+            /* ============================================================
+               CORE FUNCTIONS (LOAD & RENDER)
+            ============================================================ */
+            function loadData() {
+                if (isLoading) return;
+                isLoading = true;
+
+                renderLoading(tableState.per_page);
+
+                $.ajax({
+                    url: window.urlData,
+                    method: 'GET',
+                    data: {
+                        search: tableState.search,
+                        status: $("#filterStatusAkun").val(),
+                        row_per_page: tableState.per_page,
+                        page: tableState.page
+                    },
+                    success(res) {
+                        if (!res.success) {
+                            renderError(res.message || 'Gagal memuat data');
+                            return;
+                        }
+
+                        const rows = res.data.data;
+                        const meta = res.data.meta;
+
+                        tableState.last_page = meta.last_page;
+
+                        renderTable(rows, meta);
+                        renderInfo(meta);
+                        renderPagination(meta);
+                    },
+                    error(xhr) {
+                        let msg = 'Terjadi kesalahan sistem';
+                        if (xhr.responseJSON) msg = xhr.responseJSON.message || msg;
+                        renderError(msg);
+                    },
+                    complete() {
+                        isLoading = false;
+                    }
+                });
+            }
+
+            function renderTable(rows, meta) {
+                const $tbody = $('#dataBody');
+
+                if (!rows || rows.length === 0) {
+                    renderEmpty('Data role tidak ditemukan');
+                    return;
+                }
+
+                let html = '';
+                let no = meta.from;
+
+                rows.forEach(row => {
+                    const initial = row.name ? row.name.charAt(0).toUpperCase() : 'R';
+                    const statusClass = row.is_active == 1 ? 'rs-aktif' : 'rs-non';
+                    const statusText = row.is_active == 1 ? 'Aktif' : 'Non-Aktif';
+
+                    // Actions Logic
+                    let actions = '';
+
+                    // Button Permission
+                    actions += `
+                            <a href="/role-management/roles/${row.id}/permissions" class="ibtn ib-p" title="Konfigurasi Permission">
+                                <i class="bi bi-shield-fill-check"></i>
+                            </a>
+                        `;
+
+                    if (window.canUpdate) {
+                        actions += `
+                            <a href="${window.urlEdit.replace('__ID__', row.id)}" class="ibtn ib-e action" title="Edit Role">
+                                <i class="bi bi-pencil"></i>
+                            </a>
+                        `;
+                    }
+
+                    if (window.canDelete) {
+                        actions += `
+                            <a href="${window.urlDestroy.replace('__ID__', row.id)}" class="ibtn ib-x delete" title="Hapus Role">
+                                <i class="bi bi-trash3"></i>
+                            </a>
+                        `;
+                    }
+
+                    html += `
+                        <tr>
+                            <td class="td-no">${String(no++).padStart(2, '0')}</td>
+                            <td>
+                                <div class="td-role">
+                                    <div class="role-av" style="background:linear-gradient(135deg,#7f1d1d,#ff4d6d)">${initial}</div>
+                                    <div class="role-info">
+                                        <div class="role-nm">${row.name}</div>
+                                        <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i> ${row.slug}</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td><span class="guard-badge rg-web">${row.guard_name}</span></td>
+                            <td class="td-desc">${row.description || '-'}</td>
+                            <td>
+                                <div class="perm-wrap">
+                                    <span class="perm-count">${row.permissions_count || 0}</span>
+                                    <div class="perm-bar-track">
+                                        <div class="perm-bar-fill" style="width:${row.permissions_percentage || 0}%"></div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="user-count-wrap">
+                                    <span class="uc-num">${row.users_count || 0}</span>
+                                    <span class="uc-lbl">user</span>
+                                </div>
+                            </td>
+                            <td><span class="rs-badge ${statusClass}">${statusText}</span></td>
+                            <td class="td-dt">${row.created_at_indo || '-'}</td>
+                            <td class="td-dt">${row.updated_at_indo || '-'}</td>
+                            <td>
+                                <div class="act-row">
+                                    ${actions}
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                });
+
+                $tbody.html(html);
+            }
+
+            /* ============================================================
+               UI COMPONENTS (LOADING, EMPTY, ERROR)
+            ============================================================ */
+            function renderLoading(count = 5) {
+                let html = '';
+                for (let i = 0; i < count; i++) {
+                    html += `
+                        <tr>
+                            <td colspan="10">
+                                <div class="skeleton" style="height: 60px; margin: 5px 0; border-radius: 12px; opacity: 0.1; background: #ccc;"></div>
+                            </td>
+                        </tr>
+                    `;
+                }
+                $('#dataBody').html(html);
+            }
+
+            function renderEmpty(message) {
+                $('#dataBody').html(`
+                    <tr>
+                        <td colspan="10" class="text-center" style="padding: 50px 0;">
+                            <div class="empty-state">
+                                <i class="bi bi-folder-x" style="font-size: 40px; color: #666;"></i>
+                                <p style="margin-top: 10px; color: #888;">${message}</p>
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            }
+
+            function renderError(message) {
+                $('#dataBody').html(`
+                    <tr>
+                        <td colspan="10" class="text-center" style="padding: 40px;">
+                            <div class="alert alert-danger d-inline-block">
+                                <i class="bi bi-exclamation-triangle-fill"></i> ${message}
+                            </div>
+                        </td>
+                    </tr>
+                `);
+            }
+
+            /* ============================================================
+               PAGINATION & INFO
+            ============================================================ */
+            function renderInfo(meta) {
+                $('.tbl-info').html(
+                    `Menampilkan <b>${meta.from || 0}</b> - <b>${meta.to || 0}</b> dari <b>${meta.total || 0}</b> data`
+                );
+            }
+
+            function renderPagination(meta) {
+                const $pagination = $('.pag');
+                $pagination.empty();
+
+                const current = meta.current_page;
+                const last = meta.last_page;
+                const delta = 1; // Range halaman di sekitar active
+                const range = [];
+
+                // Tombol Previous
+                $pagination.append(`
+                    <button class="pb" data-page="prev" ${current === 1 ? 'disabled' : ''}>
+                        <i class="bi bi-chevron-left"></i>
+                    </button>
+                `);
+
+                // Logika angka halaman
+                for (let i = 1; i <= last; i++) {
+                    if (i === 1 || i === last || (i >= current - delta && i <= current + delta)) {
+                        range.push(i);
+                    }
+                }
+
+                let prevPage;
+                for (let i of range) {
+                    if (prevPage) {
+                        if (i - prevPage === 2) {
+                            $pagination.append(`<button class="pb" data-page="${prevPage + 1}">${prevPage + 1}</button>`);
+                        } else if (i - prevPage !== 1) {
+                            $pagination.append(`<span class="pag-dot">&hellip;</span>`);
+                        }
+                    }
+                    $pagination.append(`
+                        <button class="pb ${i === current ? 'active' : ''}" data-page="${i}">${i}</button>
+                    `);
+                    prevPage = i;
+                }
+
+                // Tombol Next
+                $pagination.append(`
+                    <button class="pb" data-page="next" ${current === last ? 'disabled' : ''}>
+                        <i class="bi bi-chevron-right"></i>
+                    </button>
+                `);
+            }
+
+            /* ============================================================
+               EVENTS HANDLER (SEARCH, PAGINATION CLICK)
+            ============================================================ */
+            // Search dengan Debounce
+            const debounceReload = _.debounce(() => {
+                tableState.page = 1;
+                loadData();
+            }, 500);
+
+            $('#searchInput').on('input', function() {
+                tableState.search = $(this).val();
+                debounceReload();
+            });
+
+            function applyFilter() {
+                tableState.per_page = 10;
+                debounceReload();
+            }
+
+            function resetFilter() {
+
+                tableState.search = null;
+                tableState.page = 1;
+
+                $('#searchInput').val('');
+                $("#filterStatusAkun").val('all')
+
+                debounceReload();
+            }
+
+            // Click Pagination
+            $(document).on('click', '.pag .pb', function() {
+                const page = $(this).data('page');
+                if (!page || $(this).prop('disabled') || $(this).hasClass('active')) return;
+
+                if (page === 'prev') {
+                    tableState.page--;
+                } else if (page === 'next') {
+                    tableState.page++;
+                } else {
+                    tableState.page = Number(page);
+                }
+
+                loadData();
+            });
+
+            // Change Per Page (Tampil Data)
+            $('#tampilData').on('change', function() {
+                tableState.per_page = $(this).val();
+                tableState.page = 1;
+                loadData();
+            });
         </script>
     @endpush
 
@@ -97,19 +434,29 @@
     <div class="tbar" data-aos="fade-up" data-aos-delay="60">
         <div class="tbar-search">
             <i class="bi bi-search"></i>
-            <input type="text" placeholder="Cari data..." />
+            <input type="text" id="searchInput" placeholder="Cari data..." oninput="debounceReload()" />
         </div>
 
-        <select class="nsel" style="min-width:128px">
-            <option value="all">Semua Status</option>
-            <option value="active">Aktif</option>
-            <option value="inactive">Tidak Aktif</option>
-        </select>
-        <div class="tbar-right">
-            <a href="{{ $createUrl }}" class="btn-add action">
-                <span><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline"> Tambah</span></span>
-            </a>
+        <div class="filter-wrap" style="display: flex; gap: 8px; align-items: center;">
+            <div style="flex: 1; min-width: 0;">
+                <select class="nsel" style="min-width:128px" id="filterStatusAkun" onchange="applyFilter()">
+                    <option value="all">Semua Status</option>
+                    <option value="active">Aktif</option>
+                    <option value="inactive">Tidak Aktif</option>
+                </select>
+            </div>
+
+            <button class="btn-reset" title="Reset Filter" onclick="resetFilter()">
+                <i class="bi bi-arrow-counterclockwise"></i>
+            </button>
         </div>
+        @can('create ' . $permissionAkses)
+            <div class="tbar-right">
+                <a href="{{ $createUrl }}" class="btn-add action">
+                    <span><i class="bi bi-plus-lg"></i><span class="d-none d-sm-inline"> Tambah</span></span>
+                </a>
+            </div>
+        @endcan
     </div>
 
     <!-- Table Card -->
@@ -130,266 +477,14 @@
                         <th style="text-align:center;width:110px">AKSI</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td class="td-no">01</td>
-                        <td>
-                            <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#7f1d1d,#ff4d6d)">A</div>
-                                <div class="role-info">
-                                    <div class="role-nm">Admin</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i> admin
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="guard-badge rg-web">web</span></td>
-                        <td class="td-desc">Akses penuh ke seluruh fitur dan pengaturan sistem</td>
-                        <td>
-                            <div class="perm-wrap">
-                                <span class="perm-count">65</span>
-                                <div class="perm-bar-track">
-                                    <div class="perm-bar-fill" style="width:100%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-count-wrap">
-                                <span class="uc-num">1</span>
-                                <span class="uc-lbl">user</span>
-                            </div>
-                        </td>
-                        <td><span class="rs-badge rs-aktif">Aktif</span></td>
-                        <td class="td-dt">03 Jan 2024</td>
-                        <td class="td-dt">07 Mar 2025</td>
-                        <td>
-                            <div class="act-row">
-                                <button class="ibtn ib-p" title="Konfigurasi Permission"
-                                    onclick="window.location='role.html'">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </button>
-                                <button class="ibtn ib-e" title="Edit Role" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-nm="Admin" data-slug="admin" data-guard="web"
-                                    data-desc="Akses penuh ke seluruh fitur dan pengaturan sistem"
-                                    data-status="aktif">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="ibtn ib-x" title="Hapus Role" data-bs-toggle="modal"
-                                    data-bs-target="#delModal" data-nm="Admin" data-users="1">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="td-no">02</td>
-                        <td>
-                            <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#78350f,#f59e0b)">M
-                                </div>
-                                <div class="role-info">
-                                    <div class="role-nm">Manager</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i>
-                                        manager</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="guard-badge rg-web">web</span></td>
-                        <td class="td-desc">Kelola proyek, tim, laporan, dan koordinasi anggota</td>
-                        <td>
-                            <div class="perm-wrap">
-                                <span class="perm-count">40</span>
-                                <div class="perm-bar-track">
-                                    <div class="perm-bar-fill" style="width:61%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-count-wrap">
-                                <span class="uc-num">3</span>
-                                <span class="uc-lbl">user</span>
-                            </div>
-                        </td>
-                        <td><span class="rs-badge rs-aktif">Aktif</span></td>
-                        <td class="td-dt">03 Jan 2024</td>
-                        <td class="td-dt">05 Mar 2025</td>
-                        <td>
-                            <div class="act-row">
-                                <button class="ibtn ib-p" title="Konfigurasi Permission"
-                                    onclick="window.location='role.html'">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </button>
-                                <button class="ibtn ib-e" title="Edit Role" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-nm="Manager" data-slug="manager"
-                                    data-guard="web" data-desc="Kelola proyek, tim, laporan, dan koordinasi anggota"
-                                    data-status="aktif">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="ibtn ib-x" title="Hapus Role" data-bs-toggle="modal"
-                                    data-bs-target="#delModal" data-nm="Manager" data-users="3">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="td-no">03</td>
-                        <td>
-                            <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#0c4a6e,#00c8ff)">M
-                                </div>
-                                <div class="role-info">
-                                    <div class="role-nm">Member</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i>
-                                        member</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="guard-badge rg-web">web</span></td>
-                        <td class="td-desc">Akses baca, kontribusi task, dan unggah dokumen</td>
-                        <td>
-                            <div class="perm-wrap">
-                                <span class="perm-count">18</span>
-                                <div class="perm-bar-track">
-                                    <div class="perm-bar-fill" style="width:27%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-count-wrap">
-                                <span class="uc-num">6</span>
-                                <span class="uc-lbl">user</span>
-                            </div>
-                        </td>
-                        <td><span class="rs-badge rs-aktif">Aktif</span></td>
-                        <td class="td-dt">03 Jan 2024</td>
-                        <td class="td-dt">01 Feb 2025</td>
-                        <td>
-                            <div class="act-row">
-                                <button class="ibtn ib-p" title="Konfigurasi Permission"
-                                    onclick="window.location='role.html'">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </button>
-                                <button class="ibtn ib-e" title="Edit Role" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-nm="Member" data-slug="member" data-guard="web"
-                                    data-desc="Akses baca, kontribusi task, dan unggah dokumen" data-status="aktif">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="ibtn ib-x" title="Hapus Role" data-bs-toggle="modal"
-                                    data-bs-target="#delModal" data-nm="Member" data-users="6">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="td-no">04</td>
-                        <td>
-                            <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#14532d,#00e5a0)">S
-                                </div>
-                                <div class="role-info">
-                                    <div class="role-nm">Supervisor</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i>
-                                        supervisor</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="guard-badge rg-web">web</span></td>
-                        <td class="td-desc">Monitoring proyek dan persetujuan laporan</td>
-                        <td>
-                            <div class="perm-wrap">
-                                <span class="perm-count">28</span>
-                                <div class="perm-bar-track">
-                                    <div class="perm-bar-fill" style="width:43%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-count-wrap">
-                                <span class="uc-num">0</span>
-                                <span class="uc-lbl">user</span>
-                            </div>
-                        </td>
-                        <td><span class="rs-badge rs-nonaktif">Nonaktif</span></td>
-                        <td class="td-dt">20 Feb 2025</td>
-                        <td class="td-dt">20 Feb 2025</td>
-                        <td>
-                            <div class="act-row">
-                                <button class="ibtn ib-p" title="Konfigurasi Permission"
-                                    onclick="window.location='role.html'">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </button>
-                                <button class="ibtn ib-e" title="Edit Role" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-nm="Supervisor" data-slug="supervisor"
-                                    data-guard="web" data-desc="Monitoring proyek dan persetujuan laporan"
-                                    data-status="nonaktif">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="ibtn ib-x" title="Hapus Role" data-bs-toggle="modal"
-                                    data-bs-target="#delModal" data-nm="Supervisor" data-users="0">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="td-no">05</td>
-                        <td>
-                            <div class="td-role">
-                                <div class="role-av" style="background:linear-gradient(135deg,#1e1b4b,#a78bfa)">V
-                                </div>
-                                <div class="role-info">
-                                    <div class="role-nm">Viewer</div>
-                                    <div class="role-slug"><i class="bi bi-code-slash" style="font-size:9px"></i>
-                                        viewer</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td><span class="guard-badge rg-api">api</span></td>
-                        <td class="td-desc">Akses hanya baca via API untuk integrasi eksternal</td>
-                        <td>
-                            <div class="perm-wrap">
-                                <span class="perm-count">10</span>
-                                <div class="perm-bar-track">
-                                    <div class="perm-bar-fill" style="width:15%"></div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>
-                            <div class="user-count-wrap">
-                                <span class="uc-num">0</span>
-                                <span class="uc-lbl">user</span>
-                            </div>
-                        </td>
-                        <td><span class="rs-badge rs-aktif">Aktif</span></td>
-                        <td class="td-dt">01 Mar 2025</td>
-                        <td class="td-dt">01 Mar 2025</td>
-                        <td>
-                            <div class="act-row">
-                                <button class="ibtn ib-p" title="Konfigurasi Permission"
-                                    onclick="window.location='role.html'">
-                                    <i class="bi bi-shield-fill-check"></i>
-                                </button>
-                                <button class="ibtn ib-e" title="Edit Role" data-bs-toggle="modal"
-                                    data-bs-target="#editModal" data-nm="Viewer" data-slug="viewer" data-guard="api"
-                                    data-desc="Akses hanya baca via API untuk integrasi eksternal"
-                                    data-status="aktif">
-                                    <i class="bi bi-pencil"></i>
-                                </button>
-                                <button class="ibtn ib-x" title="Hapus Role" data-bs-toggle="modal"
-                                    data-bs-target="#delModal" data-nm="Viewer" data-users="0">
-                                    <i class="bi bi-trash3"></i>
-                                </button>
-                            </div>
-                        </td>
-                    </tr>
+                <tbody id="dataBody">
+
                 </tbody>
             </table>
         </div>
         <!-- Pagination -->
         <div class="tbl-foot">
-            <div class="tbl-info">Menampilkan <b>8</b> dari <b>32</b> catatan</div>
+            <div class="tbl-info">Menampilkan <b>0</b> dari <b>0</b> data</div>
             <div class="pag">
                 <button class="pb" disabled><i class="bi bi-chevron-left"></i></button>
                 <button class="pb active">1</button>

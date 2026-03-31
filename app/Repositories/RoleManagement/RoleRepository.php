@@ -43,8 +43,8 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
             // Modifikasi array data sebelum dilempar ke mass-assignment BaseRepository
             $data['name']           = strtolower($data['name']);
             $data['slug']           = $data['slug'];
-            $data['type_role']      = $data['type_role'];
-            $data['is_active']      = $data['is_active'];
+            $data['type_role']      = 'custom';
+            $data['is_active']      = '1';
             $data['description']    = $data['description'];
             $data['guard_name']     = "web";
 

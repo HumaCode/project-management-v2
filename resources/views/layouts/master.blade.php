@@ -17,6 +17,12 @@
     <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/global.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/sca.css') }}">
 
+    <style>
+        .select2-container--default .select2-selection--single .select2-selection__clear {
+            margin-right: 0px !important;
+            margin-left: 15px !important;
+        }
+    </style>
     @stack('css')
 </head>
 

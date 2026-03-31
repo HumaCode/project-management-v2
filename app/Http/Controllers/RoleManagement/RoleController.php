@@ -6,6 +6,7 @@ use App\Constants\RoleMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleManagement\Role\RoleStoreRequest;
+use App\Http\Requests\RoleManagement\Role\RoleUpdateRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\RoleResource;
 use App\Interface\RoleManagement\RoleRepositoryInterface;
@@ -75,7 +76,7 @@ class RoleController extends Controller
 
     public function getAllPaginated(Request $request)
     {
-        Gate::authorize('read '.$this->aksesPermission);
+        Gate::authorize('read ' . $this->aksesPermission);
 
         $request = $request->validate([
             'search' => 'nullable|string',
@@ -134,17 +135,28 @@ class RoleController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Role $role)
     {
-        //
+        return view($this->formView, [
+            'action'            => route($this->updateUrl, $role->id),
+            'data'              => $role,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(RoleUpdateRequest $request, Role $role)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $role = $this->roleRepository->update($role->id, $request);
+
+            return ResponseHelper::jsonResponse(true, RoleMessages::UPDATED_SUCCESS, new RoleResource($role), 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**

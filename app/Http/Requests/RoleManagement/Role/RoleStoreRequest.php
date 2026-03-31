@@ -23,9 +23,7 @@ class RoleStoreRequest extends FormRequest
         return [
             'name' => ['required', 'string', 'max:255', 'unique:roles,name'],
             'slug' => ['required', 'string', 'max:255', 'unique:roles,slug'],
-            'type_role' => ['required', 'string', 'max:100'],
             'description' => ['nullable', 'string'],
-            'is_active' => ['required', 'in:0,1'],
             'guard_name' => ['required', 'string', 'max:255'],
         ];
     }
@@ -38,9 +36,7 @@ class RoleStoreRequest extends FormRequest
         return [
             'name' => 'Nama Role',
             'slug' => 'Slug',
-            'type_role' => 'Tipe Role',
             'description' => 'Deskripsi',
-            'is_active' => 'Status Aktif',
             'guard_name' => 'Guard Name',
         ];
     }

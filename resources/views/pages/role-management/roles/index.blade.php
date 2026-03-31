@@ -43,9 +43,7 @@
         </script>
 
         <script>
-            /* ============================================================
-                                                                                                                                                                                                                           TABLE STATE & CONFIGURATION
-                                                                                                                                                                                                                        ============================================================ */
+            /* ============================================================ TABLE STATE & CONFIGURATION ============================================================ */
             const tableState = {
                 search: null,
                 status: null,
@@ -191,7 +189,7 @@
                             <td class="td-desc">${row.description || '-'}</td>
                             <td>
                                 <div class="perm-wrap">
-                                    <span class="perm-count">${row.permissions_count || 0}</span>
+                                    <span class="perm-count">${row.permission_count_label || 0}</span>
                                     <div class="perm-bar-track">
                                         <div class="perm-bar-fill" style="width:${row.permissions_percentage || 0}%"></div>
                                     </div>
@@ -199,7 +197,7 @@
                             </td>
                             <td>
                                 <div class="user-count-wrap">
-                                    <span class="uc-num">${row.users_count || 0}</span>
+                                    <span class="uc-num">${row.users_count_label || 0}</span>
                                     <span class="uc-lbl">user</span>
                                 </div>
                             </td>

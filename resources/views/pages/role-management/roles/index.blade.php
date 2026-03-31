@@ -10,9 +10,11 @@
             window.dataTableId = @json($dataTableId);
             window.urlData = @json($dataUrl);
             window.urlEdit = @json($editUrl);
+            window.urlAkses = @json($aksesUrl);
             window.urlShow = @json($showUrl);
             window.urlDestroy = @json($destroyUrl);
             window.canRead = @json(auth()->user()->can('read ' . $permissionAkses));
+            window.canAkses = @json(auth()->user()->can('akses ' . $permissionAkses));
             window.canUpdate = @json(auth()->user()->can('update ' . $permissionAkses));
             window.canDelete = @json(auth()->user()->can('delete ' . $permissionAkses));
 
@@ -151,11 +153,13 @@
                     let actions = '';
 
                     // Button Permission
-                    actions += `
-                            <a href="/role-management/roles/${row.id}/permissions" class="ibtn ib-p" title="Konfigurasi Permission">
+                    if (window.canAkses) {
+                        actions += `
+                            <a href="${window.urlAkses.replace('__ID__', row.id)}" class="ibtn ib-p action" title="Konfigurasi Permission">
                                 <i class="bi bi-shield-fill-check"></i>
                             </a>
                         `;
+                    }
 
                     if (window.canUpdate) {
                         actions += `

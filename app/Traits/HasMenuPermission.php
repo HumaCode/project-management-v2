@@ -11,7 +11,7 @@ trait HasMenuPermission
     public function attachMenupermission(Menu $menu, array | null $permissions, array | null $roles)
     {
         if (!is_array($permissions)) {
-            $permissions = ['menu', 'create', 'read', 'update', 'delete'];
+            $permissions = ['menu', 'create', 'read', 'show', 'update', 'delete'];
         }
 
         foreach ($permissions as $item) {

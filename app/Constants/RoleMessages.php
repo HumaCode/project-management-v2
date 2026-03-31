@@ -11,6 +11,8 @@ class RoleMessages
 
     const PAGINATIONURL                         = 'roles.allPagination';
     const CREATEURL                             = 'roles.create';
+    const AKSESURL                              = 'roles.akses';
+    const AKSESEDITURL                          = 'roles.akses.edit';
     const EDITURL                               = 'roles.edit';
     const SHOWURL                               = 'roles.show';
     const STOREURL                              = 'roles.store';
@@ -19,7 +21,7 @@ class RoleMessages
 
     const TABLEID                               = 'table-role';
     const AKSES_PERMISSION                      = 'roles';
-    
+
     const ICON                                  = 'bi bi-diagram-3-fill';
 
 

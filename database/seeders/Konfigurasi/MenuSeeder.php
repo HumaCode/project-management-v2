@@ -84,6 +84,9 @@ class MenuSeeder extends Seeder
                 'category' => 'ROLE MANAGEMENT',
                 'icon'     => 'bi bi-diagram-3-fill',
                 'orders'   => 7,
+
+                // custom permissions 
+                'permissions' => ['menu', 'create', 'read', 'show', 'update', 'delete', 'akses'],
             ],
             [
                 'name'     => 'Permission',
@@ -129,13 +132,21 @@ class MenuSeeder extends Seeder
         ];
 
         foreach ($menus as $data) {
+            // Ambil dan pisahkan 'permissions' dari array utama agar tidak ikut ter-insert 
+            // ke table 'menus' jika kolom permissions tidak ada di database.
+            $customPermissions = $data['permissions'] ?? null;
+
+            // Hapus 'permissions' dari array agar firstOrCreate tidak error (opsional jika kolom tidak ada)
+            unset($data['permissions']);
 
             $menu = Menu::firstOrCreate(
                 ['url' => $data['url']],
                 $data
             );
 
-            $this->attachMenupermission($menu, null, ['dev']);
+            // Jika $customPermissions null, fungsi Anda akan otomatis membuat defaultnya
+            // Jika ada nilainya, ia akan menggunakan array khusus tersebut.
+            $this->attachMenupermission($menu, $customPermissions, ['dev']);
         }
     }
 }

@@ -8,8 +8,8 @@
 
     @if ($action ?? null)
         @include('pages.role-management.roles.partials.form-view')
-    @else
-        (detail)
+    @elseif($action !== null && $type === 'show')
+        @include('pages.role-management.roles.partials.form-akses-view')
     @endif
 
 </x-form.modal>

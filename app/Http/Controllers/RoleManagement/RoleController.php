@@ -18,17 +18,13 @@ use Illuminate\Support\Facades\Gate;
 class RoleController extends Controller
 {
     private string $title = RoleMessages::TITLE;
-
     private string $subtitle = RoleMessages::SUBTITLE;
-
     private string $formView = RoleMessages::FORMVIEW;
-
     private string $indexView = RoleMessages::INDEXVIEW;
-
     private string $createUrl = RoleMessages::CREATEURL;
-
+    private string $aksesUrl = RoleMessages::AKSESURL;
+    private string $aksesEditUrl = RoleMessages::AKSESEDITURL;
     private string $editUrl = RoleMessages::EDITURL;
-
     private string $showUrl = RoleMessages::SHOWURL;
 
     private string $storeUrl = RoleMessages::STOREURL;
@@ -64,6 +60,7 @@ class RoleController extends Controller
             'subtitle' => $this->subtitle,
             'createUrl' => route($this->createUrl),
             'editUrl' => route($this->editUrl, ['role' => '__ID__']),
+            'aksesUrl' => route($this->aksesUrl, ['role' => '__ID__']),
             'showUrl' => route($this->showUrl, ['role' => '__ID__']),
             'destroyUrl' => route($this->destroyUrl, ['role' => '__ID__']),
             'dataUrl' => route($this->dataUrl),
@@ -128,9 +125,20 @@ class RoleController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Role $role)
     {
-        //
+        // 
+    }
+
+    public function akses(Role $role)
+    {
+        Gate::authorize('akses ' . $this->aksesPermission);
+
+        return view($this->formView, [
+            'action'    => route($this->aksesEditUrl, $role->id),
+            'type'      => 'show',
+            'data'      => $role,
+        ]);
     }
 
     /**

@@ -19,6 +19,9 @@ Route::middleware(['auth', 'verified'])->group(
 
         // role
         Route::get('roles/getAllPagination', [RoleController::class, 'getAllPaginated'])->name('roles.allPagination');
+        Route::get('roles/{role}/akses', [RoleController::class, 'akses'])->name('roles.akses');
+        Route::put('roles/{role}/akses', [RoleController::class, 'aksesedit'])->name('roles.akses.edit');
+
         Route::resource('roles', RoleController::class);
     }
 );

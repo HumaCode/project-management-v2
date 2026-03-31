@@ -29,6 +29,7 @@ class RoleResource extends JsonResource
             'permissions_percentage'          => $this->permissions_percentage,
             'users_count_label'             => $this->users_count_label,
             'created_at_indo' => $this->created_at_indo,
+            'updated_at_indo' => $this->updated_at_indo,
         ];
     }
 }

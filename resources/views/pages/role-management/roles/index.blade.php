@@ -203,7 +203,7 @@
                             </td>
                             <td><span class="rs-badge ${statusClass}">${statusText}</span></td>
                             <td class="td-dt">${row.created_at_indo || '-'}</td>
-                            <td class="td-dt">${row.updated_at_indo || '-'}</td>
+                            <td class="text-center td-dt">${row.updated_at_indo || '-'}</td>
                             <td>
                                 <div class="act-row">
                                     ${actions}
@@ -461,7 +461,7 @@
     <div class="tbl-card" data-aos="fade-up" data-aos-delay="80">
         <div class="table-responsive">
             <table class="dtbl">
-                <thead>
+                <thead class="text-center">
                     <tr>
                         <th style="text-align:center;width:42px">#</th>
                         <th style="min-width:180px">ROLE</th>

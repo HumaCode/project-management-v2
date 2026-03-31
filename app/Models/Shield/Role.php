@@ -26,6 +26,7 @@ class Role extends ModelsRole
 
     protected $appends = [
         'created_at_indo',
+        'updated_at_indo',
         'permission_count_label',
         'permissions_percentage',
         'users_count_label',
@@ -84,6 +85,24 @@ class Role extends ModelsRole
 
         // Lebih aman gunakan format langsung daripada helper global
         return tgl_indo($this->created_at);
+    }
+
+    public function getUpdatedAtIndoAttribute(): ?string
+    {
+        // 1. Pastikan updated_at memiliki nilai
+        if (!$this->updated_at) {
+            return null;
+        }
+
+        // 2. Bandingkan updated_at dengan created_at
+        // Kita gunakan toDateTimeString() (format Y-m-d H:i:s) untuk menghindari 
+        // bug perbedaan microsecond (milidetik) yang kadang terjadi saat database menyimpan data
+        if ($this->created_at && $this->updated_at->toDateTimeString() === $this->created_at->toDateTimeString()) {
+            return '-';
+        }
+
+        // 3. Jika nilainya berbeda (sudah pernah diupdate), tampilkan format Indo
+        return tgl_indo($this->updated_at);
     }
 
     public function getPermissionCountLabelAttribute()

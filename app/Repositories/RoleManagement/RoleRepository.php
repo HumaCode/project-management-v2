@@ -71,6 +71,32 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
         }
     }
 
+    public function delete(string $id)
+    {
+        try {
+            $record = parent::getById($id);
+
+            if (!$record) {
+                return false;
+            }
+
+            // --- TAMBAHAN PENGECEKAN DI SINI ---
+            // Menggunakan exists() lebih cepat daripada count() karena 
+            // query akan langsung berhenti ketika menemukan 1 data pertama.
+            if ($record->users()->exists()) {
+                // Lempar error yang akan ditangkap oleh blok catch di bawah
+                throw new \Exception('Role tidak dapat dihapus karena masih digunakan oleh user aktif.');
+            }
+            // -----------------------------------
+
+            return parent::delete($id);
+        } catch (\Exception $e) {
+            // Karena kita melempar exception kustom di atas, 
+            // pesan 'Role tidak dapat dihapus...' akan digabungkan ke $e->getMessage()
+            throw new \Exception(GlobalMessages::ERROR_DELETED . ' ' . $e->getMessage());
+        }
+    }
+
     public function getMainMenuWithPermissions()
     {
         return Menu::with('permissions')->get();

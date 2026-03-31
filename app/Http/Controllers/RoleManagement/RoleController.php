@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\RoleManagement;
 
+use App\Constants\GlobalMessages;
 use App\Constants\RoleMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
@@ -162,8 +163,19 @@ class RoleController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Role $role)
     {
-        //
+        try {
+            $role = $this->roleRepository->getById($role->id);
+            if (!$role) {
+                return ResponseHelper::jsonResponse(false, GlobalMessages::NOT_FOUND, null, 404);
+            }
+
+            $this->roleRepository->delete($role->id);
+
+            return ResponseHelper::jsonResponse(true, RoleMessages::DELETED_SUCCESS, null, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 }

@@ -286,73 +286,79 @@ function handleAction(datatableId, onShow) {
 ============================================================ */
 
 function handleDelete(dataTableId, onSuccess) {
-    $(document).on("click", ".delete", function (e) {
-        e.preventDefault();
+    // Gunakan .off() sebelum .on() untuk mencegah event menumpuk (double trigger)
+    $(document)
+        .off("click", ".delete")
+        .on("click", ".delete", function (e) {
+            e.preventDefault();
 
-        const url = $(this).attr("href");
-        if (!url) return;
+            const url = $(this).attr("href");
+            if (!url) return;
 
-        SCA.dialog({
-            type: "danger",
-            title: "Hapus Data?",
-            message: "Data tidak dapat dikembalikan.",
-            confirmText: "Ya, Hapus",
-            cancelText: "Batal",
-            showCancel: true,
-        }).then((confirmed) => {
-            // Jika user batal
-            if (!confirmed) return;
+            SCA.dialog({
+                type: "danger",
+                title: "Hapus Data?",
+                message: "Data tidak dapat dikembalikan.",
+                confirmText: "Ya, Hapus",
+                cancelText: "Batal",
+                showCancel: true,
+            }).then((confirmed) => {
+                // Jika user batal
+                if (!confirmed) return;
 
-            $.ajax({
-                url: url,
-                method: "DELETE",
-                headers: {
-                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
-                        "content",
-                    ),
-                },
+                $.ajax({
+                    url: url,
+                    method: "DELETE",
+                    headers: {
+                        "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                            "content",
+                        ),
+                    },
 
-                beforeSend() {
-                    showLoading(true, {
-                        title: "Menghapus...",
-                        message: "Sedang menghapus data",
-                    });
-                },
+                    beforeSend() {
+                        showLoading(true, {
+                            title: "Menghapus...",
+                            message: "Sedang menghapus data",
+                        });
+                    },
 
-                success(res) {
-                    showLoading(false);
+                    success(res) {
+                        showLoading(false);
 
-                    SCA.toast({
-                        type: res.success ? "success" : "danger",
-                        title: res.success ? "Berhasil!" : "Gagal!",
-                        message: res.message ?? "Data berhasil dihapus.",
-                    });
+                        SCA.toast({
+                            type: res.success ? "success" : "danger",
+                            title: res.success ? "Berhasil!" : "Gagal!",
+                            message: res.message ?? "Data berhasil dihapus.",
+                        });
 
-                    if (typeof loadData === "function") {
-                        loadData();
-                    } else {
-                        setTimeout(() => location.reload(), 1000);
-                    }
+                        // Cek sukses/gagal dari response
+                        if (res.success) {
+                            if (typeof loadData === "function") {
+                                loadData(); // Jika ini memanggil handleDelete() lagi, .off() di atas akan mengamankannya
+                            } else {
+                                setTimeout(() => location.reload(), 1000);
+                            }
 
-                    if (onSuccess) {
-                        onSuccess(res);
-                    }
-                },
+                            if (onSuccess) {
+                                onSuccess(res);
+                            }
+                        }
+                    },
 
-                error(xhr) {
-                    showLoading(false);
+                    error(xhr) {
+                        showLoading(false);
 
-                    SCA.toast({
-                        type: "danger",
-                        title: "Gagal!",
-                        message:
-                            xhr.responseJSON?.message ??
-                            "Gagal menghapus data.",
-                    });
-                },
+                        SCA.toast({
+                            type: "danger",
+                            title: "Gagal!",
+                            message:
+                                xhr.responseJSON?.message ??
+                                "Gagal menghapus data.",
+                        });
+                    },
+                });
             });
         });
-    });
 }
 
 /* ============================================================
@@ -366,7 +372,22 @@ function showLoading(show, options = {}) {
             message: options.message || "Mohon tunggu sebentar",
         });
     } else {
+        // 1. Panggil fungsi close bawaan
         SCA.close();
+
+        // 2. Sapu bersih semua overlay yang mungkin masih menyangkut di layar
+        document.querySelectorAll(".sca-overlay").forEach(function (ov) {
+            // Tambahkan class animasi keluar
+            ov.classList.add("sca-out");
+
+            // Hapus elemen dari HTML setelah animasi selesai (220ms)
+            setTimeout(function () {
+                if (ov.parentNode) ov.parentNode.removeChild(ov);
+            }, 220);
+        });
+
+        // 3. Pastikan scroll halaman dikembalikan ke normal
+        document.body.style.overflow = "";
     }
 }
 

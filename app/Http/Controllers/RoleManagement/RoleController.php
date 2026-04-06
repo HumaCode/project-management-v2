@@ -18,13 +18,21 @@ use Illuminate\Support\Facades\Gate;
 class RoleController extends Controller
 {
     private string $title = RoleMessages::TITLE;
+
     private string $subtitle = RoleMessages::SUBTITLE;
+
     private string $formView = RoleMessages::FORMVIEW;
+
     private string $indexView = RoleMessages::INDEXVIEW;
+
     private string $createUrl = RoleMessages::CREATEURL;
+
     private string $aksesUrl = RoleMessages::AKSESURL;
+
     private string $aksesEditUrl = RoleMessages::AKSESEDITURL;
+
     private string $editUrl = RoleMessages::EDITURL;
+
     private string $showUrl = RoleMessages::SHOWURL;
 
     private string $storeUrl = RoleMessages::STOREURL;
@@ -74,7 +82,7 @@ class RoleController extends Controller
 
     public function getAllPaginated(Request $request)
     {
-        Gate::authorize('read ' . $this->aksesPermission);
+        Gate::authorize('read '.$this->aksesPermission);
 
         $request = $request->validate([
             'search' => 'nullable|string',
@@ -127,17 +135,17 @@ class RoleController extends Controller
      */
     public function show(Role $role)
     {
-        // 
+        //
     }
 
     public function akses(Role $role)
     {
-        Gate::authorize('akses ' . $this->aksesPermission);
+        Gate::authorize('akses '.$this->aksesPermission);
 
         return view($this->formView, [
-            'action'    => route($this->aksesEditUrl, $role->id),
-            'type'      => 'show',
-            'data'      => $role,
+            'action' => route($this->aksesEditUrl, $role->id),
+            'type' => 'akses',
+            'data' => $role,
         ]);
     }
 
@@ -147,8 +155,8 @@ class RoleController extends Controller
     public function edit(Role $role)
     {
         return view($this->formView, [
-            'action'            => route($this->updateUrl, $role->id),
-            'data'              => $role,
+            'action' => route($this->updateUrl, $role->id),
+            'data' => $role,
         ]);
     }
 
@@ -175,7 +183,7 @@ class RoleController extends Controller
     {
         try {
             $role = $this->roleRepository->getById($role->id);
-            if (!$role) {
+            if (! $role) {
                 return ResponseHelper::jsonResponse(false, GlobalMessages::NOT_FOUND, null, 404);
             }
 

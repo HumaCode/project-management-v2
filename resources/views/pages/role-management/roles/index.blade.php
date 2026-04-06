@@ -38,6 +38,55 @@
 
                     $slugInput.val(slug);
                 });
+
+                // ==========================================
+                // 1. FUNGSI UNTUK COLLAPSE / EXPAND KATEGORI
+                // ==========================================
+                $('.grp-toggle').on('click', function(e) {
+                    e.preventDefault();
+
+                    let grp = $(this).data('grp');
+                    let icon = $(this).find('i');
+
+                    // Sembunyikan atau tampilkan semua <tr> yang punya data-grp yang sama
+                    $('.item-row[data-grp="' + grp + '"]').toggle();
+
+                    // Ubah icon panah atas/bawah
+                    if (icon.hasClass('bi-chevron-down')) {
+                        icon.removeClass('bi-chevron-down').addClass('bi-chevron-right');
+                    } else {
+                        icon.removeClass('bi-chevron-right').addClass('bi-chevron-down');
+                    }
+                });
+
+                // ==========================================
+                // 2. FUNGSI UNTUK CHECKBOX "TOGGLE SEMUA"
+                // ==========================================
+                $('.sw-all-cb').on('change', function() {
+                    // Ambil target nama permission dari atribut data-target
+                    let target = $(this).data('target');
+                    let isChecked = $(this).is(':checked');
+
+                    // Cari checkbox di baris tersebut YANG TIDAK DISABLED
+                    // lalu centang atau hilangkan centangnya
+                    $('input[id^="sw_' + target + '_"]:not(:disabled)').prop('checked', isChecked);
+                });
+
+                // (Opsional) Jika salah satu checkbox dimatikan, matikan juga Toggle Semuanya
+                $('.item-row input[type="checkbox"]:not(.sw-all-cb)').on('change', function() {
+                    let row = $(this).closest('.item-row');
+                    let allCb = row.find('.sw-all-cb');
+
+                    // Ambil SEMUA checkbox di baris ini yang TIDAK disabled
+                    let itemCbs = row.find('input[type="checkbox"]:not(.sw-all-cb):not(:disabled)');
+
+                    // Cek apakah semua checkbox (yang aktif saja) di baris ini tercentang
+                    // Pastikan panjangnya lebih dari 0 agar tidak error jika kebetulan semua fitur disable
+                    let allChecked = itemCbs.length > 0 && itemCbs.length === itemCbs.filter(':checked').length;
+
+                    // Update status checkbox Toggle Semua
+                    allCb.prop('checked', allChecked);
+                });
             });
 
             // Handle delete

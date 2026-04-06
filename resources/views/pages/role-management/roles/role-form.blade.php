@@ -6,10 +6,17 @@
 
 <x-form.modal title="Role" :action="$action ?? null" :is-edit="$isEdit" :type="$type ?? null">
 
-    @if ($action ?? null)
-        @include('pages.role-management.roles.partials.form-view')
-    @elseif($action !== null && $type === 'show')
+    {{-- Cek tipe akses TERLEBIH DAHULU --}}
+    @if (($type ?? null) === 'akses')
         @include('pages.role-management.roles.partials.form-akses-view')
+
+        {{-- Jika bukan akses, tapi memiliki action (Berarti Tambah/Edit role biasa) --}}
+    @elseif ($action ?? null)
+        @include('pages.role-management.roles.partials.form-view')
+
+        {{-- (Opsional) Jika action null, biasanya untuk mode Show/Detail --}}
+    @else
+        {{-- @include('pages.role-management.roles.partials.show-view') --}}
     @endif
 
 </x-form.modal>

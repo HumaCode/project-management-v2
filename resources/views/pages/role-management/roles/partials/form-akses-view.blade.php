@@ -18,6 +18,10 @@
                     <th class="th-menu">Menu / Halaman</th>
                     {{-- permission --}}
                     <th class="ph-c"><i class="bi bi-eye-fill"></i><span class="ph-lbl">Read</span></th>
+
+                    {{-- TAMBAHAN HEADER UNTUK SHOW / DETAIL --}}
+                    <th class="ph-i"><i class="bi bi-file-text-fill"></i><span class="ph-lbl">Show</span></th>
+
                     <th class="ph-g"><i class="bi bi-plus-circle-fill"></i><span class="ph-lbl">Create</span></th>
                     <th class="ph-a"><i class="bi bi-pencil-fill"></i><span class="ph-lbl">Update</span></th>
                     <th class="ph-r"><i class="bi bi-trash3-fill"></i><span class="ph-lbl">Delete</span></th>
@@ -25,134 +29,119 @@
                     <th class="th-all">Semua</th>
                 </tr>
             </thead>
+
             <tbody>
 
-                {{-- kategori menu --}}
-                <tr class="grp-row grp-c">
-                    <td colspan="7">
-                        <div class="grp-label">
-                            <i class="bi bi-database-fill grp-ico grp-ico-c"></i><span>Master Data</span>
-                            <span class="grp-count">4 menu</span>
-                            <button class="grp-toggle" data-grp="master_data">
-                                <i class="bi bi-chevron-down"></i>
-                            </button>
-                        </div>
-                    </td>
-                </tr>
+                @php
+                    // 1. Ambil semua permission yang dimiliki ROLE ini (untuk status Checked)
+                    $rolePermissions = $data->permissions->pluck('name')->toArray();
 
-                {{-- menu --}}
-                <tr class="item-row" data-grp="master_data">
-                    <td class="td-menu"><span class="menu-dot"></span>Proyek</td>
-                    <td class="sw-cell"><label class="sw-wrap sw-c" title="Read"><input type="checkbox"
-                                id="sw_admin_proyek_read" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-g" title="Create"><input type="checkbox"
-                                id="sw_admin_proyek_create" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-a" title="Update"><input type="checkbox"
-                                id="sw_admin_proyek_update" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-r" title="Delete"><input type="checkbox"
-                                id="sw_admin_proyek_delete" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-p" title="Menu"><input type="checkbox"
-                                id="sw_admin_proyek_menu" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell">
-                        <label class="sw-wrap sw-all" title="Toggle semua">
-                            <input type="checkbox" id="all_admin_proyek" class="sw-all-cb" data-target="admin_proyek">
-                            <span class="sw-track"></span></label>
-                    </td>
-                </tr>
+                    // 2. Ambil SEMUA permission yang ada di SYSTEM (untuk mengecek apakah permission itu tersedia)
+                    $allSystemPermissions = \Spatie\Permission\Models\Permission::pluck('name')->toArray();
+                @endphp
 
+                @foreach (menus(true) as $category => $menuItems)
+                    @php
+                        $grpSlug = Str::slug($category, '_');
+                    @endphp
 
-                <tr class="item-row" data-grp="master_data">
-                    <td class="td-menu"><span class="menu-dot"></span>Manajemen Tim</td>
-                    <td class="sw-cell"><label class="sw-wrap sw-c" title="Read"><input type="checkbox"
-                                id="sw_admin_tim_read" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-g" title="Create"><input type="checkbox"
-                                id="sw_admin_tim_create" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-a" title="Update"><input type="checkbox"
-                                id="sw_admin_tim_update" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-r" title="Delete"><input type="checkbox"
-                                id="sw_admin_tim_delete" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-p" title="Menu"><input type="checkbox"
-                                id="sw_admin_tim_menu" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-all" title="Toggle semua"><input type="checkbox"
-                                id="all_admin_tim" class="sw-all-cb" data-target="admin_tim"><span
-                                class="sw-track"></span></label></td>
-                </tr>
-                <tr class="item-row" data-grp="master_data">
-                    <td class="td-menu"><span class="menu-dot"></span>Dokumen</td>
-                    <td class="sw-cell"><label class="sw-wrap sw-c" title="Read"><input type="checkbox"
-                                id="sw_admin_dokumen_read" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-g" title="Create"><input type="checkbox"
-                                id="sw_admin_dokumen_create" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-a" title="Update"><input type="checkbox"
-                                id="sw_admin_dokumen_update" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-r" title="Delete"><input type="checkbox"
-                                id="sw_admin_dokumen_delete" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-p" title="Menu"><input type="checkbox"
-                                id="sw_admin_dokumen_menu" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-all" title="Toggle semua"><input type="checkbox"
-                                id="all_admin_dokumen" class="sw-all-cb" data-target="admin_dokumen"><span
-                                class="sw-track"></span></label></td>
-                </tr>
-                <tr class="item-row" data-grp="master_data">
-                    <td class="td-menu"><span class="menu-dot"></span>Catatan / Notulen</td>
-                    <td class="sw-cell"><label class="sw-wrap sw-c" title="Read"><input type="checkbox"
-                                id="sw_admin_catatan_read" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-g" title="Create"><input type="checkbox"
-                                id="sw_admin_catatan_create" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-a" title="Update"><input type="checkbox"
-                                id="sw_admin_catatan_update" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-r" title="Delete"><input type="checkbox"
-                                id="sw_admin_catatan_delete" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-p" title="Menu"><input type="checkbox"
-                                id="sw_admin_catatan_menu" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-all" title="Toggle semua"><input type="checkbox"
-                                id="all_admin_catatan" class="sw-all-cb" data-target="admin_catatan"><span
-                                class="sw-track"></span></label></td>
-                </tr>
-                <tr class="grp-row grp-g">
-                    <td colspan="7">
-                        <div class="grp-label"><i
-                                class="bi bi-file-earmark-bar-graph-fill grp-ico grp-ico-g"></i><span>Laporan</span><span
-                                class="grp-count">3 menu</span><button class="grp-toggle" data-grp="laporan"><i
-                                    class="bi bi-chevron-down"></i></button></div>
-                    </td>
-                </tr>
-                <tr class="item-row" data-grp="laporan">
-                    <td class="td-menu"><span class="menu-dot"></span>Laporan Proyek</td>
-                    <td class="sw-cell"><label class="sw-wrap sw-c" title="Read"><input type="checkbox"
-                                id="sw_admin_laporan_read" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-g" title="Create"><input type="checkbox"
-                                id="sw_admin_laporan_create" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-a" title="Update"><input type="checkbox"
-                                id="sw_admin_laporan_update" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-r" title="Delete"><input type="checkbox"
-                                id="sw_admin_laporan_delete" checked=""><span class="sw-track"></span></label>
-                    </td>
-                    <td class="sw-cell"><label class="sw-wrap sw-p" title="Menu"><input type="checkbox"
-                                id="sw_admin_laporan_menu" checked=""><span class="sw-track"></span></label></td>
-                    <td class="sw-cell"><label class="sw-wrap sw-all" title="Toggle semua"><input type="checkbox"
-                                id="all_admin_laporan" class="sw-all-cb" data-target="admin_laporan"><span
-                                class="sw-track"></span></label></td>
-                </tr>
+                    {{-- Kategori Menu --}}
+                    <tr class="grp-row grp-c">
+                        <td colspan="8">
+                            <div class="grp-label">
+                                <i class="bi bi-database-fill grp-ico grp-ico-c"></i><span>{{ $category }}</span>
+                                <span class="grp-count">{{ $menuItems->count() }} menu</span>
+                                <button class="grp-toggle" data-grp="{{ $grpSlug }}" type="button">
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+
+                    {{-- Daftar Menu per Kategori --}}
+                    @foreach ($menuItems as $menu)
+                        @php
+                            $permKey = $menu->permission ?? Str::slug($menu->name, '_');
+
+                            // UBAH 'detail' MENJADI 'show'
+                            $canRead = in_array("read {$permKey}", $rolePermissions);
+                            $canShow = in_array("show {$permKey}", $rolePermissions); // <-- Diubah
+                            $canCreate = in_array("create {$permKey}", $rolePermissions);
+                            $canUpdate = in_array("update {$permKey}", $rolePermissions);
+                            $canDelete = in_array("delete {$permKey}", $rolePermissions);
+                            $canMenu = in_array("menu {$permKey}", $rolePermissions);
+
+                            // UBAH 'detail' MENJADI 'show'
+                            $isShowAvailable = in_array("show {$permKey}", $allSystemPermissions); // <-- Diubah
+                        @endphp
+
+                        <tr class="item-row" data-grp="{{ $grpSlug }}">
+                            <td class="td-menu"><span class="menu-dot"></span>{{ $menu->name }}</td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-c" title="Read">
+                                    <input type="checkbox" name="permissions[]" value="read {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_read" {{ $canRead ? 'checked' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            {{-- KOLOM SHOW (DETAIL) DENGAN LOGIKA DISABLED --}}
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-c" title="Show / Detail"
+                                    style="{{ !$isShowAvailable ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
+                                    {{-- Pastikan value-nya adalah "show" --}}
+                                    <input type="checkbox" name="permissions[]" value="show {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_show" {{ $canShow ? 'checked' : '' }}
+                                        {{ !$isShowAvailable ? 'disabled' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-g" title="Create">
+                                    <input type="checkbox" name="permissions[]" value="create {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_create" {{ $canCreate ? 'checked' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-a" title="Update">
+                                    <input type="checkbox" name="permissions[]" value="update {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_update" {{ $canUpdate ? 'checked' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-r" title="Delete">
+                                    <input type="checkbox" name="permissions[]" value="delete {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_delete" {{ $canDelete ? 'checked' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-p" title="Menu">
+                                    <input type="checkbox" name="permissions[]" value="menu {{ $permKey }}"
+                                        id="sw_{{ $permKey }}_menu" {{ $canMenu ? 'checked' : '' }}>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-all" title="Toggle semua">
+                                    <input type="checkbox" id="all_{{ $permKey }}" class="sw-all-cb"
+                                        data-target="{{ $permKey }}">
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+                        </tr>
+                    @endforeach
+                @endforeach
 
             </tbody>
         </table>
-    </div>
-    <div class="save-bar">
-        <div class="save-info"><i class="bi bi-shield-lock-fill"></i>Perubahan hanya berlaku setelah disimpan. Role:
-            <strong style="color:var(--purple)">Admin</strong>
-        </div>
-        <div class="save-btns">
-            <button class="btn-reset-modal"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
-            <button class="btn-save"><span><i class="bi bi-floppy-fill"></i> Simpan Permission</span></button>
-        </div>
     </div>
 </div>

@@ -11,7 +11,7 @@ trait HasPermission
         'index'     => 'read',
         'create'    => 'create',
         'store'     => 'create',
-        'show'      => 'detail',
+        'show'      => 'show',
         'edit'      => 'update',
         'update'    => 'update',
         'menu'      => 'menu',

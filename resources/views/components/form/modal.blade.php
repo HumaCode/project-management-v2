@@ -15,6 +15,8 @@
                             $finalTitle = "Detail $title";
                         } elseif ($isEdit ?? false) {
                             $finalTitle = "Edit $title";
+                        } elseif (($type ?? null) === 'akses') {
+                            $finalTitle = "Akses $title";
                         } else {
                             $finalTitle = "Tambah Data $title";
                         }

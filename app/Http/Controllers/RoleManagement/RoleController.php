@@ -6,6 +6,7 @@ use App\Constants\GlobalMessages;
 use App\Constants\RoleMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RoleManagement\Role\AksesRoleRequest;
 use App\Http\Requests\RoleManagement\Role\RoleStoreRequest;
 use App\Http\Requests\RoleManagement\Role\RoleUpdateRequest;
 use App\Http\Resources\PaginateResource;
@@ -147,6 +148,25 @@ class RoleController extends Controller
             'type' => 'akses',
             'data' => $role,
         ]);
+    }
+
+    public function aksesedit(AksesRoleRequest $request, Role $role)
+    {
+        Gate::authorize('akses '.$this->aksesPermission);
+
+        // 1. Simpan hasil validasi ke variabel baru
+        // $validatedData ini bentuknya: ['permissions' => ['read project', ...]]
+        $validatedData = $request->validated();
+
+        try {
+            // 2. Lempar KESELURUHAN $validatedData ke repository
+            // Jangan dikasih tambahan ['permissions'] lagi di sini
+            $this->roleRepository->syncPermissions($role->id, $validatedData);
+
+            return ResponseHelper::jsonResponse(true, RoleMessages::AKSES_UPDATED_SUCCESS, null, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**

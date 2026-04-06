@@ -29,4 +29,5 @@ class RoleMessages
     const CREATED_SUCCESS              = 'Role berhasil ditambahkan';
     const UPDATED_SUCCESS              = 'Role berhasil diubah';
     const DELETED_SUCCESS              = 'Role berhasil dihapus';
+    const AKSES_UPDATED_SUCCESS        = 'Hak akses role berhasil diperbarui';
 }

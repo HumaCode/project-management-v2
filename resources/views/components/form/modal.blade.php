@@ -13,10 +13,12 @@
                     @php
                         if (($type ?? null) === 'show') {
                             $finalTitle = "Detail $title";
-                        } elseif ($isEdit ?? false) {
-                            $finalTitle = "Edit $title";
                         } elseif (($type ?? null) === 'akses') {
+                            // <-- PINDAHKAN PENGECEKAN AKSES KE SINI
                             $finalTitle = "Akses $title";
+                        } elseif ($isEdit ?? false) {
+                            // <-- TARUH isEdit DI BAWAHNYA
+                            $finalTitle = "Edit $title";
                         } else {
                             $finalTitle = "Tambah Data $title";
                         }

@@ -81,7 +81,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
             }
 
             // --- TAMBAHAN PENGECEKAN DI SINI ---
-            // Menggunakan exists() lebih cepat daripada count() karena 
+            // Menggunakan exists() lebih cepat daripada count() karena
             // query akan langsung berhenti ketika menemukan 1 data pertama.
             if ($record->users()->exists()) {
                 // Lempar error yang akan ditangkap oleh blok catch di bawah
@@ -91,9 +91,31 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
             return parent::delete($id);
         } catch (\Exception $e) {
-            // Karena kita melempar exception kustom di atas, 
+            // Karena kita melempar exception kustom di atas,
             // pesan 'Role tidak dapat dihapus...' akan digabungkan ke $e->getMessage()
             throw new \Exception(GlobalMessages::ERROR_DELETED . ' ' . $e->getMessage());
+        }
+    }
+
+    public function syncPermissions(string $id, array $data)
+    {
+        try {
+            $role = parent::getById($id);
+
+            if (!$role) {
+                throw new \Exception(GlobalMessages::NOT_FOUND);
+            }
+
+            // 1. Eksekusi sinkronisasi ke Database
+            $role->syncPermissions($data['permissions'] ?? []);
+
+            // 2. 🔥 WAJIB: Refresh relasi permission agar memuat data terbaru dari DB
+            $role->load('permissions');
+
+            return $role->permissions;
+
+        } catch (\Exception $e) {
+            throw new \Exception(GlobalMessages::ERROR_UPDATING . ' ' . $e->getMessage());
         }
     }
 

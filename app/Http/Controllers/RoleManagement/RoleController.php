@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\RoleManagement;
 
 use App\Constants\GlobalMessages;
-use App\Constants\RoleMessages;
+use App\Constants\RoleManagement\RoleMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleManagement\Role\AksesRoleRequest;
@@ -76,6 +76,10 @@ class RoleController extends Controller
             'dataTableId' => $this->dataTableId,
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
+            'getCountRoles' => $this->roleRepository->getCountRoles(),
+            'getCountGuardName' => $this->roleRepository->getCountGuardName(),
+            'getCountUser' => $this->roleRepository->getCountUser(),
+            'getPermissions' => $this->roleRepository->getPermissions(),
         ];
 
         return view($this->indexView, $data);

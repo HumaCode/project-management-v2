@@ -123,4 +123,30 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
     {
         return Menu::with('permissions')->get();
     }
+
+    public function getCountRoles()
+    {
+        return $this->model->where('is_active', '1')->count();
+    }
+
+    public function getCountGuardName()
+    {
+        return $this->model->distinct()->count('guard_name');
+    }
+
+    public function getCountUser()
+    {
+        return $this->model->where('is_active', '1')->withCount('users')->get()->pluck('users_count')->sum();
+    }
+
+    public function getPermissions()
+    {
+        return $this->model->with('permissions')
+            ->get()
+            ->pluck('permissions')
+            ->flatten()
+            ->pluck('name')
+            ->unique()
+            ->count(); // <-- Tambahkan ini di akhir
+    }
 }

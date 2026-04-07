@@ -6,6 +6,7 @@ use App\Constants\RoleManagement\PermissionMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RoleManagement\Permission\PermissionStoreRequest;
+use App\Http\Requests\RoleManagement\Permission\PermissionUpdateRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\PermissionResource;
 use App\Interface\RoleManagement\PermissionRepositoryInterface;
@@ -136,24 +137,41 @@ class PermissionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit(Permission $permission)
     {
-        //
+        return view($this->formView, [
+            'action' => route($this->updateUrl, $permission->id),
+            'data' => $permission,
+        ]);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(PermissionUpdateRequest $request, Permission $permission)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $permission = $this->permissionRepository->update($permission->id, $request);
+
+            return ResponseHelper::jsonResponse(true, PermissionMessages::UPDATED_SUCCESS, new PermissionResource($permission), 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(Permission $permission)
     {
-        //
+        try {
+            $this->permissionRepository->delete($permission->id);
+
+            return ResponseHelper::jsonResponse(true, PermissionMessages::DELETED_SUCCESS, null, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 }

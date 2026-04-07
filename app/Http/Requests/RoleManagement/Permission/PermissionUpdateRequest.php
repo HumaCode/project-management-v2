@@ -4,6 +4,7 @@ namespace App\Http\Requests\RoleManagement\Permission;
 
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class PermissionUpdateRequest extends FormRequest
 {
@@ -12,7 +13,7 @@ class PermissionUpdateRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return auth()->check() && auth()->user()->can('update permissions');
     }
 
     /**
@@ -22,8 +23,42 @@ class PermissionUpdateRequest extends FormRequest
      */
     public function rules(): array
     {
+        $permissionId = $this->route('permission');
+
         return [
-            //
+            'name' => [
+                'required',
+                'string',
+                'max:255',
+                // Pastikan unik, tapi abaikan ID milik role yang sedang di-update
+                Rule::unique('permissions', 'name')->ignore($permissionId),
+            ],
+            'guard_name' => ['required', 'string', 'max:255'],
+        ];
+    }
+
+    /**
+     * Custom attributes untuk pesan error yang lebih user-friendly.
+     */
+    public function attributes(): array
+    {
+        return [
+            'name' => 'Nama Permission',
+            'guard_name' => 'Guard Name',
+        ];
+    }
+
+    /**
+     * Custom messages (Opsional) jika ingin pesan spesifik dalam Bahasa Indonesia.
+     */
+    public function messages(): array
+    {
+        return [
+            'required' => ':attribute wajib diisi.',
+            'name.unique' => 'Nama permission sudah digunakan oleh permission lain.',
+            'name.required' => 'Nama permission tidak boleh kosong.',
+            'guard_name.required' => 'Guard name tidak boleh kosong.',
+            'unique' => ':attribute sudah digunakan, silakan pilih nama lain.',
         ];
     }
 }

@@ -4,7 +4,6 @@ namespace Database\Seeders\Konfigurasi;
 
 use App\Models\Konfigurasi\Menu;
 use App\Traits\HasMenuPermission;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Cache;
 
@@ -27,32 +26,32 @@ class MenuSeeder extends Seeder
 
             // MASTER
             [
-                'name'     => 'Project',
-                'url'      => 'project',
+                'name' => 'Project',
+                'url' => 'project',
                 'category' => 'MASTER',
-                'icon'     => 'bi bi-kanban-fill',
-                'orders'   => 1,
+                'icon' => 'bi bi-kanban-fill',
+                'orders' => 1,
             ],
             [
-                'name'     => 'Dokumen',
-                'url'      => 'dokumen',
+                'name' => 'Dokumen',
+                'url' => 'dokumen',
                 'category' => 'MASTER',
-                'icon'     => 'bi bi-folder2-open',
-                'orders'   => 2,
+                'icon' => 'bi bi-folder2-open',
+                'orders' => 2,
             ],
             [
-                'name'     => 'Catatan',
-                'url'      => 'catatan',
+                'name' => 'Catatan',
+                'url' => 'catatan',
                 'category' => 'MASTER',
-                'icon'     => 'bi bi-journal-text',
-                'orders'   => 3,
+                'icon' => 'bi bi-journal-text',
+                'orders' => 3,
             ],
             [
-                'name'     => 'Laporan PDF',
-                'url'      => 'laporan',
+                'name' => 'Laporan PDF',
+                'url' => 'laporan',
                 'category' => 'MASTER',
-                'icon'     => 'bi bi-file-earmark-pdf-fill',
-                'orders'   => 4,
+                'icon' => 'bi bi-file-earmark-pdf-fill',
+                'orders' => 4,
             ],
 
             // =============================
@@ -60,18 +59,18 @@ class MenuSeeder extends Seeder
             // =============================
 
             [
-                'name'     => 'Manajemen Tim',
-                'url'      => 'tim',
+                'name' => 'Manajemen Tim',
+                'url' => 'tim',
                 'category' => 'MANAGEMENT',
-                'icon'     => 'bi bi-people-fill',
-                'orders'   => 5,
+                'icon' => 'bi bi-people-fill',
+                'orders' => 5,
             ],
             [
-                'name'     => 'Kategori Dokumen',
-                'url'      => 'kat-dokumen',
+                'name' => 'Kategori Dokumen',
+                'url' => 'kat-dokumen',
                 'category' => 'MANAGEMENT',
-                'icon'     => 'bi bi-tags-fill',
-                'orders'   => 6,
+                'icon' => 'bi bi-tags-fill',
+                'orders' => 6,
             ],
 
             // =============================
@@ -79,35 +78,28 @@ class MenuSeeder extends Seeder
             // =============================
 
             [
-                'name'     => 'Role',
-                'url'      => 'roles',
+                'name' => 'Role',
+                'url' => 'roles',
                 'category' => 'ROLE MANAGEMENT',
-                'icon'     => 'bi bi-diagram-3-fill',
-                'orders'   => 7,
+                'icon' => 'bi bi-diagram-3-fill',
+                'orders' => 7,
 
-                // custom permissions 
+                // custom permissions
                 'permissions' => ['menu', 'create', 'read', 'show', 'update', 'delete', 'akses'],
             ],
             [
-                'name'     => 'Permission',
-                'url'      => 'permissions',
+                'name' => 'Permission',
+                'url' => 'permissions',
                 'category' => 'ROLE MANAGEMENT',
-                'icon'     => 'bi bi-shield-lock',
-                'orders'   => 8,
+                'icon' => 'bi bi-shield-lock',
+                'orders' => 8,
             ],
             [
-                'name'     => 'Akses Role',
-                'url'      => 'akses-role',
+                'name' => 'Users',
+                'url' => 'users',
                 'category' => 'ROLE MANAGEMENT',
-                'icon'     => 'bi bi-person-fill-lock',
-                'orders'   => 9,
-            ],
-            [
-                'name'     => 'Users',
-                'url'      => 'users',
-                'category' => 'ROLE MANAGEMENT',
-                'icon'     => 'bi bi-people-fill',
-                'orders'   => 10,
+                'icon' => 'bi bi-people-fill',
+                'orders' => 9,
             ],
 
             // =============================
@@ -115,24 +107,24 @@ class MenuSeeder extends Seeder
             // =============================
 
             [
-                'name'     => 'Profil',
-                'url'      => 'profil',
+                'name' => 'Profil',
+                'url' => 'profil',
                 'category' => 'SETTING',
-                'icon'     => 'bi bi-person-badge-fill',
-                'orders'   => 11,
+                'icon' => 'bi bi-person-badge-fill',
+                'orders' => 10,
             ],
             [
-                'name'     => 'Pengaturan Sistem',
-                'url'      => 'settings',
+                'name' => 'Pengaturan Sistem',
+                'url' => 'settings',
                 'category' => 'SETTING',
-                'icon'     => 'bi bi-gear-fill',
-                'orders'   => 12,
+                'icon' => 'bi bi-gear-fill',
+                'orders' => 11,
             ],
 
         ];
 
         foreach ($menus as $data) {
-            // Ambil dan pisahkan 'permissions' dari array utama agar tidak ikut ter-insert 
+            // Ambil dan pisahkan 'permissions' dari array utama agar tidak ikut ter-insert
             // ke table 'menus' jika kolom permissions tidak ada di database.
             $customPermissions = $data['permissions'] ?? null;
 

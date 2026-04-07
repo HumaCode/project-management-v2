@@ -88,12 +88,12 @@ class PermissionController extends Controller
         ]);
 
         try {
-            $roles = $this->permissionRepository->getAllPaginated(
+            $permissions = $this->permissionRepository->getAllPaginated(
                 $request['search'] ?? null,
                 $request['row_per_page'],
             );
 
-            return ResponseHelper::jsonResponse(true, PermissionMessages::RETRIEVED_SUCCESS, PaginateResource::make($roles, PermissionResource::class), 200);
+            return ResponseHelper::jsonResponse(true, PermissionMessages::RETRIEVED_SUCCESS, PaginateResource::make($permissions, PermissionResource::class), 200);
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }

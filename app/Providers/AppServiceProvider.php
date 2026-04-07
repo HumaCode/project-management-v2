@@ -4,8 +4,10 @@ namespace App\Providers;
 
 use App\Interface\RoleManagement\PermissionRepositoryInterface;
 use App\Interface\RoleManagement\RoleRepositoryInterface;
+use App\Interface\RoleManagement\UserRepositoryInterface;
 use App\Repositories\RoleManagement\PermissionRepository;
 use App\Repositories\RoleManagement\RoleRepository;
+use App\Repositories\RoleManagement\UserRepository;
 use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
@@ -20,6 +22,9 @@ class AppServiceProvider extends ServiceProvider
 
         // permission
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
+
+        // users
+        $this->app->bind(UserRepositoryInterface::class, UserRepository::class);
     }
 
     /**

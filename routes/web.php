@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RoleManagement\PermissionController;
 use App\Http\Controllers\RoleManagement\RoleController;
+use App\Http\Controllers\RoleManagement\UserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -17,7 +18,6 @@ Route::middleware(['auth', 'verified'])->group(
                 Route::get('/dashboard', 'index')->name('dashboard');
             });
 
-
         // role
         Route::get('roles/getAllPagination', [RoleController::class, 'getAllPaginated'])->name('roles.allPagination');
         Route::get('roles/{role}/akses', [RoleController::class, 'akses'])->name('roles.akses');
@@ -28,6 +28,12 @@ Route::middleware(['auth', 'verified'])->group(
         // permissions
         Route::get('permissions/getAllPagination', [PermissionController::class, 'getAllPaginated'])->name('permissions.allPagination');
         Route::resource('permissions', PermissionController::class);
+
+        // users
+        Route::get('users/getAllPagination', [UserController::class, 'getAllPaginated'])->name('users.allPagination');
+        Route::put('users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
+        Route::put('users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
+        Route::resource('users', UserController::class);
     }
 );
 
@@ -37,4 +43,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__ . '/auth.php';
+require __DIR__.'/auth.php';

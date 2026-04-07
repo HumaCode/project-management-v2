@@ -409,3 +409,134 @@ function showToast(status = "success", message = "") {
 function loadData() {
     location.reload();
 }
+
+//  fungsi js user
+function approveUser(id) {
+    // 1. Tampilkan Popup Konfirmasi
+    SCA.confirm(
+        "Aktifkan Pengguna?",
+        "Akun pengguna ini akan diaktifkan dan bisa mengakses sistem.",
+    ).then(function (isConfirmed) {
+        // 2. Jika user menekan "Ya" / Konfirmasi
+        if (isConfirmed) {
+            // Opsional: Tampilkan loading atau disable tombol di sini jika diperlukan
+
+            // 3. Eksekusi AJAX
+            $.ajax({
+                url: `/users/${id}/approve`, // Sesuaikan dengan route PUT/POST kamu
+                type: "PUT", // Gunakan PUT atau POST sesuai definisi route
+                headers: {
+                    // Mengambil CSRF token dari tag meta HTML
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content",
+                    ),
+                },
+                success: function (res) {
+                    // Jika dari controller me-return jsonResponse(true, ...)
+                    if (res.success) {
+                        SCA.toast({
+                            type: "success",
+                            title: "Berhasil!",
+                            message:
+                                res.message || "Pengguna berhasil diaktifkan.",
+                            position: "top-right",
+                        });
+
+                        // 4. Refresh data tabel (karena status berubah)
+                        // Jika kamu menggunakan custom-table.js dari obrolan sebelumnya:
+                        if (typeof window.loadData === "function") {
+                            window.loadData();
+                        }
+                    } else {
+                        // Jika controller me-return success = false
+                        SCA.toast({
+                            type: "error",
+                            title: "Gagal!",
+                            message:
+                                res.message || "Gagal mengaktifkan pengguna.",
+                            position: "top-right",
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = "Terjadi kesalahan sistem.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: errorMessage,
+                        position: "top-right",
+                    });
+                },
+            });
+        }
+    });
+}
+
+function rejectUser(id) {
+    // 1. Tampilkan Popup Konfirmasi
+    SCA.confirm(
+        "Nonaktifkan Pengguna?",
+        "Akun pengguna ini akan dinonaktifkan dan tidak bisa mengakses sistem.",
+    ).then(function (isConfirmed) {
+        // 2. Jika user menekan "Ya" / Konfirmasi
+        if (isConfirmed) {
+            // Opsional: Tampilkan loading atau disable tombol di sini jika diperlukan
+
+            // 3. Eksekusi AJAX
+            $.ajax({
+                url: `/users/${id}/reject`, // Pastikan route ini sudah kamu buat
+                type: "PUT", // Gunakan PUT atau POST sesuai definisi route
+                headers: {
+                    // Mengambil CSRF token dari tag meta HTML
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content",
+                    ),
+                },
+                success: function (res) {
+                    // Jika dari controller me-return jsonResponse(true, ...)
+                    if (res.success) {
+                        SCA.toast({
+                            type: "success",
+                            title: "Berhasil!",
+                            message:
+                                res.message ||
+                                "Pengguna berhasil dinonaktifkan.",
+                            position: "top-right",
+                        });
+
+                        // 4. Refresh data tabel (karena status berubah)
+                        if (typeof window.loadData === "function") {
+                            window.loadData();
+                        }
+                    } else {
+                        // Jika controller me-return success = false
+                        SCA.toast({
+                            type: "error",
+                            title: "Gagal!",
+                            message:
+                                res.message || "Gagal menonaktifkan pengguna.",
+                            position: "top-right",
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = "Terjadi kesalahan sistem.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: errorMessage,
+                        position: "top-right",
+                    });
+                },
+            });
+        }
+    });
+}

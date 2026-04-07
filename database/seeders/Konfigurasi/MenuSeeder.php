@@ -100,6 +100,9 @@ class MenuSeeder extends Seeder
                 'category' => 'ROLE MANAGEMENT',
                 'icon' => 'bi bi-people-fill',
                 'orders' => 9,
+
+                // custom permissions
+                'permissions' => ['menu', 'create', 'read', 'show', 'update', 'delete', 'activate'],
             ],
 
             // =============================

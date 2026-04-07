@@ -71,6 +71,10 @@ class UserController extends Controller
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
             'rolesActive' => $this->userRepository->getRoleActive(),
+            'countAllUser' => $this->userRepository->countAllUser(),
+            'countAllUserActive' => $this->userRepository->countAllUserActive(),
+            'countAllUserInactive' => $this->userRepository->countAllUserInactive(),
+            'countNewUser' => $this->userRepository->countNewUser(),
         ];
 
         return view($this->indexView, $data);

@@ -154,4 +154,26 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     {
         return Role::where('is_active', '1')->get(['id', 'name', 'is_active']);
     }
+
+    public function countAllUser()
+    {
+        return $this->model->count();
+    }
+
+    public function countAllUserActive()
+    {
+        return $this->model->where('is_active', '1')->count();
+    }
+
+    public function countAllUserInactive()
+    {
+        return $this->model->where('is_active', '0')->count();
+    }
+
+    public function countNewUser(int $days = 7)
+    {
+        return $this->model
+            ->where('created_at', '>=', now()->subDays($days))
+            ->count();
+    }
 }

@@ -181,6 +181,8 @@
                 window.tableState.type = $("#filterTypeRole").val();
                 window.tableState.per_page = 10;
                 window.tableState.page = 1;
+
+                // console.log(window.tableState.type);
                 window.loadData();
             };
 
@@ -230,7 +232,7 @@
         </div>
         <div class="pg-actions">
             <div class="bc d-none d-xl-flex">
-                <a href="dashboard.html"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
+                <a href="#"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
                 <span class="sep"><i class="bi bi-chevron-right"></i></span>
                 <span class="here">{{ $title }}</span>
             </div>

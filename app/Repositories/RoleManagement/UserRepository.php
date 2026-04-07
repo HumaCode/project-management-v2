@@ -26,6 +26,18 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         if (! empty($status) && $status !== 'all') {
             $status === 'active' ? $query->active() : $query->inactive();
         }
+
+        // --- FILTER TYPE (ROLE) ---
+        // Cek jika $type ada isinya dan bukan 'all'
+        if (! empty($type) && $type !== 'all') {
+            // Gunakan scope bawaan Spatie untuk memfilter user berdasarkan nama role
+            $query->role($type);
+
+            // Catatan: Jika kamu masih mempertahankan function scopeRoleType()
+            // di model User dari obrolan sebelumnya, kamu juga bisa memakai:
+            // $query->roleType($type);
+        }
+
         if ($limit) {
             $query->take((int) $limit);
         }

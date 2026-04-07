@@ -5,9 +5,11 @@ namespace App\Http\Controllers\RoleManagement;
 use App\Constants\RoleManagement\PermissionMessages;
 use App\Helpers\ResponseHelper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\RoleManagement\Permission\PermissionStoreRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\PermissionResource;
 use App\Interface\RoleManagement\PermissionRepositoryInterface;
+use App\Models\Shield\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -99,17 +101,28 @@ class PermissionController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(Permission $permission)
     {
-        //
+        return view($this->formView, [
+            'action' => route($this->storeUrl),
+            'data' => $permission,
+        ]);
     }
 
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(PermissionStoreRequest $request)
     {
-        //
+        $request = $request->validated();
+
+        try {
+            $permission = $this->permissionRepository->create($request);
+
+            return ResponseHelper::jsonResponse(true, PermissionMessages::CREATED_SUCCESS, new PermissionResource($permission), 201);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
     }
 
     /**

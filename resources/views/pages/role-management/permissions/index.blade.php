@@ -140,7 +140,9 @@
                 }, 300);
 
                 handleAction(window.dataTableId, function() {
-
+                    setTimeout(() => {
+                        $('#name').focus();
+                    }, 200);
                 });
 
                 if (typeof handleDelete === 'function') {

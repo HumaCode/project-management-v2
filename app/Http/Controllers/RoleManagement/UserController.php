@@ -131,6 +131,19 @@ class UserController extends Controller
         }
     }
 
+    public function resetPassword(Request $request, string $id)
+    {
+        Gate::authorize('update '.$this->aksesPermission);
+
+        try {
+            $result = $this->userRepository->resetPassword($id, $request->all());
+
+            return ResponseHelper::jsonResponse(true, 'Password '.UserMessages::UPDATED_SUCCESS, UserResource::make($result), 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
     /**
      * Show the form for creating a new resource.
      */

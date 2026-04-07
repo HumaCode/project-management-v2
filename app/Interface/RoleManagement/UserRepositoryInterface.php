@@ -13,4 +13,6 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function approve(string $id);
 
     public function reject(string $id);
+
+    public function resetPassword(string $id, array $data);
 }

@@ -106,16 +106,23 @@
                         const disableReject = row.is_active == 0 ? 'disabled' : '';
 
                         actions += `
-                            <button type="button" onclick="approveUser('${row.id}')" class="ibtn ib-e action" id="btnActivate-${row.id}" title="Aktifkan" ${disableApprove} style="${disableApprove ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
+                            <button type="button" onclick="approveUser('${row.id}')" class="ibtn ib-e " id="btnActivate-${row.id}" title="Aktifkan" ${disableApprove} style="${disableApprove ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
                                 <i class="bi bi-check"></i>
                             </button>
                         `;
 
                         actions += `
-                            <button type="button" onclick="rejectUser('${row.id}')" class="ibtn ib-f action" id="btnDeactivate-${row.id}" title="Nonaktifkan" ${disableReject} style="${disableReject ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
+                            <button type="button" onclick="rejectUser('${row.id}')" class="ibtn ib-f " id="btnDeactivate-${row.id}" title="Nonaktifkan" ${disableReject} style="${disableReject ? 'opacity: 0.4; cursor: not-allowed;' : ''}">
                                 <i class="bi bi-x"></i>
                             </button>
                         `;
+                    }
+
+                    if (window.canUpdate) {
+                        actions +=
+                            `<button type="button" onclick="resetPassword('${row.id}', '${row.name}', '${row.email}')" class="ibtn ib-s" title="Reset Password">
+                                <i class="bi bi-key-fill"></i>
+                            </button>`;
                     }
 
                     if (window.canShow) {
@@ -126,6 +133,7 @@
                         actions +=
                             `<a href="${window.urlEdit.replace('__ID__', row.id)}" class="ibtn ib-e action" title="Edit"><i class="bi bi-pencil"></i></a>`;
                     }
+
                     if (window.canDelete) {
                         actions +=
                             `<a href="${window.urlDestroy.replace('__ID__', row.id)}" class="ibtn ib-x delete" title="Hapus"><i class="bi bi-trash3"></i></a>`;

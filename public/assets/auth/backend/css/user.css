@@ -1537,6 +1537,17 @@ a {
     transform: translateY(-2px);
 }
 
+.ib-s {
+    background: rgba(245, 158, 11, 0.08);
+    border: 1px solid rgba(245, 158, 11, 0.15);
+    color: var(--warn);
+}
+
+.ib-s:hover {
+    background: rgba(245, 158, 11, 0.18);
+    transform: translateY(-2px);
+}
+
 .ib-f {
     background: rgba(245, 158, 11, 0.08);
     border: 1px solid rgba(255, 77, 109, 0.15);

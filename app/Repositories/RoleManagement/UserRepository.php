@@ -7,6 +7,8 @@ use App\Interface\RoleManagement\UserRepositoryInterface;
 use App\Models\Shield\Role;
 use App\Models\User;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Password;
 
 class UserRepository extends BaseRepository implements UserRepositoryInterface
 {
@@ -145,6 +147,57 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             $user->save();
 
             return $user;
+        } catch (\Exception $e) {
+            throw new \Exception(GlobalMessages::ERROR_UPDATING.' '.$e->getMessage());
+        }
+    }
+
+    public function resetPassword(string $id, array $data)
+    {
+        try {
+            $user = parent::getById($id);
+
+            if (! $user) {
+                throw new \Exception('User tidak ditemukan.');
+            }
+
+            // MODE 1: MANUAL (Admin menginputkan password sendiri)
+            if (($data['mode'] ?? '') === 'manual') {
+
+                if (empty($data['newPassword'])) {
+                    throw new \Exception('Password baru tidak boleh kosong.');
+                }
+
+                $user->password = Hash::make($data['newPassword']);
+                $user->save();
+
+                return [
+                    'status' => true,
+                    'message' => 'Password berhasil diperbarui secara manual.',
+                ];
+            }
+
+            // MODE 2: LINK (Kirim email ke user)
+            elseif (($data['mode'] ?? '') === 'link') {
+
+                // Gunakan broker bawaan Laravel agar aman dan otomatis
+                $status = Password::broker()->sendResetLink(
+                    ['email' => $user->email]
+                );
+
+                if ($status !== Password::RESET_LINK_SENT) {
+                    // Jika SMTP error atau email tidak valid
+                    throw new \Exception(__($status));
+                }
+
+                return [
+                    'status' => true,
+                    'message' => 'Link reset password berhasil dikirim ke email pengguna.',
+                ];
+            }
+
+            // Jika mode tidak dikenali
+            throw new \Exception('Metode reset password tidak valid.');
         } catch (\Exception $e) {
             throw new \Exception(GlobalMessages::ERROR_UPDATING.' '.$e->getMessage());
         }

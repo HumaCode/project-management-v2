@@ -540,3 +540,68 @@ function rejectUser(id) {
         }
     });
 }
+
+function resetPassword(id, name, email) {
+    // 1. Panggil Popup SCA Reset Password
+    SCA.resetPassword({
+        userName: name,
+        userEmail: email,
+    }).then(function (r) {
+        // 2. Jika user menekan tombol konfirmasi di popup
+        if (r && r.confirmed) {
+            // 3. Eksekusi AJAX
+            $.ajax({
+                url: `/users/${id}/reset-password`,
+                type: "PUT",
+                headers: {
+                    // CSRF Token wajib untuk method PUT/POST
+                    "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
+                        "content",
+                    ),
+                },
+                data: {
+                    // Kirim hasil inputan modal ke backend (link / auto / manual)
+                    mode: r.mode,
+                    // password_baru: r.password // (Opsional: Jika SCA juga mereturn password ketikan admin)
+                },
+                success: function (res) {
+                    if (res.success) {
+                        // Tentukan pesan sukses berdasarkan mode
+                        let msg =
+                            r.mode === "link"
+                                ? "Link reset dikirim ke email pengguna."
+                                : "Password berhasil diperbarui.";
+
+                        SCA.toast({
+                            type: "success",
+                            title: "Password Direset!",
+                            // Gunakan pesan dari backend jika ada, fallback ke msg lokal
+                            message: res.message || msg,
+                            position: "top-right",
+                        });
+                    } else {
+                        SCA.toast({
+                            type: "error",
+                            title: "Gagal!",
+                            message: res.message || "Gagal mereset password.",
+                            position: "top-right",
+                        });
+                    }
+                },
+                error: function (xhr) {
+                    let errorMessage = "Terjadi kesalahan sistem.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMessage = xhr.responseJSON.message;
+                    }
+
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: errorMessage,
+                        position: "top-right",
+                    });
+                },
+            });
+        }
+    });
+}

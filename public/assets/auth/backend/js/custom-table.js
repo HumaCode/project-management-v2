@@ -9,14 +9,41 @@ window.getTableColSpan = function () {
     return cols > 0 ? cols : 10; // Fallback ke 10 jika thead tidak ditemukan
 };
 
-window.renderLoading = function (count = 5) {
+window.renderLoading = function (count = 6) {
     let colspan = window.getTableColSpan();
     let html = "";
+
     for (let i = 0; i < count; i++) {
+        // Efek estetika: Baris semakin ke bawah semakin transparan (fade-out)
+        let opacity = 1 - i * 0.12;
+        opacity = opacity < 0.2 ? 0.2 : opacity; // Batas minimal opacity 0.2
+
         html += `
             <tr>
-                <td colspan="${colspan}">
-                    <div class="skeleton" style="height: 60px; margin: 5px 0; border-radius: 12px; opacity: 0.1; background: #ccc;"></div>
+                <td colspan="${colspan}" style="padding: 16px 20px; border-bottom: 1px solid var(--bd);">
+                    <div style="display: flex; align-items: center; gap: 20px; opacity: ${opacity};">
+                        
+                        <div class="skel-item" style="width: 20px; height: 14px; border-radius: 4px;"></div>
+
+                        <div style="display: flex; align-items: center; gap: 12px; width: 25%;">
+                            <div class="skel-item" style="width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0;"></div>
+                            <div style="flex-grow: 1;">
+                                <div class="skel-item" style="width: 70%; height: 14px; border-radius: 4px; margin-bottom: 8px;"></div>
+                                <div class="skel-item" style="width: 40%; height: 10px; border-radius: 4px;"></div>
+                            </div>
+                        </div>
+
+                        <div class="skel-item" style="width: 10%; height: 26px; border-radius: 20px;"></div>
+
+                        <div style="flex-grow: 1;">
+                            <div class="skel-item" style="width: 90%; height: 12px; border-radius: 4px;"></div>
+                        </div>
+
+                        <div style="display: flex; gap: 8px;">
+                            <div class="skel-item" style="width: 35px; height: 35px; border-radius: 8px;"></div>
+                            <div class="skel-item" style="width: 35px; height: 35px; border-radius: 8px;"></div>
+                        </div>
+                    </div>
                 </td>
             </tr>
         `;

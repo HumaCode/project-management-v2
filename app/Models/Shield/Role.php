@@ -16,7 +16,7 @@ class Role extends ModelsRole
         'type_role',
         'is_active',
         'description',
-        'guard_name'
+        'guard_name',
     ];
 
     protected $casts = [
@@ -40,7 +40,7 @@ class Role extends ModelsRole
 
     public function scopeSearch(Builder $query, ?string $search): Builder
     {
-        if (!$search) {
+        if (! $search) {
             return $query;
         }
 
@@ -52,7 +52,7 @@ class Role extends ModelsRole
 
     public function scopeRoleType($query, ?string $type)
     {
-        if (!$type) {
+        if (! $type) {
             return $query;
         }
 
@@ -69,8 +69,6 @@ class Role extends ModelsRole
         return $query->where('is_active', '0');
     }
 
-
-
     /*
     |--------------------------------------------------------------------------
     | Accessors
@@ -79,7 +77,7 @@ class Role extends ModelsRole
 
     public function getCreatedAtIndoAttribute(): ?string
     {
-        if (!$this->created_at) {
+        if (! $this->created_at) {
             return null;
         }
 
@@ -90,12 +88,12 @@ class Role extends ModelsRole
     public function getUpdatedAtIndoAttribute(): ?string
     {
         // 1. Pastikan updated_at memiliki nilai
-        if (!$this->updated_at) {
+        if (! $this->updated_at) {
             return null;
         }
 
         // 2. Bandingkan updated_at dengan created_at
-        // Kita gunakan toDateTimeString() (format Y-m-d H:i:s) untuk menghindari 
+        // Kita gunakan toDateTimeString() (format Y-m-d H:i:s) untuk menghindari
         // bug perbedaan microsecond (milidetik) yang kadang terjadi saat database menyimpan data
         if ($this->created_at && $this->updated_at->toDateTimeString() === $this->created_at->toDateTimeString()) {
             return '-';
@@ -112,6 +110,7 @@ class Role extends ModelsRole
         }
 
         $count = $this->attributes['permissions_count'] ?? $this->permissions()->count();
+
         return $count;
     }
 

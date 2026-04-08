@@ -136,9 +136,16 @@ class UserController extends Controller
         Gate::authorize('update '.$this->aksesPermission);
 
         try {
+            // $result sekarang berisi Objek User, BUKAN Array!
             $result = $this->userRepository->resetPassword($id, $request->all());
 
-            return ResponseHelper::jsonResponse(true, 'Password '.UserMessages::UPDATED_SUCCESS, UserResource::make($result), 200);
+            // Kita tentukan pesan sukses kustom berdasarkan mode yang dipilih
+            $pesanSukses = ($request->mode === 'link')
+                ? 'Link reset berhasil dikirim ke email.'
+                : 'Password berhasil diperbarui secara manual.';
+
+            return ResponseHelper::jsonResponse(true, $pesanSukses, UserResource::make($result), 200);
+
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }

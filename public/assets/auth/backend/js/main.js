@@ -542,50 +542,44 @@ function rejectUser(id) {
 }
 
 function resetPassword(id, name, email) {
-    // 1. Panggil Popup SCA Reset Password
     SCA.resetPassword({
         userName: name,
         userEmail: email,
     }).then(function (r) {
-        // 2. Jika user menekan tombol konfirmasi di popup
         if (r && r.confirmed) {
-            // 3. Eksekusi AJAX
             $.ajax({
                 url: `/users/${id}/reset-password`,
-                type: "PUT",
+                type: "POST", // ✅ UBAH JADI POST DI SINI
                 headers: {
-                    // CSRF Token wajib untuk method PUT/POST
                     "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr(
                         "content",
                     ),
                 },
                 data: {
-                    // Kirim hasil inputan modal ke backend (link / auto / manual)
+                    _method: "PUT",
                     mode: r.mode,
-                    // password_baru: r.password // (Opsional: Jika SCA juga mereturn password ketikan admin)
+                    newPassword: r.newPassword,
+                    newPassword_confirmation: r.newPassword_confirmation,
                 },
                 success: function (res) {
-                    if (res.success) {
-                        // Tentukan pesan sukses berdasarkan mode
-                        let msg =
-                            r.mode === "link"
-                                ? "Link reset dikirim ke email pengguna."
-                                : "Password berhasil diperbarui.";
+                    // Menggunakan format toast tunggal yang kamu minta
+                    SCA.toast({
+                        type: res.success ? "success" : "danger", // Pastikan classnya 'danger' atau 'error' sesuai CSS SCA kamu
+                        title: res.success ? "Berhasil!" : "Gagal!",
+                        // Menggunakan res.message dari Controller, fallback ke pesan default jika kosong
+                        message:
+                            res.message ??
+                            (res.success
+                                ? "Password berhasil diperbarui."
+                                : "Gagal memproses permintaan."),
+                    });
 
-                        SCA.toast({
-                            type: "success",
-                            title: "Password Direset!",
-                            // Gunakan pesan dari backend jika ada, fallback ke msg lokal
-                            message: res.message || msg,
-                            position: "top-right",
-                        });
-                    } else {
-                        SCA.toast({
-                            type: "error",
-                            title: "Gagal!",
-                            message: res.message || "Gagal mereset password.",
-                            position: "top-right",
-                        });
+                    if (res.success) {
+                        if (typeof loadData === "function") {
+                            loadData(); // Jika ini memanggil handleDelete() lagi, .off() di atas akan mengamankannya
+                        } else {
+                            setTimeout(() => location.reload(), 1000);
+                        }
                     }
                 },
                 error: function (xhr) {
@@ -595,10 +589,9 @@ function resetPassword(id, name, email) {
                     }
 
                     SCA.toast({
-                        type: "error",
+                        type: "danger",
                         title: "Error!",
                         message: errorMessage,
-                        position: "top-right",
                     });
                 },
             });

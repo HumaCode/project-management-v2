@@ -33,7 +33,7 @@ Route::middleware(['auth', 'verified'])->group(
         Route::get('users/getAllPagination', [UserController::class, 'getAllPaginated'])->name('users.allPagination');
         Route::put('users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
         Route::put('users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
-        Route::put('users/{id}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+        Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::resource('users', UserController::class);
     }
 );

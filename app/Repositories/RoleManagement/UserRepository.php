@@ -155,7 +155,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function resetPassword(string $id, array $data)
     {
         try {
-            $user = parent::getById($id);
+            // Cari user
+            $user = $this->model->where('id', $id)->first();
 
             if (! $user) {
                 throw new \Exception('User tidak ditemukan.');
@@ -171,29 +172,24 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
                 $user->password = Hash::make($data['newPassword']);
                 $user->save();
 
-                return [
-                    'status' => true,
-                    'message' => 'Password berhasil diperbarui secara manual.',
-                ];
+                // RETURN OBJEK USER (Bukan Array)
+                return $user;
             }
 
             // MODE 2: LINK (Kirim email ke user)
             elseif (($data['mode'] ?? '') === 'link') {
 
-                // Gunakan broker bawaan Laravel agar aman dan otomatis
                 $status = Password::broker()->sendResetLink(
                     ['email' => $user->email]
                 );
 
                 if ($status !== Password::RESET_LINK_SENT) {
-                    // Jika SMTP error atau email tidak valid
                     throw new \Exception(__($status));
                 }
 
-                return [
-                    'status' => true,
-                    'message' => 'Link reset password berhasil dikirim ke email pengguna.',
-                ];
+                // Jika kirim link sukses, password di database tidak berubah,
+                // tapi kita tetap return objek User agar Resource di Controller tidak error.
+                return $user;
             }
 
             // Jika mode tidak dikenali

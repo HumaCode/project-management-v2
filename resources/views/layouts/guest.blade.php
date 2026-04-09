@@ -13,6 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet" />
 
+    <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/sca.css') }}">
+
+
 
     @stack('auth-css')
 </head>
@@ -47,7 +50,28 @@
 
     <script src="{{ asset('assets/auth/js/global-script.js') }}"></script>
 
+    <script src="{{ asset('assets/auth/backend/js/sca.js') }}"></script>
+
     @stack('auth-js')
+
+    @if (session('sca_error'))
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                // Pastikan library SCA sudah dimuat sebelum memanggil ini
+                if (typeof SCA !== 'undefined' && typeof SCA.toast === 'function') {
+                    SCA.toast({
+                        type: 'danger', // atau 'error' tergantung CSS SCA kamu
+                        title: 'Akses Ditolak!',
+                        message: '{{ session('sca_error') }}',
+                        position: 'top-right'
+                    });
+                } else {
+                    // Fallback jika SCA belum ter-load (untuk jaga-jaga)
+                    alert('Akses Ditolak!\n' + '{{ session('sca_error') }}');
+                }
+            });
+        </script>
+    @endif
 </body>
 
 </html>

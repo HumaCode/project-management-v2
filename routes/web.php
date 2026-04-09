@@ -37,6 +37,7 @@ Route::middleware(['auth', 'user.active'])->group(
         Route::resource('users', UserController::class);
 
         Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
+        Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
 
     }
 );

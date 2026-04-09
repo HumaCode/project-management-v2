@@ -6,6 +6,7 @@ namespace App\Models;
 
 use Database\Factories\UserFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -158,5 +159,50 @@ class User extends Authenticatable
         // Contoh output: "Dev, Super Admin"
         // Jika hanya 1 role, otomatis hanya menampilkan nama 1 role tersebut
         return $roles->join(', ');
+    }
+
+    /**
+     * Accessor untuk mendapatkan URL Avatar atau Inisial Gambar
+     */
+    protected function displayAvatar(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // 1. Jika avatar ada di database
+                if (! empty($this->avatar)) {
+                    // Asumsi avatar disimpan di disk public (storage/app/public/avatar)
+                    // Pastikan kamu sudah menjalankan `php artisan storage:link`
+                    return asset('storage/avatar/'.$this->avatar);
+                }
+
+                // 2. Jika kosong, gunakan UI-Avatars API untuk membuat gambar inisial
+                $name = urlencode($this->name);
+
+                // Kamu bisa atur background & warna hurufnya di sini
+                return "https://ui-avatars.com/api/?name={$name}&background=0D8ABC&color=fff&rounded=true";
+            }
+        );
+    }
+
+    /**
+     * Accessor untuk mendapatkan Inisial Nama (Maksimal 2 huruf)
+     */
+    protected function initials(): Attribute
+    {
+        return Attribute::make(
+            get: function () {
+                // Pecah nama berdasarkan spasi
+                $words = explode(' ', trim($this->name));
+                $initials = '';
+
+                // Ambil huruf pertama dari tiap kata
+                foreach ($words as $word) {
+                    $initials .= strtoupper(substr($word, 0, 1));
+                }
+
+                // Kembalikan maksimal 2 huruf saja (Misal: Amir Zakaria Subarjo -> AZ)
+                return substr($initials, 0, 2);
+            }
+        );
     }
 }

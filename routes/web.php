@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\RoleManagement\PermissionController;
 use App\Http\Controllers\RoleManagement\RoleController;
 use App\Http\Controllers\RoleManagement\UserController;
+use App\Http\Controllers\Setting\ProfileController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
@@ -34,6 +35,9 @@ Route::middleware(['auth', 'user.active'])->group(
         Route::put('users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
         Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
         Route::resource('users', UserController::class);
+
+        Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
+
     }
 );
 

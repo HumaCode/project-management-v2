@@ -153,6 +153,7 @@
             });
         </script>
 
+        {{-- edit --}}
         <script>
             $(document).ready(function() {
                 $('#form-edit').on('submit', function(e) {
@@ -240,6 +241,112 @@
                                 SCA.toast({
                                     type: "danger", // Gunakan 'danger' jika kamu pakai class standar Bootstrap
                                     title: "Peringatan Validasi!",
+                                    message: errorMessage,
+                                    position: "top-right"
+                                });
+                            }
+                        });
+
+                    }, 500); // Penundaan 500 milidetik
+                });
+            });
+        </script>
+
+        {{-- ubah password --}}
+        <script>
+            $(document).ready(function() {
+                $('#form-keamanan').on('submit', function(e) {
+                    e.preventDefault(); // Mencegah form reload halaman
+
+                    let form = $(this);
+                    let url = form.data('url');
+                    let submitBtn = form.find('.btn-save');
+
+                    // Simpan isi asli tombol agar bisa dikembalikan nanti
+                    let originalBtnHtml = submitBtn.html();
+
+                    // Gunakan FormData untuk mengambil data input
+                    let formData = new FormData(this);
+
+                    // Trik Laravel: Karena kita butuh method PUT
+                    formData.append('_method', 'PUT');
+
+                    // 1. Ubah tombol jadi disabled dan tampilkan spinner
+                    submitBtn.prop('disabled', true);
+                    submitBtn.html(
+                        '<span><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>Memperbarui...</span>'
+                    );
+
+                    // 2. Tunda selama setengah detik (500 ms) sebelum menjalankan AJAX
+                    setTimeout(function() {
+
+                        $.ajax({
+                            url: url,
+                            type: 'POST', // Kita pakai POST, tapi Laravel akan membacanya sebagai PUT dari formData
+                            data: formData,
+                            processData: false,
+                            contentType: false,
+                            headers: {
+                                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                            },
+                            success: function(res) {
+                                // Kembalikan tombol ke kondisi semula
+                                submitBtn.prop('disabled', false);
+                                submitBtn.html(originalBtnHtml);
+
+                                if (res.success) {
+                                    // Tampilkan notifikasi sukses
+                                    SCA.toast({
+                                        type: "success",
+                                        title: "Berhasil!",
+                                        message: res.message ||
+                                            "Password berhasil diperbarui.",
+                                        position: "top-right"
+                                    });
+
+                                    // 1. Kosongkan form input
+                                    form[0].reset();
+
+                                    // 2. Hapus semua class warna dari bar indikator
+                                    $('.pws-bar').removeClass('weak med str');
+
+                                    // 3. Kembalikan teks label ke bentuk kosong (menggunakan &nbsp; agar tingginya tidak menyusut)
+                                    $('#pwsLbl').html('&nbsp;').css('color', '');
+
+                                    // (Opsional) Jika kamu punya script untuk mereset bar kekuatan password, panggil di sini
+                                    // $('.pws-bar').removeClass('active'); 
+                                    // $('#pwsLbl').html('&nbsp;');
+                                } else {
+                                    SCA.toast({
+                                        type: "error",
+                                        title: "Gagal!",
+                                        message: res.message ||
+                                            "Gagal memperbarui password.",
+                                        position: "top-right"
+                                    });
+                                }
+                            },
+                            error: function(xhr) {
+                                // Kembalikan tombol ke kondisi semula
+                                submitBtn.prop('disabled', false);
+                                submitBtn.html(originalBtnHtml);
+
+                                let errorMessage = "Terjadi kesalahan sistem.";
+
+                                // JIKA ERROR DARI VALIDASI LARAVEL (Error 422)
+                                if (xhr.status === 422) {
+                                    let errors = xhr.responseJSON.errors;
+                                    // Ambil pesan error pertama dari list error
+                                    errorMessage = Object.values(errors)[0][0];
+                                }
+                                // JIKA ERROR DARI CONTROLLER (Error 500, 400, dll)
+                                else if (xhr.responseJSON && xhr.responseJSON.message) {
+                                    errorMessage = xhr.responseJSON.message;
+                                }
+
+                                SCA.toast({
+                                    type: "error", // Gunakan 'danger' jika sesuai class Bootstrap kamu
+                                    title: "Peringatan!",
                                     message: errorMessage,
                                     position: "top-right"
                                 });

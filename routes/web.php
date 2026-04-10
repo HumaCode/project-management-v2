@@ -38,6 +38,7 @@ Route::middleware(['auth', 'user.active'])->group(
 
         Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
         Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
+        Route::put('profil/{user}/ubah-password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
 
     }
 );

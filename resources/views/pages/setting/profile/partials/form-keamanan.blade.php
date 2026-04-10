@@ -12,44 +12,50 @@
                         </div>
                     </div>
                 </div>
-                <div class="pc-body">
-                    <div class="row g-3">
-                        <div class="col-12">
-                            <label class="fm-lbl">Password Saat Ini <span class="req">*</span></label>
-                            <div class="pw-wrap">
-                                <input type="password" class="fmi" placeholder="Masukkan password saat ini..." />
-                                <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+
+                <form data-url="{{ route('profil.update-password', $profile->id) }}" id="form-keamanan">
+
+                    <div class="pc-body">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="fm-lbl">Password Saat Ini <span class="req">*</span></label>
+                                <div class="pw-wrap">
+                                    <input type="password" class="fmi" name="current_password"
+                                        placeholder="Masukkan password saat ini..." />
+                                    <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <label class="fm-lbl">Password Baru <span class="req">*</span></label>
+                                <div class="pw-wrap">
+                                    <input type="password" class="fmi" name="new_password" id="pwNew"
+                                        placeholder="Minimal 8 karakter..." />
+                                    <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+                                </div>
+                                <div class="pw-strength">
+                                    <div class="pws-bar"></div>
+                                    <div class="pws-bar"></div>
+                                    <div class="pws-bar"></div>
+                                    <div class="pws-bar"></div>
+                                </div>
+                                <div class="form-note" id="pwsLbl">&nbsp;</div>
+                            </div>
+                            <div class="col-12">
+                                <label class="fm-lbl">Konfirmasi Password Baru <span class="req">*</span></label>
+                                <div class="pw-wrap">
+                                    <input type="password" class="fmi" name="new_password_confirmation"
+                                        placeholder="Ulangi password baru..." />
+                                    <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-12">
-                            <label class="fm-lbl">Password Baru <span class="req">*</span></label>
-                            <div class="pw-wrap">
-                                <input type="password" class="fmi" id="pwNew"
-                                    placeholder="Minimal 8 karakter..." />
-                                <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
-                            </div>
-                            <div class="pw-strength">
-                                <div class="pws-bar"></div>
-                                <div class="pws-bar"></div>
-                                <div class="pws-bar"></div>
-                                <div class="pws-bar"></div>
-                            </div>
-                            <div class="form-note" id="pwsLbl">&nbsp;</div>
-                        </div>
-                        <div class="col-12">
-                            <label class="fm-lbl">Konfirmasi Password Baru <span class="req">*</span></label>
-                            <div class="pw-wrap">
-                                <input type="password" class="fmi" placeholder="Ulangi password baru..." />
-                                <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
-                            </div>
+                        <div class="save-row">
+                            <button type="submit" class="btn-save"><span><i class="bi bi-key-fill"></i> Perbarui
+                                    Password</span></button>
                         </div>
                     </div>
-                    <div class="save-row">
-                        <button class="btn-cancel">Batal</button>
-                        <button class="btn-save"><span><i class="bi bi-key-fill"></i> Perbarui
-                                Password</span></button>
-                    </div>
-                </div>
+
+                </form>
             </div>
         </div>
         <div class="col-12 col-lg-5">

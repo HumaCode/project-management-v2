@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Setting;
 
 use App\Constants\Setting\ProfileMessages;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Setting\ProfileUpdatePasswordRequest;
 use App\Http\Requests\Setting\ProfileUpdateRequest;
 use App\Interface\Setting\ProfileRepositoryInterface;
 use App\Models\User;
@@ -60,6 +61,26 @@ class ProfileController extends Controller
             return response()->json([
                 'success' => false,
                 'message' => 'Gagal memperbarui profil: '.$e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function updatePassword(ProfileUpdatePasswordRequest $request, User $user)
+    {
+        try {
+            $data = $request->validated();
+
+            $this->profileRepository->updatePassword($user->id, $data);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Password berhasil diperbarui!',
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui password: '.$e->getMessage(),
             ], 500);
         }
     }

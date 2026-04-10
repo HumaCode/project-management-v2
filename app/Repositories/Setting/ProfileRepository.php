@@ -5,6 +5,7 @@ namespace App\Repositories\Setting;
 use App\Interface\Setting\ProfileRepositoryInterface;
 use App\Models\User;
 use App\Repositories\BaseRepository;
+use Illuminate\Support\Facades\Hash;
 
 class ProfileRepository extends BaseRepository implements ProfileRepositoryInterface
 {
@@ -38,6 +39,20 @@ class ProfileRepository extends BaseRepository implements ProfileRepositoryInter
             $user->addMedia($avatar)
                 ->toMediaCollection('avatar');
         }
+
+        return $user;
+    }
+
+    public function updatePassword(string $id, array $data)
+    {
+        $user = $this->model->findOrFail($id);
+
+        $newPassword = $data['new_password'] ?? null;
+
+        // Gunakan Hash::make untuk mengamankan password sebelum disimpan ke database
+        $user->update([
+            'password' => Hash::make($newPassword),
+        ]);
 
         return $user;
     }

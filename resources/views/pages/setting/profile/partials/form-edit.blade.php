@@ -116,9 +116,6 @@
                         <input type="file" id="avUpload" name="avatar" accept=".jpg,.jpeg,.png,.gif"
                             style="display: none;">
 
-                        <button class="btn-cancel"
-                            style="width:100%;justify-content:center;margin-top:8px;height:36px"><i
-                                class="bi bi-trash3"></i> Hapus Foto</button>
                     </div>
                 </div>
 

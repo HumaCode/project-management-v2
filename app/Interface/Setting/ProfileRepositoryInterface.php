@@ -9,4 +9,6 @@ interface ProfileRepositoryInterface extends BaseRepositoryInterface
     public function getProfileByUserId(string $id);
 
     public function update(string $id, array $data);
+
+    public function updatePassword(string $id, array $data);
 }

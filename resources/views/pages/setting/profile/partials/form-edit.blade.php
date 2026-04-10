@@ -87,8 +87,9 @@
                         <div style="display:flex;justify-content:center;margin-bottom:16px">
                             <div class="av-ring" style="width:90px;height:90px;animation:avring 8s linear infinite">
 
-                                @if ($profile->avatar)
-                                    <img src="{{ asset('storage/avatar/' . $profile->avatar) }}"
+                                {{-- 1. UBAH PENGECEKANNYA MENJADI HASMEDIA --}}
+                                @if ($profile->hasMedia('avatar'))
+                                    <img src="{{ $profile->getFirstMediaUrl('avatar', 'thumb') }}"
                                         alt="{{ $profile->name }}" class="av-inner" id="avPreview"
                                         style="width:84px;height:84px;object-fit:cover;border-radius:50%;display:block;margin:0 auto;">
                                 @else

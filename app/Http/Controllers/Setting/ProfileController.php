@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Setting;
 
 use App\Constants\Setting\ProfileMessages;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\ProfileUpdateRequest;
+use App\Http\Requests\Setting\ProfileUpdateRequest;
 use App\Interface\Setting\ProfileRepositoryInterface;
 use App\Models\User;
 
@@ -42,12 +42,25 @@ class ProfileController extends Controller
 
     public function update(ProfileUpdateRequest $request, User $user)
     {
-        $profile = $this->profileRepository->getProfileByUserId($user->id);
+        try {
+            // 1. Ambil semua data yang sudah lulus validasi (termasuk file gambar jika ada)
+            $data = $request->validated();
 
-        $data = $request->only(['name', 'email', 'phone', 'city']);
+            // 2. Lempar proses update sepenuhnya ke Repository
+            $this->profileRepository->update($user->id, $data);
 
-        $this->profileRepository->update($profile->id, $data);
+            // 3. Return response JSON untuk jQuery AJAX
+            return response()->json([
+                'success' => true,
+                'message' => 'Profil berhasil diperbarui!',
+            ]);
 
-        return redirect()->route('profil.index')->with('success', ProfileMessages::UPDATED_SUCCESS);
+        } catch (\Exception $e) {
+            // 4. Return pesan error JSON jika terjadi kegagalan
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui profil: '.$e->getMessage(),
+            ], 500);
+        }
     }
 }

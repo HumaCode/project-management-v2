@@ -177,7 +177,7 @@
                     // Ganti icon floppy disk dengan spinner bawaan bootstrap (atau sesuaikan dengan class CSS spinner-mu)
                     submitBtn.html(
                         '<span><span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="margin-right: 8px;"></span>Menyimpan...</span>'
-                        );
+                    );
 
                     // 2. Tunda selama setengah detik (500 ms) sebelum menjalankan AJAX
                     setTimeout(function() {
@@ -204,6 +204,11 @@
                                             "Profil berhasil diperbarui.",
                                         position: "top-right"
                                     });
+
+                                    // Opsional: Refresh halaman setelah 1,5 detik agar foto di Navbar atas ikut berubah
+                                    setTimeout(() => {
+                                        window.location.reload();
+                                    }, 1500);
                                 } else {
                                     SCA.toast({
                                         type: "error", // Sesuaikan jika kamu pakai 'danger'
@@ -220,13 +225,21 @@
                                 submitBtn.html(originalBtnHtml);
 
                                 let errorMessage = "Terjadi kesalahan sistem.";
-                                if (xhr.responseJSON && xhr.responseJSON.message) {
+
+                                // JIKA ERROR DARI VALIDASI LARAVEL (Error 422)
+                                if (xhr.status === 422) {
+                                    let errors = xhr.responseJSON.errors;
+                                    // Ambil pesan error pertama dari list error
+                                    errorMessage = Object.values(errors)[0][0];
+                                }
+                                // JIKA ERROR DARI TRY-CATCH CONTROLLER (Error 500, dll)
+                                else if (xhr.responseJSON && xhr.responseJSON.message) {
                                     errorMessage = xhr.responseJSON.message;
                                 }
 
                                 SCA.toast({
-                                    type: "error", // Sesuaikan jika kamu pakai 'danger'
-                                    title: "Error!",
+                                    type: "danger", // Gunakan 'danger' jika kamu pakai class standar Bootstrap
+                                    title: "Peringatan Validasi!",
                                     message: errorMessage,
                                     position: "top-right"
                                 });
@@ -268,18 +281,24 @@
         <div class="hero-meta">
             <!-- Avatar -->
             <div class="av-wrap">
-                @if ($profile->avatar)
+
+                {{-- Ganti pengecekan menjadi hasMedia bawaan Spatie --}}
+                @if ($profile->hasMedia('avatar'))
                     <div class="av-ring">
-                        <img src="{{ asset('storage/avatar/' . $profile->avatar) }}" alt="{{ $profile->name }}"
+                        <img src="{{ $profile->getFirstMediaUrl('avatar', 'thumb') }}" alt="{{ $profile->name }}"
                             class="av-inner" style="object-fit: cover; width: 100%; height: 100%; border-radius: 50%;">
                     </div>
                 @else
                     <div class="av-ring">
-                        <div class="av-inner" id="avInner">{{ $profile->initials }}</div>
+                        {{-- Tambahkan flexbox agar teks inisial selalu rapi di tengah --}}
+                        <div class="av-inner" id="avInner"
+                            style="display:flex; align-items:center; justify-content:center;">
+                            {{ $profile->initials }}
+                        </div>
                     </div>
                 @endif
-                <div class="av-online" title="Online"></div>
 
+                <div class="av-online" title="Online"></div>
             </div>
             <!-- Names & badges -->
             <div class="hero-names">

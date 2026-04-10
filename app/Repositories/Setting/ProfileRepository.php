@@ -21,10 +21,24 @@ class ProfileRepository extends BaseRepository implements ProfileRepositoryInter
 
     public function update(string $id, array $data)
     {
-        $profile = $this->model->findOrFail($id);
+        $user = $this->model->findOrFail($id);
 
-        $profile->update($data);
+        // 1. Ambil file avatar dari array data (jika ada)
+        $avatar = $data['avatar'] ?? null;
 
-        return $profile;
+        // 2. Hapus 'avatar' dari array agar tidak ikut tersimpan di update teks biasa
+        unset($data['avatar']);
+
+        // 3. Update data teks ke tabel users
+        $user->update($data);
+
+        // 4. Handle upload gambar menggunakan Spatie
+        // Karena kita tidak memakai Request, kita gunakan addMedia() yang menerima UploadedFile
+        if ($avatar) {
+            $user->addMedia($avatar)
+                ->toMediaCollection('avatar');
+        }
+
+        return $user;
     }
 }

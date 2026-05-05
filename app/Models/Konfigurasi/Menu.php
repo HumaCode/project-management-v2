@@ -25,13 +25,13 @@ class Menu extends Model
     protected static function booted()
     {
         static::saved(function () {
-            Cache::forget('menus');
-            Cache::forget('urlMenu');
+            Cache::forget('menus_data');
+            Cache::forget('menus_url_list');
         });
 
         static::deleted(function () {
-            Cache::forget('menus');
-            Cache::forget('urlMenu');
+            Cache::forget('menus_data');
+            Cache::forget('menus_url_list');
         });
     }
 

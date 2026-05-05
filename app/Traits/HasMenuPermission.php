@@ -15,8 +15,14 @@ trait HasMenuPermission
         }
 
         foreach ($permissions as $item) {
-            $permission = Permission::create(['name' =>  $item . " $menu->url"]);
-            $permission->menus()->attach($menu);
+            $permission = Permission::firstOrCreate([
+                'name' => $item . " $menu->url"
+            ], [
+                'guard_name' => 'web'
+            ]);
+
+            $permission->menus()->syncWithoutDetaching([$menu->id]);
+
             if ($roles) {
                 $permission->assignRole($roles);
             }

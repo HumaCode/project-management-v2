@@ -70,13 +70,13 @@ if (!function_exists('user')) {
             return $user;
         }
 
-        // 2. Logika khusus untuk 'initial' (Inisial Nama)
+        // 2. Gunakan Accessor dari Model User (Lebih konsisten & hemat memori)
         if ($field === 'initial') {
-            $words = explode(' ', $user->name);
-            return collect($words)
-                ->map(fn($name) => Str::upper(Str::substr($name, 0, 1)))
-                ->take(2) // Biasanya inisial cukup 2 huruf (misal: AS)
-                ->implode('');
+            return $user->initials;
+        }
+
+        if ($field === 'avatar') {
+            return $user->display_avatar;
         }
 
         // 3. Logika khusus untuk 'name' dengan limit kata
@@ -129,7 +129,9 @@ if (!function_exists('menus')) {
 if (!function_exists('urlMenu')) {
     function urlMenu()
     {
-        // Panggil menus(false) untuk mendapatkan collection flat, bukan grouped
-        return menus(false)->whereNotNull('url')->pluck('url')->toArray();
+        // Cache hasil akhir array URL agar tidak perlu pluck() di setiap request
+        return Cache::rememberForever('menus_url_list', function () {
+            return menus(false)->whereNotNull('url')->pluck('url')->toArray();
+        });
     }
 }

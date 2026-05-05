@@ -44,6 +44,8 @@ class RoleUpdateRequest extends FormRequest
             'description' => ['nullable', 'string'],
             'is_active' => ['required', 'in:0,1'],
             'guard_name' => ['required', 'string', 'max:255'],
+            'color' => ['nullable', 'string', 'max:7'],
+            'priority' => ['nullable', 'integer'],
         ];
     }
 

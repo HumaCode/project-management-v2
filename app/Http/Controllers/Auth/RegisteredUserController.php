@@ -27,24 +27,37 @@ class RegisteredUserController extends Controller
      *
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function store(Request $request): RedirectResponse
+    public function store(Request $request)
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'username' => ['required', 'string', 'lowercase', 'max:255', 'unique:'.User::class, 'alpha_dash'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'is_active' => 0, // Akun baru tidak aktif secara default (perlu approval admin)
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Note: Kita TIDAK otomatis login-kan user di sini karena akunnya belum aktif (is_active = 0).
+        // Middleware CheckUserActive akan menolak jika kita login-kan sekarang.
+        // Jadi kita hanya beri respon sukses.
 
-        return redirect(route('dashboard', absolute: false));
+        if ($request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.',
+                'redirect' => route('login')
+            ]);
+        }
+
+        return redirect(route('login'))->with('status', 'Pendaftaran berhasil! Silakan tunggu aktivasi dari Admin.');
     }
 }

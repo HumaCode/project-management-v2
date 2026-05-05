@@ -4816,3 +4816,14 @@ tr:hover .ct-ico {
 .perm-pane.active {
     display: block;
 }
+
+/* --- COLOR SWATCHES & MODAL SECTIONS --- */
+.color-row { display: flex; flex-wrap: wrap; gap: 10px; padding: 5px 0; }
+.csw { position: relative; transition: transform 0.2s; box-shadow: 0 2px 5px rgba(0,0,0,0.2); }
+.csw:hover { transform: scale(1.15); }
+.csw.sel { box-shadow: 0 0 0 2px var(--cyan), 0 4px 12px rgba(0,0,0,0.4); transform: scale(1.1); }
+.csw.sel::after { content: '\F26E'; font-family: 'bootstrap-icons'; position: absolute; inset: 0; display: grid; place-items: center; color: #fff; font-size: 14px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+.m-section { font-family: var(--mono); font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: var(--muted); padding: 12px 0 6px; border-top: 1px solid var(--bd); margin-top: 10px; }
+.fmta { width: 100%; background: rgba(0, 200, 255, 0.04); border: 1px solid var(--bd); border-radius: var(--rs); padding: 10px 12px; color: var(--txt); font-family: var(--font); font-size: 13px; outline: none; transition: border-color 0.25s; resize: vertical; min-height: 80px; }
+.fmta:focus { border-color: rgba(0, 200, 255, 0.35); background: rgba(0, 200, 255, 0.07); }
+

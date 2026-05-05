@@ -51,8 +51,9 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        // Cari user
-        $user = User::where('email', $this->identitas)
+        // Cari user dengan eager load roles & permissions untuk mempercepat rendering sidebar setelah login
+        $user = User::with(['roles', 'permissions'])
+            ->where('email', $this->identitas)
             ->orWhere('username', $this->identitas)
             ->first();
 
@@ -61,6 +62,15 @@ class LoginRequest extends FormRequest
 
             throw ValidationException::withMessages([
                 'identitas' => trans('auth.failed'),
+            ]);
+        }
+
+        // Cek apakah user aktif
+        if ($user->is_active == '0') {
+            RateLimiter::hit($this->throttleKey());
+
+            throw ValidationException::withMessages([
+                'identitas' => 'Akun Anda belum aktif atau dinonaktifkan. Silakan hubungi Administrator.',
             ]);
         }
 

@@ -141,10 +141,11 @@ window.renderPagination = function (meta) {
 $(function () {
     // Pastikan loadData dan tableState ada sebelum mendaftarkan event
     if (typeof window.loadData === "function" && window.tableState) {
-        // Search dengan Debounce
-        const debounceReload =
+        // Search dengan Debounce (Expose ke window agar bisa dipanggil via oninput HTML)
+        window.debounceReload =
             typeof _ !== "undefined"
                 ? _.debounce(() => {
+                      window.tableState.search = $("#searchInput").val();
                       window.tableState.page = 1;
                       window.loadData();
                   }, 500)
@@ -152,14 +153,14 @@ $(function () {
                       // Fallback jika tidak ada lodash
                       clearTimeout(window.searchTimeout);
                       window.searchTimeout = setTimeout(() => {
+                          window.tableState.search = $("#searchInput").val();
                           window.tableState.page = 1;
                           window.loadData();
                       }, 500);
                   };
 
         $("#searchInput").on("input", function () {
-            window.tableState.search = $(this).val();
-            debounceReload();
+            window.debounceReload();
         });
 
         // Click Pagination

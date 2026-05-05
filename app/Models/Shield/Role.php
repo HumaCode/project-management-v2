@@ -14,6 +14,8 @@ class Role extends ModelsRole
         'name',
         'slug',
         'type_role',
+        'color',
+        'priority',
         'is_active',
         'description',
         'guard_name',
@@ -121,22 +123,24 @@ class Role extends ModelsRole
             return 100;
         }
 
-        // 2. Ambil total seluruh permission yang ada di database
-        // (Lihat tips performa di bawah untuk optimasi query ini)
-        $totalPermissionsInSystem = Permission::count();
+        // 2. Ambil total seluruh permission (Gunakan static cache agar query cuma 1x per request)
+        static $totalPermissionsInSystem = null;
+        if ($totalPermissionsInSystem === null) {
+            $totalPermissionsInSystem = Permission::count();
+        }
 
         // 3. Hindari error Division by Zero jika belum ada permission sama sekali
         if ($totalPermissionsInSystem === 0) {
             return 0;
         }
 
-        // 4. Ambil jumlah permission yang dimiliki role ini (menggunakan logika yang sama dengan label Anda)
+        // 4. Ambil jumlah permission yang dimiliki role ini
         $rolePermissionsCount = $this->attributes['permissions_count'] ?? $this->permissions()->count();
 
-        // 5. Hitung persentase dan bulatkan (misal: 50.5% jadi 51%)
+        // 5. Hitung persentase dan bulatkan
         $percentage = ($rolePermissionsCount / $totalPermissionsInSystem) * 100;
 
-        return round($percentage);
+        return (int) round($percentage);
     }
 
     public function getUsersCountLabelAttribute()

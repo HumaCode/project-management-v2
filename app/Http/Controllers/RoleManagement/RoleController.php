@@ -11,7 +11,7 @@ use App\Http\Requests\RoleManagement\Role\RoleStoreRequest;
 use App\Http\Requests\RoleManagement\Role\RoleUpdateRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\RoleResource;
-use App\Interface\RoleManagement\RoleRepositoryInterface;
+use App\Interface\RoleManagement\RoleServiceInterface;
 use App\Models\Shield\Role;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -19,42 +19,27 @@ use Illuminate\Support\Facades\Gate;
 class RoleController extends Controller
 {
     private string $title = RoleMessages::TITLE;
-
     private string $subtitle = RoleMessages::SUBTITLE;
-
     private string $formView = RoleMessages::FORMVIEW;
-
     private string $indexView = RoleMessages::INDEXVIEW;
-
     private string $createUrl = RoleMessages::CREATEURL;
-
     private string $aksesUrl = RoleMessages::AKSESURL;
-
     private string $aksesEditUrl = RoleMessages::AKSESEDITURL;
-
     private string $editUrl = RoleMessages::EDITURL;
-
     private string $showUrl = RoleMessages::SHOWURL;
-
     private string $storeUrl = RoleMessages::STOREURL;
-
     private string $updateUrl = RoleMessages::UPDATEURL;
-
     private string $destroyUrl = RoleMessages::DESTROYURL;
-
     private string $icon = RoleMessages::ICON;
-
     private string $dataUrl = RoleMessages::PAGINATIONURL;
-
     private string $dataTableId = RoleMessages::TABLEID;
-
     private string $aksesPermission = RoleMessages::AKSES_PERMISSION;
 
-    private RoleRepositoryInterface $roleRepository;
+    private RoleServiceInterface $roleService;
 
-    public function __construct(RoleRepositoryInterface $roleRepository)
+    public function __construct(RoleServiceInterface $roleService)
     {
-        $this->roleRepository = $roleRepository;
+        $this->roleService = $roleService;
     }
 
     /**
@@ -62,9 +47,11 @@ class RoleController extends Controller
      */
     public function index()
     {
-        // Gate::authorize('read ' . $this->aksesPermission);
+        Gate::authorize('read ' . $this->aksesPermission);
 
-        $data = [
+        $stats = $this->roleService->getIndexData();
+
+        $data = array_merge([
             'title' => $this->title,
             'subtitle' => $this->subtitle,
             'createUrl' => route($this->createUrl),
@@ -76,35 +63,37 @@ class RoleController extends Controller
             'dataTableId' => $this->dataTableId,
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
-            'getCountRoles' => $this->roleRepository->getCountRoles(),
-            'getCountGuardName' => $this->roleRepository->getCountGuardName(),
-            'getCountUser' => $this->roleRepository->getCountUser(),
-            'getPermissions' => $this->roleRepository->getPermissions(),
-        ];
+        ], $stats);
 
         return view($this->indexView, $data);
     }
 
+    /**
+     * Get paginated roles for DataTable.
+     */
     public function getAllPaginated(Request $request)
     {
-        Gate::authorize('read '.$this->aksesPermission);
+        Gate::authorize('read ' . $this->aksesPermission);
 
-        $request = $request->validate([
+        $params = $request->validate([
             'search' => 'nullable|string',
             'status' => 'nullable|string',
             'row_per_page' => 'required|integer',
         ]);
 
         try {
-            $roles = $this->roleRepository->getAllPaginated(
-                $request['search'] ?? null,
-                $request['status'] ?? null,
-                $request['row_per_page'],
+            $roles = $this->roleService->getPaginatedRoles(
+                $params['search'] ?? null,
+                $params['status'] ?? null,
+                $params['row_per_page']
             );
 
-            return ResponseHelper::jsonResponse(true, RoleMessages::RETRIEVED_SUCCESS, PaginateResource::make($roles, RoleResource::class), 200);
+            return ResponseHelper::success(
+                RoleMessages::RETRIEVED_SUCCESS,
+                PaginateResource::make($roles, RoleResource::class)
+            );
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+            return ResponseHelper::error($e->getMessage(), 500);
         }
     }
 
@@ -124,14 +113,16 @@ class RoleController extends Controller
      */
     public function store(RoleStoreRequest $request)
     {
-        $request = $request->validated();
-
         try {
-            $role = $this->roleRepository->create($request);
+            $role = $this->roleService->createRole($request->validated());
 
-            return ResponseHelper::jsonResponse(true, RoleMessages::CREATED_SUCCESS, new RoleResource($role), 201);
+            return ResponseHelper::success(
+                RoleMessages::CREATED_SUCCESS,
+                new RoleResource($role),
+                201
+            );
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+            return ResponseHelper::error($e->getMessage(), 500);
         }
     }
 
@@ -143,9 +134,12 @@ class RoleController extends Controller
         //
     }
 
+    /**
+     * Show the access configuration form.
+     */
     public function akses(Role $role)
     {
-        Gate::authorize('akses '.$this->aksesPermission);
+        Gate::authorize('akses ' . $this->aksesPermission);
 
         return view($this->formView, [
             'action' => route($this->aksesEditUrl, $role->id),
@@ -154,22 +148,20 @@ class RoleController extends Controller
         ]);
     }
 
+    /**
+     * Update access configuration (permissions) for a role.
+     */
     public function aksesedit(AksesRoleRequest $request, Role $role)
     {
-        Gate::authorize('akses '.$this->aksesPermission);
-
-        // 1. Simpan hasil validasi ke variabel baru
-        // $validatedData ini bentuknya: ['permissions' => ['read project', ...]]
-        $validatedData = $request->validated();
+        Gate::authorize('akses ' . $this->aksesPermission);
 
         try {
-            // 2. Lempar KESELURUHAN $validatedData ke repository
-            // Jangan dikasih tambahan ['permissions'] lagi di sini
-            $this->roleRepository->syncPermissions($role->id, $validatedData);
+            $validated = $request->validated();
+            $this->roleService->syncPermissions($role->id, $validated['permissions'] ?? []);
 
-            return ResponseHelper::jsonResponse(true, RoleMessages::AKSES_UPDATED_SUCCESS, null, 200);
+            return ResponseHelper::success(RoleMessages::AKSES_UPDATED_SUCCESS);
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+            return ResponseHelper::error($e->getMessage(), 500);
         }
     }
 
@@ -189,14 +181,15 @@ class RoleController extends Controller
      */
     public function update(RoleUpdateRequest $request, Role $role)
     {
-        $request = $request->validated();
-
         try {
-            $role = $this->roleRepository->update($role->id, $request);
+            $role = $this->roleService->updateRole($role->id, $request->validated());
 
-            return ResponseHelper::jsonResponse(true, RoleMessages::UPDATED_SUCCESS, new RoleResource($role), 201);
+            return ResponseHelper::success(
+                RoleMessages::UPDATED_SUCCESS,
+                new RoleResource($role)
+            );
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+            return ResponseHelper::error($e->getMessage(), 500);
         }
     }
 
@@ -206,16 +199,13 @@ class RoleController extends Controller
     public function destroy(Role $role)
     {
         try {
-            $role = $this->roleRepository->getById($role->id);
-            if (! $role) {
-                return ResponseHelper::jsonResponse(false, GlobalMessages::NOT_FOUND, null, 404);
-            }
+            $this->roleService->deleteRole($role->id);
 
-            $this->roleRepository->delete($role->id);
-
-            return ResponseHelper::jsonResponse(true, RoleMessages::DELETED_SUCCESS, null, 200);
+            return ResponseHelper::success(RoleMessages::DELETED_SUCCESS);
         } catch (\Exception $e) {
-            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+            // Check if it's a 404 or a logical error from repository
+            $code = str_contains($e->getMessage(), GlobalMessages::NOT_FOUND) ? 404 : 500;
+            return ResponseHelper::error($e->getMessage(), $code);
         }
     }
 }

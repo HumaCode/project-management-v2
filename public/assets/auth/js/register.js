@@ -330,11 +330,12 @@ document
 
         const nama = namaInput.value.trim();
         const user = usernameInput.value.trim();
+        const email = document.getElementById("email").value.trim();
         const pass = passInput.value;
         const conf = confirmInput.value;
         const terms = document.getElementById("terms").checked;
 
-        // Validasi final
+        // Validasi final frontend
         if (!nama || !namaInput.classList.contains("is-valid")) {
             showAlert("Harap isi nama lengkap yang valid.");
             namaInput.focus();
@@ -343,6 +344,11 @@ document
         if (!user || !usernameInput.classList.contains("is-valid")) {
             showAlert("Harap pilih username yang tersedia dan valid.");
             usernameInput.focus();
+            return;
+        }
+        if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            showAlert("Harap masukkan alamat email yang valid.");
+            document.getElementById("email").focus();
             return;
         }
         if (!pass || !passInput.classList.contains("is-valid")) {
@@ -363,21 +369,75 @@ document
         }
 
         const btn = document.getElementById("btnRegister");
+        const btnSpan = btn.querySelector("span");
+        const originalText = btnSpan.innerHTML;
+
         btn.classList.add("loading");
         btn.disabled = true;
+        $.ajax({
+            url: $("#registerForm").attr("action"),
+            method: "POST",
+            data: {
+                name: nama,
+                username: user,
+                email: email,
+                password: pass,
+                password_confirmation: conf
+            },
+            dataType: "json",
+            success: function (res) {
+                btn.classList.remove("loading");
+                // Success state UI
+                btn.style.background = "linear-gradient(135deg, #00e5a0, #0072c6)";
+                btnSpan.innerHTML = '<i class="bi bi-check-lg"></i> Pendaftaran Berhasil!';
 
-        setTimeout(() => {
-            btn.classList.remove("loading");
-            btn.disabled = false;
-            // Success state
-            btn.style.background = "linear-gradient(135deg, #00e5a0, #0072c6)";
-            btn.querySelector("span").innerHTML =
-                '<i class="bi bi-check-lg"></i> Akun Berhasil Dibuat!';
-            // Redirect: window.location.href = '/login';
-            setTimeout(() => {
-                btn.style.background = "";
-                btn.querySelector("span").innerHTML =
-                    '<i class="bi bi-person-plus-fill"></i> Buat Akun Sekarang';
-            }, 2800);
-        }, 2000);
+                if (typeof SCA !== "undefined" && typeof SCA.toast === "function") {
+                    SCA.toast({
+                        type: "success",
+                        title: "Berhasil!",
+                        message: res.message,
+                        position: "top-right"
+                    });
+                }
+
+                setTimeout(() => {
+                    if (res.redirect) {
+                        window.location.href = res.redirect;
+                    } else {
+                        window.location.href = "/login";
+                    }
+                }, 2000);
+            },
+            error: function (xhr) {
+                btn.classList.remove("loading");
+                btn.disabled = false;
+                btnSpan.innerHTML = originalText;
+
+                let msg = "Terjadi kesalahan saat mendaftar.";
+                if (xhr.status === 422) {
+                    const errors = xhr.responseJSON.errors;
+                    msg = Object.values(errors).flat()[0]; // Ambil error pertama
+                }
+
+                showAlert(msg);
+
+                if (typeof SCA !== "undefined" && typeof SCA.toast === "function") {
+                    SCA.toast({
+                        type: "danger",
+                        title: "Pendaftaran Gagal",
+                        message: msg,
+                        position: "top-right"
+                    });
+                }
+            }
+        });
     });
+
+function showAlert(msg) {
+    const alert = document.getElementById("alertError");
+    const alertMsg = document.getElementById("alertMsg");
+    alert.style.display = "flex";
+    alertMsg.textContent = msg;
+    alert.classList.add("shake-animation");
+    setTimeout(() => alert.classList.remove("shake-animation"), 500);
+}

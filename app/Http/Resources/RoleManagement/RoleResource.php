@@ -28,6 +28,9 @@ class RoleResource extends JsonResource
             'permission_count_label'          => $this->permission_count_label,
             'permissions_percentage'          => $this->permissions_percentage,
             'users_count_label'             => $this->users_count_label,
+            'is_active'       => $this->is_active,
+            'color'           => $this->color ?? '#ff4d6d',
+            'priority'        => $this->priority,
             'created_at_indo' => $this->created_at_indo,
             'updated_at_indo' => $this->updated_at_indo,
         ];

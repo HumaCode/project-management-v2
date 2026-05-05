@@ -25,6 +25,9 @@ class RoleStoreRequest extends FormRequest
             'slug' => ['required', 'string', 'max:255', 'unique:roles,slug'],
             'description' => ['nullable', 'string'],
             'guard_name' => ['required', 'string', 'max:255'],
+            'is_active' => ['nullable', 'in:0,1'],
+            'color' => ['nullable', 'string', 'max:7'],
+            'priority' => ['nullable', 'integer'],
         ];
     }
 

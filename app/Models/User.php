@@ -53,6 +53,11 @@ class User extends Authenticatable implements HasMedia
         'is_active',
     ];
 
+    protected $with = [
+        'roles',
+        'permissions',
+    ];
+
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',

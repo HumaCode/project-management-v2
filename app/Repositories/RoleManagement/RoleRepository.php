@@ -41,13 +41,12 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
     {
         try {
             // Modifikasi array data sebelum dilempar ke mass-assignment BaseRepository
-            $data['name']           = strtolower($data['name']);
-            $data['slug']           = $data['slug'];
-            $data['type_role']      = 'custom';
-            $data['is_active']      = '1';
-            $data['description']    = $data['description'];
-            $data['guard_name']     = "web";
-
+            $data['name']        = strtolower($data['name']);
+            $data['type_role']   = $data['type_role'] ?? 'custom';
+            $data['is_active']   = $data['is_active'] ?? '1';
+            $data['guard_name']  = $data['guard_name'] ?? 'web';
+            $data['color']       = $data['color'] ?? '#ff4d6d';
+            $data['priority']    = $data['priority'] ?? 5;
 
             return parent::create($data);
         } catch (\Exception $e) {
@@ -59,11 +58,9 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
     public function update(string $id, array $data)
     {
         try {
-            $data['name']           = strtolower($data['name']);
-            $data['slug']           = $data['slug'];
-            $data['type_role']      = $data['type_role'];
-            $data['is_active']      = $data['is_active'];
-            $data['description']    = $data['description'];
+            if (isset($data['name'])) {
+                $data['name'] = strtolower($data['name']);
+            }
 
             return parent::update($id, $data);
         } catch (\Exception $e) {

@@ -20,16 +20,25 @@ trait HasPermission
 
     public function callAction($method, $parameters)
     {
-        $action = Arr::get($this->abilities, $method);
+        $action = $this->abilities[$method] ?? null;
 
         if (!$action) {
             return parent::callAction($method, $parameters);
         }
 
-        $staticPath = ltrim(request()->route()->getCompiled()->getStaticPrefix(), '/');
-        $urlMenu    = urlMenu();
+        // Ambil prefix static dari route (misal: 'users' dari 'users/{id}/edit')
+        $route = request()->route();
+        $staticPath = ltrim($route->getCompiled()->getStaticPrefix(), '/');
 
-        if (in_array($staticPath, $urlMenu)) {
+        // Optimasi: Gunakan caching lokal (static) agar tidak panggil fungsi berulang kali dalam satu request
+        static $allowedUrls = null;
+        if ($allowedUrls === null) {
+            // Flip agar URL menjadi KEY sehingga pencarian menggunakan isset() jauh lebih cepat (O(1))
+            $allowedUrls = array_flip(urlMenu());
+        }
+
+        // Pencarian instan (Hash Lookup)
+        if (isset($allowedUrls[$staticPath])) {
             $this->authorize("$action $staticPath");
         }
 

@@ -1,22 +1,12 @@
 @php
     $isEdit = !empty($data->id);
     $isCreate = !$isEdit;
-
 @endphp
 
-<x-form.modal title="Role" :action="$action ?? null" :is-edit="$isEdit" :type="$type ?? null">
+<x-form.modal title="User" :action="$action ?? null" :is-edit="$isEdit" :type="$type ?? null">
 
-    {{-- Cek tipe akses TERLEBIH DAHULU --}}
-    @if (($type ?? null) === 'akses')
-        @include('pages.role-management.roles.partials.form-akses-view')
-
-        {{-- Jika bukan akses, tapi memiliki action (Berarti Tambah/Edit role biasa) --}}
-    @elseif ($action ?? null)
-        @include('pages.role-management.roles.partials.form-view')
-
-        {{-- (Opsional) Jika action null, biasanya untuk mode Show/Detail --}}
-    @else
-        {{-- @include('pages.role-management.roles.partials.show-view') --}}
+    @if ($action ?? null)
+        @include('pages.role-management.users.partials.form-view')
     @endif
 
 </x-form.modal>

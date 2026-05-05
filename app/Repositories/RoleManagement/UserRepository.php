@@ -54,63 +54,77 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         return $this->getAll($search, null, $status, $type, false)->paginate($rowsPerPage);
     }
 
-    // OVERRIDE Create dari Base untuk menyisipkan data spesifik role
     public function create(array $data)
     {
         try {
-            // Modifikasi array data sebelum dilempar ke mass-assignment BaseRepository
-            $data['name'] = strtolower($data['name']);
-            $data['slug'] = $data['slug'];
-            $data['type_role'] = 'custom';
-            $data['is_active'] = '1';
-            $data['description'] = $data['description'];
-            $data['guard_name'] = 'web';
+            if (isset($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            }
 
-            return parent::create($data);
+            // Jika dibuat melalui admin panel, otomatis diverifikasi & aktif
+            $data['email_verified_at'] = now();
+            if (!isset($data['is_active'])) {
+                $data['is_active'] = '1';
+            }
+
+            // Pisahkan role dari data mass-assignment
+            $roleName = $data['role'] ?? null;
+            unset($data['role']);
+
+            $user = parent::create($data);
+
+            if ($roleName) {
+                $user->assignRole($roleName);
+            }
+
+            return $user;
         } catch (\Exception $e) {
-            throw new \Exception(GlobalMessages::ERROR_CREATING.$e->getMessage());
+            throw new \Exception(GlobalMessages::ERROR_CREATING . $e->getMessage());
         }
     }
 
-    // OVERRIDE Update dari Base untuk menyisipkan data spesifik role
     public function update(string $id, array $data)
     {
         try {
-            $data['name'] = strtolower($data['name']);
-            $data['slug'] = $data['slug'];
-            $data['type_role'] = $data['type_role'];
-            $data['is_active'] = $data['is_active'];
-            $data['description'] = $data['description'];
+            if (isset($data['password']) && !empty($data['password'])) {
+                $data['password'] = Hash::make($data['password']);
+            } else {
+                unset($data['password']);
+            }
 
-            return parent::update($id, $data);
+            // Pisahkan role dari data mass-assignment
+            $roleName = $data['role'] ?? null;
+            unset($data['role']);
+
+            $user = parent::update($id, $data);
+
+            if ($roleName) {
+                $user->syncRoles($roleName);
+            }
+
+            return $user;
         } catch (\Exception $e) {
-            throw new \Exception(GlobalMessages::ERROR_UPDATING.$e->getMessage());
+            throw new \Exception(GlobalMessages::ERROR_UPDATING . $e->getMessage());
         }
     }
 
     public function delete(string $id)
     {
         try {
-            $record = parent::getById($id);
+            $user = parent::getById($id);
 
-            if (! $record) {
+            if (!$user) {
                 return false;
             }
 
-            // --- TAMBAHAN PENGECEKAN DI SINI ---
-            // Menggunakan exists() lebih cepat daripada count() karena
-            // query akan langsung berhenti ketika menemukan 1 data pertama.
-            if ($record->users()->exists()) {
-                // Lempar error yang akan ditangkap oleh blok catch di bawah
-                throw new \Exception('Role tidak dapat dihapus karena masih digunakan oleh user aktif.');
+            // Mencegah menghapus diri sendiri
+            if ($user->id === auth()->id()) {
+                throw new \Exception('Anda tidak dapat menghapus akun Anda sendiri.');
             }
-            // -----------------------------------
 
             return parent::delete($id);
         } catch (\Exception $e) {
-            // Karena kita melempar exception kustom di atas,
-            // pesan 'Role tidak dapat dihapus...' akan digabungkan ke $e->getMessage()
-            throw new \Exception(GlobalMessages::ERROR_DELETED.' '.$e->getMessage());
+            throw new \Exception(GlobalMessages::ERROR_DELETED . ' ' . $e->getMessage());
         }
     }
 

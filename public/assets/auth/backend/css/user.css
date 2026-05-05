@@ -2891,3 +2891,10 @@ a {
     .select2-selection__clear:hover {
     color: var(--err) !important;
 }
+
+/* Password Obscure */
+.pass-group { position: relative; display: flex; align-items: center; }
+.pass-group .fmi { padding-right: 45px; }
+.pass-toggle { position: absolute; right: 12px; background: none; border: none; color: #7a90a8; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s; outline: none; }
+.pass-toggle:hover { color: #00c8ff; }
+.pass-toggle:focus { outline: none; }

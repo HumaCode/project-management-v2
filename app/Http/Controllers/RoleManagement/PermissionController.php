@@ -9,7 +9,7 @@ use App\Http\Requests\RoleManagement\Permission\PermissionStoreRequest;
 use App\Http\Requests\RoleManagement\Permission\PermissionUpdateRequest;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\RoleManagement\PermissionResource;
-use App\Interface\RoleManagement\PermissionRepositoryInterface;
+use App\Interface\RoleManagement\PermissionServiceInterface;
 use App\Models\Shield\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
@@ -17,42 +17,25 @@ use Illuminate\Support\Facades\Gate;
 class PermissionController extends Controller
 {
     private string $title = PermissionMessages::TITLE;
-
     private string $subtitle = PermissionMessages::SUBTITLE;
-
     private string $formView = PermissionMessages::FORMVIEW;
-
     private string $indexView = PermissionMessages::INDEXVIEW;
-
     private string $createUrl = PermissionMessages::CREATEURL;
-
-    private string $aksesUrl = PermissionMessages::AKSESURL;
-
-    private string $aksesEditUrl = PermissionMessages::AKSESEDITURL;
-
     private string $editUrl = PermissionMessages::EDITURL;
-
     private string $showUrl = PermissionMessages::SHOWURL;
-
     private string $storeUrl = PermissionMessages::STOREURL;
-
     private string $updateUrl = PermissionMessages::UPDATEURL;
-
     private string $destroyUrl = PermissionMessages::DESTROYURL;
-
     private string $icon = PermissionMessages::ICON;
-
     private string $dataUrl = PermissionMessages::PAGINATIONURL;
-
     private string $dataTableId = PermissionMessages::TABLEID;
-
     private string $aksesPermission = PermissionMessages::AKSES_PERMISSION;
 
-    private PermissionRepositoryInterface $permissionRepository;
+    private PermissionServiceInterface $permissionService;
 
-    public function __construct(PermissionRepositoryInterface $permissionRepository)
+    public function __construct(PermissionServiceInterface $permissionService)
     {
-        $this->permissionRepository = $permissionRepository;
+        $this->permissionService = $permissionService;
     }
 
     /**
@@ -60,8 +43,6 @@ class PermissionController extends Controller
      */
     public function index()
     {
-        // Gate::authorize('read ' . $this->aksesPermission);
-
         $data = [
             'title' => $this->title,
             'subtitle' => $this->subtitle,
@@ -80,20 +61,25 @@ class PermissionController extends Controller
 
     public function getAllPaginated(Request $request)
     {
-        Gate::authorize('read '.$this->aksesPermission);
+        Gate::authorize('read ' . $this->aksesPermission);
 
-        $request = $request->validate([
+        $validated = $request->validate([
             'search' => 'nullable|string',
             'row_per_page' => 'required|integer',
         ]);
 
         try {
-            $permissions = $this->permissionRepository->getAllPaginated(
-                $request['search'] ?? null,
-                $request['row_per_page'],
+            $permissions = $this->permissionService->getPaginatedPermissions(
+                $validated['search'] ?? null,
+                $validated['row_per_page'],
             );
 
-            return ResponseHelper::jsonResponse(true, PermissionMessages::RETRIEVED_SUCCESS, PaginateResource::make($permissions, PermissionResource::class), 200);
+            return ResponseHelper::jsonResponse(
+                true,
+                PermissionMessages::RETRIEVED_SUCCESS,
+                PaginateResource::make($permissions, PermissionResource::class),
+                200
+            );
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
@@ -115,23 +101,18 @@ class PermissionController extends Controller
      */
     public function store(PermissionStoreRequest $request)
     {
-        $request = $request->validated();
-
         try {
-            $permission = $this->permissionRepository->create($request);
+            $permission = $this->permissionService->createPermission($request->validated());
 
-            return ResponseHelper::jsonResponse(true, PermissionMessages::CREATED_SUCCESS, new PermissionResource($permission), 201);
+            return ResponseHelper::jsonResponse(
+                true,
+                PermissionMessages::CREATED_SUCCESS,
+                new PermissionResource($permission),
+                201
+            );
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        //
     }
 
     /**
@@ -150,12 +131,15 @@ class PermissionController extends Controller
      */
     public function update(PermissionUpdateRequest $request, Permission $permission)
     {
-        $request = $request->validated();
-
         try {
-            $permission = $this->permissionRepository->update($permission->id, $request);
+            $updated = $this->permissionService->updatePermission($permission->id, $request->validated());
 
-            return ResponseHelper::jsonResponse(true, PermissionMessages::UPDATED_SUCCESS, new PermissionResource($permission), 201);
+            return ResponseHelper::jsonResponse(
+                true,
+                PermissionMessages::UPDATED_SUCCESS,
+                new PermissionResource($updated),
+                200
+            );
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
@@ -167,7 +151,7 @@ class PermissionController extends Controller
     public function destroy(Permission $permission)
     {
         try {
-            $this->permissionRepository->delete($permission->id);
+            $this->permissionService->deletePermission($permission->id);
 
             return ResponseHelper::jsonResponse(true, PermissionMessages::DELETED_SUCCESS, null, 200);
         } catch (\Exception $e) {

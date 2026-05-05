@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use App\Interface\RoleManagement\PermissionRepositoryInterface;
+use App\Interface\RoleManagement\PermissionServiceInterface;
 use App\Interface\RoleManagement\RoleRepositoryInterface;
 use App\Interface\RoleManagement\RoleServiceInterface;
 use App\Interface\RoleManagement\UserRepositoryInterface;
@@ -11,6 +12,7 @@ use App\Repositories\RoleManagement\PermissionRepository;
 use App\Repositories\RoleManagement\RoleRepository;
 use App\Repositories\RoleManagement\UserRepository;
 use App\Repositories\Setting\ProfileRepository;
+use App\Services\RoleManagement\PermissionService;
 use App\Services\RoleManagement\RoleService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -29,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
 
         // permission
         $this->app->bind(PermissionRepositoryInterface::class, PermissionRepository::class);
+        $this->app->bind(PermissionServiceInterface::class, PermissionService::class);
 
         // users
         $this->app->bind(UserRepositoryInterface::class, UserRepository::class);

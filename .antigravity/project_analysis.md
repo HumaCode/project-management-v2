@@ -34,7 +34,10 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 3.  **Global Helpers**:
     - `Helper.php`: Berisi fungsi `tgl_indo()`, `user()`, dan `menus()`.
     - `ResponseHelper.php`: Wrapper standar untuk JSON response.
-4.  **Custom Menu System**:
+4.  **Service-Repository Pattern**:
+    - Diimplementasikan pada modul baru (misal: Project Management) untuk memisahkan logika bisnis dari kontroler.
+    - Menggunakan interface untuk abstraksi (misal: `ProjectServiceInterface`).
+5.  **Custom Menu System**:
     - Memiliki tabel `menus` dan `menu_permissions`.
     - Mendukung grouping berdasarkan kategori dan caching menggunakan `Cache::rememberForever`.
 5.  **Controller Messages Pattern**:
@@ -57,9 +60,16 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Update data diri dan password.
   - Upload avatar dengan single-file collection (otomatis hapus file lama).
 - **Authentication**: Login, Register, Forgot Password via Laravel Breeze.
+- **Project Management**:
+  - Manajemen list proyek dengan status & progress.
+  - Hubungan PIC (User) many-to-many.
+  - Server-side data table & filtering.
+  - Integrasi desain premium (Glassmorphism).
 
 ## Database Schema (Current)
 - `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.
 - `permissions`, `roles`, `model_has_permissions`, dll (Spatie standard).
 - `menus`, `menu_permissions`.
 - `media`: Spatie Media Library.
+- `projects`: `id` (ULID), `name`, `description`, `status` (enum), `start_date`, `deadline`, `progress`, `created_by`.
+- `project_user`: `project_id`, `user_id` (Pivot untuk PIC).

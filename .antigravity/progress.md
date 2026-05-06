@@ -28,8 +28,18 @@
     - [x] **Forgot Password Simplification**: Streamlined reset link flow with premium single-form UI.
     - [x] **Security Hardening**: Implemented route-level rate limiting (throttling) for all authentication entry points.
 - [x] **Menu System**: Database-driven sidebar menus with caching.
+- [x] **Project Management (Phase 1: Listing)**:
+    - [x] **Database & Relation**: Migration with ULID support and PIC (many-to-many) relationship.
+    - [x] **Architecture**: Service-Repository pattern with `ProjectServiceInterface`.
+    - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX).
+    - [x] **Premium UI**: Integration of Glassmorphism design from reference HTML.
+    - [x] **Stats Overview**: Dashboard-style metrics (Total, In Progress, Done, To Do).
+    - [x] **Navigation Fixes**: Singular-to-plural redirect (`/project` -> `/projects`) and menu URL syncing.
 
 ## 🚀 To-Do (Upcoming/Planned)
+- [ ] **Project Management (Phase 2: CRUD)**:
+    - [ ] Implementation of Create, Update, and Delete functionality with validation.
+    - [ ] Detailed View for individual projects with activity log.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

@@ -8,11 +8,13 @@ use App\Interface\RoleManagement\RoleRepositoryInterface;
 use App\Interface\RoleManagement\RoleServiceInterface;
 use App\Interface\RoleManagement\UserRepositoryInterface;
 use App\Interface\RoleManagement\UserServiceInterface;
+use App\Interface\Project\ProjectServiceInterface;
 use App\Interface\Setting\ProfileRepositoryInterface;
 use App\Repositories\RoleManagement\PermissionRepository;
 use App\Repositories\RoleManagement\RoleRepository;
 use App\Repositories\RoleManagement\UserRepository;
 use App\Repositories\Setting\ProfileRepository;
+use App\Services\Project\ProjectService;
 use App\Services\RoleManagement\PermissionService;
 use App\Services\RoleManagement\RoleService;
 use App\Services\RoleManagement\UserService;
@@ -41,6 +43,9 @@ class AppServiceProvider extends ServiceProvider
 
         // profile
         $this->app->bind(ProfileRepositoryInterface::class, ProfileRepository::class);
+
+        // project
+        $this->app->bind(ProjectServiceInterface::class, ProjectService::class);
     }
 
     /**

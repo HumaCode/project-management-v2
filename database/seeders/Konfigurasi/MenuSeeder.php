@@ -27,7 +27,7 @@ class MenuSeeder extends Seeder
             // MASTER
             [
                 'name' => 'Project',
-                'url' => 'project',
+                'url' => 'projects',
                 'category' => 'MASTER',
                 'icon' => 'bi bi-kanban-fill',
                 'orders' => 1,
@@ -134,7 +134,7 @@ class MenuSeeder extends Seeder
             // Hapus 'permissions' dari array agar firstOrCreate tidak error (opsional jika kolom tidak ada)
             unset($data['permissions']);
 
-            $menu = Menu::firstOrCreate(
+            $menu = Menu::updateOrCreate(
                 ['url' => $data['url']],
                 $data
             );

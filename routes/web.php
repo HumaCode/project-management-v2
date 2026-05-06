@@ -66,6 +66,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
             Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
             Route::put('profil/{user}/ubah-password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
+
+            // projects
+            Route::redirect('project', 'projects');
+            Route::get('projects/getAllPagination', [\App\Http\Controllers\Project\ProjectController::class, 'getAllPaginated'])->name('projects.allPagination');
+            Route::resource('projects', \App\Http\Controllers\Project\ProjectController::class);
         }
     );
 });

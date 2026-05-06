@@ -46,18 +46,16 @@ class RegisteredUserController extends Controller
 
         event(new Registered($user));
 
-        // Note: Kita TIDAK otomatis login-kan user di sini karena akunnya belum aktif (is_active = 0).
-        // Middleware CheckUserActive akan menolak jika kita login-kan sekarang.
-        // Jadi kita hanya beri respon sukses.
+        Auth::login($user);
 
         if ($request->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Pendaftaran berhasil! Akun Anda sedang menunggu persetujuan Admin.',
-                'redirect' => route('login')
+                'message' => 'Pendaftaran berhasil!',
+                'redirect' => route('inactive')
             ]);
         }
 
-        return redirect(route('login'))->with('status', 'Pendaftaran berhasil! Silakan tunggu aktivasi dari Admin.');
+        return redirect(route('inactive'));
     }
 }

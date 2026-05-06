@@ -70,7 +70,16 @@
                         </div>
                     </div>
 
-                    <button type="submit" class="btn-login" id="btnLogin">
+                    <div class="check-group">
+                        <input type="checkbox" name="remember" id="remember_me" class="custom-check">
+                        <label for="remember_me" class="check-label">Ingat Saya</label>
+                        
+                        @if (Route::has('password.request'))
+                            <a href="{{ route('password.request') }}" class="link-forgot">Lupa Password?</a>
+                        @endif
+                    </div>
+
+                    <button type="submit" class="btn-login" id="btnLogin" style="margin-top: 24px;">
                         <span><i class="bi bi-box-arrow-in-right"></i> Masuk Sekarang</span>
                         <div class="spinner-ring">
                             <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -86,9 +95,8 @@
 
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 
-                <div class="social-row">
-                    <a href="#" class="btn-social"><i class="bi bi-google"></i><span>Google</span></a>
-                    <a href="#" class="btn-social"><i class="bi bi-microsoft"></i><span>Microsoft</span></a>
+                <div class="social-row" style="grid-template-columns: 1fr;">
+                    <a href="{{ route('auth.google') }}" class="btn-social"><i class="bi bi-google"></i><span>Masuk dengan Google</span></a>
                 </div>
 
                 <div class="register-row">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></div>

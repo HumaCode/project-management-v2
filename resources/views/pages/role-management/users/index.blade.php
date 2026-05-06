@@ -22,6 +22,23 @@
 
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>
         <script src="{{ asset('assets/auth/backend/js/user.js') }}"></script>
+
+        <script>
+            // Logic Search via URL (Diletakkan setelah user.js agar tidak tertimpa)
+            $(function() {
+                const urlParams = new URLSearchParams(window.location.search);
+                const searchVal = urlParams.get('search');
+                
+                if (searchVal) {
+                    window.tableState.search = searchVal;
+                    $('#searchInput').val(searchVal);
+                    // Reload data dengan parameter baru
+                    if (typeof window.loadData === 'function') {
+                        window.loadData();
+                    }
+                }
+            });
+        </script>
     @endpush
 
 

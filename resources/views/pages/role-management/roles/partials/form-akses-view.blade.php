@@ -24,6 +24,10 @@
                     <th class="ph-g"><i class="bi bi-plus-circle-fill"></i><span class="ph-lbl">Create</span></th>
                     <th class="ph-a"><i class="bi bi-pencil-fill"></i><span class="ph-lbl">Update</span></th>
                     <th class="ph-r"><i class="bi bi-trash3-fill"></i><span class="ph-lbl">Delete</span></th>
+
+                    {{-- TAMBAHAN UNTUK ACTIVATE --}}
+                    <th class="ph-v"><i class="bi bi-patch-check-fill"></i><span class="ph-lbl">Activate</span></th>
+
                     <th class="ph-p"><i class="bi bi-layout-sidebar"></i><span class="ph-lbl">Menu</span></th>
                     <th class="th-all">Semua</th>
                 </tr>
@@ -46,7 +50,7 @@
 
                     {{-- Kategori Menu --}}
                     <tr class="grp-row grp-c">
-                        <td colspan="8">
+                        <td colspan="9">
                             <div class="grp-label">
                                 <i class="bi bi-database-fill grp-ico grp-ico-c"></i><span>{{ $category }}</span>
                                 <span class="grp-count">{{ $menuItems->count() }} menu</span>
@@ -70,6 +74,7 @@
                             $pCreate = "create {$permKey}";
                             $pUpdate = "update {$permKey}";
                             $pDelete = "delete {$permKey}";
+                            $pActivate = "activate {$permKey}";
                             $pMenu = "menu {$permKey}";
 
                             // Jika DEV, paksa TRUE agar tidak di-disable. Jika bukan, cek dari database.
@@ -78,6 +83,7 @@
                             $isCreateAvail = $isDev || in_array($pCreate, $allSystemPermissions);
                             $isUpdateAvail = $isDev || in_array($pUpdate, $allSystemPermissions);
                             $isDeleteAvail = $isDev || in_array($pDelete, $allSystemPermissions);
+                            $isActivateAvail = $isDev || in_array($pActivate, $allSystemPermissions);
                             $isMenuAvail = $isDev || in_array($pMenu, $allSystemPermissions);
                         @endphp
 
@@ -135,6 +141,17 @@
                                     <input type="checkbox" name="permissions[]" value="{{ $pDelete }}"
                                         id="sw_{{ $permKey }}_delete" @checked($isDev || ($isDeleteAvail && $data->hasPermissionTo($pDelete)))
                                         @disabled(!$isDeleteAvail)>
+                                    <span class="sw-track"></span>
+                                </label>
+                            </td>
+
+                            {{-- ACTIVATE --}}
+                            <td class="sw-cell">
+                                <label class="sw-wrap sw-v" title="Activate"
+                                    style="{{ !$isActivateAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
+                                    <input type="checkbox" name="permissions[]" value="{{ $pActivate }}"
+                                        id="sw_{{ $permKey }}_activate" @checked($isDev || ($isActivateAvail && $data->hasPermissionTo($pActivate)))
+                                        @disabled(!$isActivateAvail)>
                                     <span class="sw-track"></span>
                                 </label>
                             </td>

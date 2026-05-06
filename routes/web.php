@@ -5,42 +5,69 @@ use App\Http\Controllers\RoleManagement\PermissionController;
 use App\Http\Controllers\RoleManagement\RoleController;
 use App\Http\Controllers\RoleManagement\UserController;
 use App\Http\Controllers\Setting\ProfileController;
+use App\Http\Controllers\Auth\InactiveUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::middleware(['auth', 'user.active'])->group(
-    function () {
-        Route::controller(DashboardController::class)
-            ->group(function () {
-                Route::get('/dashboard', 'index')->name('dashboard');
-            });
+// Auto Login (Signed URL) - Harus di luar middleware auth agar bisa login otomatis
+Route::get('/auth/auto-login/{admin_id}', [\App\Http\Controllers\Auth\AutoLoginController::class, 'login'])
+    ->name('auto-login')
+    ->middleware('signed');
 
-        // role
-        Route::get('roles/getAllPagination', [RoleController::class, 'getAllPaginated'])->name('roles.allPagination');
-        Route::get('roles/{role}/akses', [RoleController::class, 'akses'])->name('roles.akses');
-        Route::put('roles/{role}/akses', [RoleController::class, 'aksesedit'])->name('roles.akses.edit');
+Route::middleware(['auth'])->group(function () {
+    
+    // Halaman Inactive (Untuk user yang belum diaktivasi)
+    Route::get('/inactive', function () {
+        // Jika user sudah aktif, kembalikan ke dashboard
+        if (auth()->user()->is_active == '1') {
+            return redirect()->route('dashboard');
+        }
+        
+        $isComplete = !empty(auth()->user()->gender) && 
+                      !empty(auth()->user()->city) && 
+                      !empty(auth()->user()->phone) && 
+                      !empty(auth()->user()->username) &&
+                      !empty(auth()->user()->bio);
 
-        Route::resource('roles', RoleController::class);
+        return view('auth.inactive', compact('isComplete'));
+    })->name('inactive');
 
-        // permissions
-        Route::get('permissions/getAllPagination', [PermissionController::class, 'getAllPaginated'])->name('permissions.allPagination');
-        Route::resource('permissions', PermissionController::class);
+    Route::post('/inactive/update', [InactiveUserController::class, 'update'])->name('inactive.update');
 
-        // users
-        Route::get('users/getAllPagination', [UserController::class, 'getAllPaginated'])->name('users.allPagination');
-        Route::put('users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
-        Route::put('users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
-        Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
-        Route::resource('users', UserController::class);
+    // Group untuk user yang SUDAH aktif
+    Route::middleware(['user.active'])->group(
+        function () {
+            Route::controller(DashboardController::class)
+                ->group(function () {
+                    Route::get('/dashboard', 'index')->name('dashboard');
+                });
 
-        Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
-        Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
-        Route::put('profil/{user}/ubah-password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
+            // role
+            Route::get('roles/getAllPagination', [RoleController::class, 'getAllPaginated'])->name('roles.allPagination');
+            Route::get('roles/{role}/akses', [RoleController::class, 'akses'])->name('roles.akses');
+            Route::put('roles/{role}/akses', [RoleController::class, 'aksesedit'])->name('roles.akses.edit');
 
-    }
-);
+            Route::resource('roles', RoleController::class);
+
+            // permissions
+            Route::get('permissions/getAllPagination', [PermissionController::class, 'getAllPaginated'])->name('permissions.allPagination');
+            Route::resource('permissions', PermissionController::class);
+
+            // users
+            Route::get('users/getAllPagination', [UserController::class, 'getAllPaginated'])->name('users.allPagination');
+            Route::put('users/{id}/approve', [UserController::class, 'approve'])->name('users.approve');
+            Route::put('users/{id}/reject', [UserController::class, 'reject'])->name('users.reject');
+            Route::put('users/{user}/reset-password', [UserController::class, 'resetPassword'])->name('users.reset-password');
+            Route::resource('users', UserController::class);
+
+            Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
+            Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
+            Route::put('profil/{user}/ubah-password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
+        }
+    );
+});
 
 require __DIR__.'/auth.php';

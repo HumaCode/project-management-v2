@@ -48,6 +48,10 @@ class User extends Authenticatable implements HasMedia
         'username',
         'email',
         'phone',
+        'gender',
+        'city',
+        'bio',
+        'google_id',
         'avatar',
         'password',
         'is_active',
@@ -77,6 +81,7 @@ class User extends Authenticatable implements HasMedia
     protected $hidden = [
         'password',
         'remember_token',
+        'google_id',
     ];
 
     /**
@@ -107,7 +112,8 @@ class User extends Authenticatable implements HasMedia
         return $query->where(function (Builder $q) use ($search) {
             $q->where('name', 'like', "%{$search}%")
                 ->orWhere('username', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%");
+                ->orWhere('email', 'like', "%{$search}%")
+                ->orWhere('id', $search);
         });
     }
 

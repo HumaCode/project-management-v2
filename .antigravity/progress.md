@@ -11,12 +11,19 @@
     - Reset password functionality.
     - Role assignment.
     - Modal Detail User.
+    - **Activation/Deactivation Toggle** with AJAX.
 - [x] **Role & Permission Management**:
     - CRUD for Roles and Permissions.
     - Interactive "Akses" (permission assignment) for Roles.
+    - **Added "Activate" permission** to support granular activation control.
 - [x] **Profile Management**:
     - Update profile info & password.
     - Avatar upload with automatic thumbnail conversion.
+- [x] **Authentication & Onboarding**:
+    - [x] **Google Socialite**: Integration for Google login.
+    - [x] **Inactive Flow**: Seamless onboarding for users with incomplete profiles.
+    - [x] **Secure Admin Activation**: Signed URL mechanism for one-click admin approval via email.
+    - [x] **Dynamic Search Integration**: Support for deep-linking search results via URL parameters.
 - [x] **Menu System**: Database-driven sidebar menus with caching.
 
 ## 🚀 To-Do (Upcoming/Planned)
@@ -24,8 +31,7 @@
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).
-- [ ] **Middleware Activation**: Memastikan user yang belum di-approve tidak bisa masuk ke fitur utama (sedang/sudah dikerjakan di `user.active`).
-- [ ] **UI Polish**: Memastikan semua modal dan form menggunakan AJAX secara konsisten.
+- [ ] **UI Polish**: Terus memantau konsistensi UI/UX pada modul baru.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 ## 📝 Notes

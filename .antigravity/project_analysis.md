@@ -14,6 +14,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - **Key Packages**:
   - `spatie/laravel-permission`: Manajemen Role & Permission.
   - `spatie/laravel-medialibrary`: Manajemen media (Avatar).
+  - `laravel/socialite`: Integrasi Login Media Sosial (Google).
   - `laravel/breeze`: Starter kit untuk autentikasi.
   - `fruitcake/laravel-debugbar`: Tool debugging (dev only).
 
@@ -21,10 +22,14 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 1.  **Identity Management**:
     - Menggunakan **ULID** (Universally Unique Lexicographically Sortable Identifier) sebagai primary key untuk keamanan dan skalabilitas.
     - Model `User` memiliki fitur:
-        - `is_active`: Status aktivasi akun (mendukung alur persetujuan admin).
-        - Spatie Media Library terintegrasi untuk Avatar dengan konversi otomatis ke thumbnail.
-        - Custom Accessors untuk format tanggal Indonesia (`tgl_indo`) dan inisial nama.
-2.  **Modular Controllers**:
+        - `is_active`: Status aktivasi akun.
+        - `google_id` & `is_socialite`: Untuk integrasi Socialite (Google).
+        - Spatie Media Library terintegrasi untuk Avatar.
+2.  **Advanced Authentication Flow**:
+    - **Google Auth**: Pendaftaran otomatis via Socialite.
+    - **Inactive Onboarding**: Pengguna melengkapi profil (username/phone) sebelum aktivasi.
+    - **Secure Admin Activation**: Tautan email berbasis **Signed URL** untuk akses instan Admin yang aman.
+3.  **Modular Controllers**:
     - Terpisah dalam namespace yang jelas: `RoleManagement`, `Setting`, `Auth`.
 3.  **Global Helpers**:
     - `Helper.php`: Berisi fungsi `tgl_indo()`, `user()`, dan `menus()`.
@@ -32,6 +37,10 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 4.  **Custom Menu System**:
     - Memiliki tabel `menus` dan `menu_permissions`.
     - Mendukung grouping berdasarkan kategori dan caching menggunakan `Cache::rememberForever`.
+5.  **Controller Messages Pattern**:
+    - Setiap modul memiliki class `Messages` (misal: `UserMessages`) untuk mengelola semua string statis.
+    - String yang dikelola meliputi: Title, Subtitle, View Path, Route Name, Table ID, dan Pesan Success/Error.
+    - Hal ini memudahkan manajemen konten tanpa harus menyentuh logika controller.
 
 ## Current Modules & Features
 - **Dashboard**: Panel ringkasan utama.
@@ -50,8 +59,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - **Authentication**: Login, Register, Forgot Password via Laravel Breeze.
 
 ## Database Schema (Current)
-- `users`: Ditambah kolom `username`, `phone`, `avatar`, `is_active`, dan menggunakan ULID.
+- `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.
 - `permissions`, `roles`, `model_has_permissions`, dll (Spatie standard).
-- `menus`: `id`, `name`, `url`, `icon`, `category`, `orders`, `is_active`.
-- `menu_permissions`: Mapping antara menu dan permission.
-- `media`: Tabel standar Spatie Media Library.
+- `menus`, `menu_permissions`.
+- `media`: Spatie Media Library.

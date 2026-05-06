@@ -30,6 +30,7 @@ class UserController extends Controller
     private string $dataUrl = UserMessages::PAGINATIONURL;
     private string $dataTableId = UserMessages::TABLEID;
     private string $aksesPermission = UserMessages::AKSES_PERMISSION;
+    private string $detailView = UserMessages::DETAILVIEW;
 
     private UserServiceInterface $userService;
 
@@ -169,6 +170,16 @@ class UserController extends Controller
         } catch (\Exception $e) {
             return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
         }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(User $user)
+    {
+        return view($this->detailView, [
+            'data' => $user
+        ]);
     }
 
     /**

@@ -8,6 +8,7 @@ class UserMessages
     const SUBTITLE                              = 'Kelola data user';
     const FORMVIEW                              = 'pages.role-management.users.user-form';
     const INDEXVIEW                             = 'pages.role-management.users.index';
+    const DETAILVIEW                            = 'pages.role-management.users.user-detail';
 
     const PAGINATIONURL                         = 'users.allPagination';
     const CREATEURL                             = 'users.create';

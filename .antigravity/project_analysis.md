@@ -15,6 +15,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - `spatie/laravel-permission`: Manajemen Role & Permission.
   - `spatie/laravel-medialibrary`: Manajemen media (Avatar).
   - `laravel/breeze`: Starter kit untuk autentikasi.
+  - `fruitcake/laravel-debugbar`: Tool debugging (dev only).
 
 ## Architecture Highlights
 1.  **Identity Management**:
@@ -41,6 +42,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - CRUD Pengguna.
   - Alur Approve/Reject untuk aktivasi akun.
   - Reset Password.
+  - Modal Detail User (AJAX-based).
   - Pencarian dan filter berdasarkan Role/Status.
 - **Profile Settings**:
   - Update data diri dan password.

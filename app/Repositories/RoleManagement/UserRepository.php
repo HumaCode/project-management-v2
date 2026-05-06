@@ -7,6 +7,7 @@ use App\Interface\RoleManagement\UserRepositoryInterface;
 use App\Models\Shield\Role;
 use App\Models\User;
 use App\Repositories\BaseRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 
@@ -138,7 +139,7 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             }
 
             $user->is_active = '1';
-            $user->email_verified_at = now(); // Optional: set email_verified_at saat user disetujui
+            $user->email_verified_at = Carbon::now(); // Optional: set email_verified_at saat user disetujui
             $user->save();
 
             return $user;

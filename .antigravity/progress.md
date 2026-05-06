@@ -10,6 +10,7 @@
     - Approve/Reject new user registration.
     - Reset password functionality.
     - Role assignment.
+    - Modal Detail User.
 - [x] **Role & Permission Management**:
     - CRUD for Roles and Permissions.
     - Interactive "Akses" (permission assignment) for Roles.
@@ -31,3 +32,4 @@
 - Project ini menggunakan pendekatan **Premium Design**, jadi setiap fitur baru harus dipastikan memiliki UI/UX yang modern.
 - Pastikan menjalankan `php artisan storage:link` jika avatar tidak muncul.
 - Cache menu harus di-clear jika ada perubahan data pada tabel `menus`.
+- Laravel Debugbar telah diinstal untuk mempermudah debugging query dan performa (dev only).

@@ -15,25 +15,33 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Auth\OtpLoginController;
 
 Route::middleware('guest')->group(function () {
-    Route::post('login/otp/send', [OtpLoginController::class, 'sendOtp'])->name('login.otp.send');
-    Route::post('login/otp/verify', [OtpLoginController::class, 'verifyOtp'])->name('login.otp.verify');
+    Route::post('login/otp/send', [OtpLoginController::class, 'sendOtp'])
+        ->middleware('throttle:3,1')
+        ->name('login.otp.send');
+
+    Route::post('login/otp/verify', [OtpLoginController::class, 'verifyOtp'])
+        ->middleware('throttle:5,1')
+        ->name('login.otp.verify');
 
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
     Route::get('register', [RegisteredUserController::class, 'create'])
         ->name('register');
 
-    Route::post('register', [RegisteredUserController::class, 'store']);
+    Route::post('register', [RegisteredUserController::class, 'store'])
+        ->middleware('throttle:3,1');
 
     Route::get('login', [AuthenticatedSessionController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [AuthenticatedSessionController::class, 'store']);
+    Route::post('login', [AuthenticatedSessionController::class, 'store'])
+        ->middleware('throttle:5,1');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
 
     Route::post('forgot-password', [PasswordResetLinkController::class, 'store'])
+        ->middleware('throttle:3,1')
         ->name('password.email');
 
     Route::get('reset-password/{token}', [NewPasswordController::class, 'create'])

@@ -26,6 +26,7 @@
     - [x] **Dynamic Search Integration**: Support for deep-linking search results via URL parameters.
     - [x] **Passwordless OTP Login**: 2-step OTP verification with professional HTML email and 6-digit box UI.
     - [x] **Forgot Password Simplification**: Streamlined reset link flow with premium single-form UI.
+    - [x] **Security Hardening**: Implemented route-level rate limiting (throttling) for all authentication entry points.
 - [x] **Menu System**: Database-driven sidebar menus with caching.
 
 ## 🚀 To-Do (Upcoming/Planned)

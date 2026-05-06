@@ -56,3 +56,13 @@ Dokumentasi alur autentikasi lanjutan yang diimplementasikan pada Proyek V2.
     - Disederhanakan menjadi 1 form input email dengan desain premium.
     - Menggunakan alur standar Laravel (mengirim link reset ke email) untuk keamanan maksimal.
     - Dilengkapi dengan indikator status pengiriman real-time.
+
+## 8. Security & Rate Limiting
+- **Mechanism**: Laravel `throttle` middleware.
+- **Protection Rules**:
+    - **Login POST**: Maksimal 5 percobaan per menit (Anti-Brute Force).
+    - **Register POST**: Maksimal 3 pendaftaran per menit (Anti-Spam Bot).
+    - **Forgot Password POST**: Maksimal 3 permintaan per menit (Anti-Email Bombing).
+    - **OTP Send POST**: Maksimal 3 pengiriman per menit.
+    - **OTP Verify POST**: Maksimal 5 percobaan per menit.
+- **Feedback**: Terintegrasi dengan AJAX di frontend untuk menampilkan pesan error "Terlalu banyak percobaan" yang ramah user.

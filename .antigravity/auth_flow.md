@@ -39,3 +39,20 @@ Dokumentasi alur autentikasi lanjutan yang diimplementasikan pada Proyek V2.
 ## 5. Granular Permissions
 - Ditambahkan permission `activate users` untuk mengontrol siapa yang bisa mengaktifkan akun.
 - UI konfigurasi hak akses di Role Management telah diperbarui untuk mendukung permission ini.
+
+## 6. Passwordless OTP Login
+- **Controller**: `App\Http\Controllers\Auth\OtpLoginController`
+- **Mailable**: `App\Mail\OtpLoginMail`
+- **Workflow**:
+    1. User memasukkan email di form login (panel OTP).
+    2. Sistem me-generate 6 digit angka acak dan menyimpannya di `Cache` (expires 10 menit).
+    3. User menerima email profesional dengan template `emails.otp-login`.
+    4. User memasukkan kode ke UI 6-digit box dengan auto-tabbing dan countdown timer (120s).
+    5. Setelah verifikasi berhasil, user otomatis di-login-kan.
+
+## 7. Forgot Password (Reset Link)
+- **Controller**: `App\Http\Controllers\Auth\PasswordResetLinkController` (Laravel Breeze Default)
+- **UI Customization**:
+    - Disederhanakan menjadi 1 form input email dengan desain premium.
+    - Menggunakan alur standar Laravel (mengirim link reset ke email) untuk keamanan maksimal.
+    - Dilengkapi dengan indikator status pengiriman real-time.

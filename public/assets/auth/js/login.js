@@ -5,7 +5,7 @@ $(document).ready(function () {
     const $alertMsg = $("#alertMsg");
     const $btnText = $btn.find("span");
 
-    // Toggle Password
+    /* ── Toggle Password ── */
     $("#togglePass").on("click", function () {
         const input = $("#password");
         const icon = $("#eyeIcon");
@@ -14,18 +14,13 @@ $(document).ready(function () {
         icon.attr("class", isPass ? "bi bi-eye-slash" : "bi bi-eye");
     });
 
-    // Sembunyikan error saat user mulai mengetik lagi
     $(".form-input").on("input", function () {
-        if ($alert.is(":visible")) {
-            $alert.fadeOut();
-        }
+        if ($alert.is(":visible")) $alert.fadeOut();
     });
 
-    // Submit via AJAX
+    /* ── Standard Login AJAX ── */
     $form.on("submit", function (e) {
         e.preventDefault();
-
-        // Reset UI
         $alert.hide();
         $btn.addClass("loading").prop("disabled", true);
 
@@ -35,35 +30,162 @@ $(document).ready(function () {
             data: $form.serialize(),
             dataType: "json",
             success: function (response) {
-                // Tampilan Sukses
-                $btn.css(
-                    "background",
-                    "linear-gradient(135deg, #00e5a0, #0072c6)",
-                );
+                $btn.css("background", "linear-gradient(135deg, #00e5a0, #0072c6)");
                 $btnText.html('<i class="bi bi-check-lg"></i> Berhasil!');
-
-                setTimeout(() => {
-                    window.location.href = response.redirect;
-                }, 800);
+                setTimeout(() => { window.location.href = response.redirect; }, 800);
             },
             error: function (xhr) {
                 $btn.removeClass("loading").prop("disabled", false);
-
-                let errorMsg = "Terjadi kesalahan fatal.";
-
-                if (xhr.status === 422) {
-                    // Ambil error pertama dari Laravel Validation
-                    const errors = xhr.responseJSON.errors;
-                    errorMsg = Object.values(errors)[0][0];
-                } else if (xhr.status === 419) {
-                    errorMsg = "Sesi kadaluarsa, silakan refresh halaman.";
-                } else if (xhr.status === 429) {
-                    errorMsg = "Terlalu banyak percobaan. Coba lagi nanti.";
-                }
-
+                let errorMsg = getErrorMessage(xhr);
                 $alertMsg.text(errorMsg);
                 $alert.css("display", "flex").hide().fadeIn();
             },
         });
     });
+
+    /* ── OTP LOGIN LOGIC ── */
+    const $loginStandard = $("#loginStandard");
+    const $loginOtp = $("#loginOtp");
+    const $otpStepEmail = $("#otpStepEmail");
+    const $otpStepCode = $("#otpStepCode");
+    let countdownTimer;
+
+    $("#btnOtpToggle").on("click", function() {
+        $loginStandard.fadeOut(300, () => $loginOtp.fadeIn(300));
+    });
+
+    $("#btnBackLogin").on("click", function() {
+        $loginOtp.fadeOut(300, () => $loginStandard.fadeIn(300));
+    });
+
+    /* Step 1: Send OTP */
+    $("#btnSendOtp").on("click", function() {
+        const email = $("#otpEmail").val().trim();
+        const $btn = $(this);
+        const $msg = $("#otpEmailMsg");
+
+        if (!email) { setMsg($msg, "Email wajib diisi.", "error"); return; }
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { setMsg($msg, "Format email tidak valid.", "error"); return; }
+
+        $btn.addClass("loading").prop("disabled", true);
+        $msg.hide();
+
+        $.ajax({
+            url: "/login/otp/send",
+            type: "POST",
+            data: { email: email, _token: $("input[name='_token']").val() },
+            success: function(response) {
+                $btn.removeClass("loading").prop("disabled", false);
+                $("#btnResendOtp").removeClass("loading");
+                
+                $("#displayOtpEmail").text(email);
+                $otpStepEmail.fadeOut(300, () => {
+                    $otpStepCode.fadeIn(300);
+                    startCountdown();
+                    $("#o1").focus();
+                });
+            },
+            error: function(xhr) {
+                $btn.removeClass("loading").prop("disabled", false);
+                $("#btnResendOtp").removeClass("loading").prop("disabled", false);
+                setMsg($msg, getErrorMessage(xhr), "error");
+            }
+        });
+    });
+
+    /* OTP Box Auto-tab */
+    $(".otp-box").on("input", function() {
+        const $this = $(this);
+        const val = $this.val().replace(/\D/g, "");
+        $this.val(val);
+        if (val) {
+            $this.addClass("filled");
+            $this.next(".otp-box").focus();
+        } else {
+            $this.removeClass("filled");
+        }
+        checkVerifyBtnState();
+    }).on("keydown", function(e) {
+        if (e.key === "Backspace" && !$(this).val()) {
+            $(this).prev(".otp-box").focus();
+        }
+    });
+
+    /* Verify OTP */
+    $("#btnVerifyOtp").on("click", function() {
+        let code = "";
+        $(".otp-box").each(function() { code += $(this).val(); });
+        const email = $("#otpEmail").val();
+        const $btn = $(this);
+        const $msg = $("#otpCodeMsg");
+
+        if (code.length < 6) return;
+
+        $btn.addClass("loading").prop("disabled", true);
+        $msg.hide();
+
+        $.ajax({
+            url: "/login/otp/verify",
+            type: "POST",
+            data: { email: email, code: code, _token: $("input[name='_token']").val() },
+            success: function(response) {
+                $btn.css("background", "linear-gradient(135deg, #00e5a0, #0072c6)");
+                $btn.find("span").html('<i class="bi bi-check-lg"></i> Berhasil!');
+                setTimeout(() => { window.location.href = response.redirect; }, 800);
+            },
+            error: function(xhr) {
+                $btn.removeClass("loading").prop("disabled", false);
+                setMsg($msg, getErrorMessage(xhr), "error");
+                $(".otp-box").addClass("error-shake");
+                setTimeout(() => $(".otp-box").removeClass("error-shake"), 500);
+            }
+        });
+    });
+
+    /* Timer Logic */
+    function startCountdown() {
+        let timeLeft = 120;
+        const $timer = $("#otpTimer");
+        const $btn = $("#btnResendOtp");
+        
+        $btn.prop("disabled", true);
+        clearInterval(countdownTimer);
+
+        countdownTimer = setInterval(() => {
+            const min = Math.floor(timeLeft / 60);
+            const sec = timeLeft % 60;
+            $timer.text(`${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`);
+            
+            if (--timeLeft < 0) {
+                clearInterval(countdownTimer);
+                $btn.prop("disabled", false);
+            }
+        }, 1000);
+    }
+
+    $("#btnResendOtp").on("click", function() {
+        $(this).addClass("loading").prop("disabled", true);
+        $("#btnSendOtp").click();
+    });
+
+    /* Helpers */
+    function getErrorMessage(xhr) {
+        if (xhr.status === 422) return Object.values(xhr.responseJSON.errors)[0][0];
+        if (xhr.status === 419) return "Sesi kadaluarsa, silakan refresh.";
+        if (xhr.status === 429) return "Terlalu banyak percobaan.";
+        return xhr.responseJSON?.message || "Terjadi kesalahan.";
+    }
+
+    function setMsg($el, text, type) {
+        $el.removeClass("error success").addClass(type).html(`<i class="bi bi-${type==='error'?'exclamation-circle':'check-circle'}"></i> ${text}`).fadeIn();
+    }
+
+    function checkVerifyBtnState() {
+        let code = "";
+        $(".otp-box").each(function() { code += $(this).val(); });
+        // Optional: auto trigger verify if 6 digits filled
+        if (code.length === 6) {
+            // $("#btnVerifyOtp").click();
+        }
+    }
 });

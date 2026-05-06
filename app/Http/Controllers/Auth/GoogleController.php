@@ -52,6 +52,9 @@ class GoogleController extends Controller
                     'is_active' => 0, // Default to inactive for new registration
                 ]);
 
+                // Assign default role 'anggota'
+                $newUser->assignRole('anggota');
+
                 Auth::login($newUser);
             }
 

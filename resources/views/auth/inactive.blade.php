@@ -229,23 +229,23 @@
 
                         @if(!$isComplete)
                             <!-- Step 2: Lengkapi Profil (Active) -->
-                            <div class="step-item active">
-                                <div class="step-num sn-pending">2</div>
+                            <div class="step-item active" id="step2">
+                                <div class="step-num sn-pending" id="sn2">2</div>
                                 <div class="step-info">
                                     <div class="st-title">Lengkapi Profil</div>
-                                    <div class="st-sub">Sedang dilakukan</div>
+                                    <div class="st-sub" id="ss2">Sedang dilakukan</div>
                                 </div>
                             </div>
                             <!-- Step 3: Verifikasi Admin -->
-                            <div class="step-item">
-                                <div class="step-num sn-wait">3</div>
+                            <div class="step-item" id="step3">
+                                <div class="step-num sn-wait" id="sn3">3</div>
                                 <div class="step-info">
                                     <div class="st-title">Verifikasi Admin</div>
-                                    <div class="st-sub">Menunggu</div>
+                                    <div class="st-sub" id="ss3">Menunggu</div>
                                 </div>
                             </div>
                             <!-- Step 4: Akun Aktif -->
-                            <div class="step-item">
+                            <div class="step-item" id="step4">
                                 <div class="step-num sn-wait">4</div>
                                 <div class="step-info">
                                     <div class="st-title">Akun Aktif</div>
@@ -560,6 +560,29 @@ function executeSubmit(btn) {
         if(typeof SCA !== 'undefined') SCA.close();
 
         if(data.success) {
+            // 1. Update Step 2 to Done
+            var s2 = document.getElementById('step2');
+            var sn2 = document.getElementById('sn2');
+            var ss2 = document.getElementById('ss2');
+            if(s2) s2.classList.remove('active');
+            if(sn2) {
+                sn2.classList.remove('sn-pending');
+                sn2.classList.add('sn-done');
+                sn2.innerHTML = '<i class="bi bi-check-lg"></i>';
+            }
+            if(ss2) ss2.textContent = 'Selesai';
+
+            // 2. Update Step 3 to Active
+            var s3 = document.getElementById('step3');
+            var sn3 = document.getElementById('sn3');
+            var ss3 = document.getElementById('ss3');
+            if(s3) s3.classList.add('active');
+            if(sn3) {
+                sn3.classList.remove('sn-wait');
+                sn3.classList.add('sn-pending');
+            }
+            if(ss3) ss3.textContent = 'Sedang diproses';
+
             document.getElementById('formArea').classList.add('hidden');
             document.getElementById('successOverlay').classList.add('show');
             if(document.getElementById('progFill')) document.getElementById('progFill').style.width='100%';

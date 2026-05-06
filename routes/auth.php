@@ -12,7 +12,12 @@ use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\GoogleController;
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Auth\OtpLoginController;
+
 Route::middleware('guest')->group(function () {
+    Route::post('login/otp/send', [OtpLoginController::class, 'sendOtp'])->name('login.otp.send');
+    Route::post('login/otp/verify', [OtpLoginController::class, 'verifyOtp'])->name('login.otp.verify');
+
     Route::get('auth/google', [GoogleController::class, 'redirectToGoogle'])->name('auth.google');
     Route::get('auth/google/callback', [GoogleController::class, 'handleGoogleCallback']);
     Route::get('register', [RegisteredUserController::class, 'create'])

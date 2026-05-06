@@ -863,3 +863,129 @@ input:-webkit-autofill:focus {
     -webkit-text-fill-color: var(--text);
     transition: background-color 9999s ease;
 }
+
+/* ══ OTP LOGIN UI ══ */
+.btn-otp-toggle, .btn-back-login {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(0, 200, 255, 0.15);
+    border-radius: var(--radius-sm);
+    color: var(--text-dim);
+    padding: 10px;
+    font-size: 13px;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-otp-toggle:hover, .btn-back-login:hover {
+    background: rgba(0, 200, 255, 0.08);
+    color: var(--cyan);
+    border-color: var(--cyan);
+}
+
+.otp-header {
+    text-align: center;
+    margin-bottom: 24px;
+}
+.otp-header i {
+    font-size: 32px;
+    color: var(--cyan);
+    display: block;
+    margin-bottom: 12px;
+}
+.otp-header p {
+    font-size: 14px;
+    color: var(--text-dim);
+    line-height: 1.6;
+}
+
+.otp-boxes {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 12px;
+    margin: 20px 0;
+}
+.otp-box {
+    width: 100%;
+    aspect-ratio: 1/1;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
+    border-radius: 10px;
+    color: var(--cyan);
+    font-size: 24px;
+    font-weight: 700;
+    text-align: center;
+    transition: var(--transition);
+    outline: none;
+}
+.otp-box:focus {
+    border-color: var(--cyan);
+    background: rgba(0, 40, 80, 0.8);
+    box-shadow: 0 0 15px var(--cyan-glow);
+    transform: translateY(-2px);
+}
+.otp-box.filled {
+    border-color: var(--cyan);
+    background: rgba(0, 40, 80, 0.6);
+}
+
+.resend-text {
+    text-align: center;
+    font-size: 13px;
+    color: var(--text-muted);
+    margin-top: 16px;
+}
+.resend-text button {
+    background: none;
+    border: none;
+    color: var(--cyan);
+    font-weight: 600;
+    padding: 0;
+    margin-left: 5px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+.resend-text button:disabled {
+    color: var(--text-muted);
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+.resend-text button:not(:disabled):hover {
+    color: #fff;
+    text-shadow: 0 0 10px var(--cyan-glow);
+}
+
+#btnResendOtp.loading span {
+    opacity: 0;
+}
+#btnResendOtp.loading .spinner-ring {
+    display: block;
+}
+
+.field-msg {
+    font-size: 12px;
+    margin-top: 6px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.field-msg.error { color: var(--error); }
+.field-msg.success { color: var(--success); }
+
+@media (max-width: 575.98px) {
+    .otp-boxes { gap: 8px; }
+    .otp-box { font-size: 20px; }
+}
+
+@keyframes errorShake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+.error-shake {
+    animation: errorShake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    border-color: var(--error) !important;
+}

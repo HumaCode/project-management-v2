@@ -1062,6 +1062,12 @@
 
     @push('auth-js')
         <script>
+            const params = new URLSearchParams(window.location.search);
+            const emailParam = params.get('email');
+            if (emailParam) {
+                document.getElementById('emailDisplay').textContent = emailParam;
+            }
+
             /* Demo: show expired panel if ?expired=1 in URL */
             if (params.get('expired') === '1') {
                 document.getElementById('panelForm').style.display = 'none';
@@ -1175,27 +1181,24 @@
             document.getElementById('confirmPass').addEventListener('input', checkConfirm);
 
             document.getElementById('formReset').addEventListener('submit', function(e) {
-                e.preventDefault();
                 const newPass = newPassInput.value,
                     conf = document.getElementById('confirmPass').value;
+                
                 if (!newPassInput.classList.contains('is-valid')) {
+                    e.preventDefault();
                     setMsg(document.getElementById('newPassMsg'), 'Password belum memenuhi kriteria.', 'error');
                     return;
                 }
                 if (newPass !== conf) {
+                    e.preventDefault();
                     setMsg(document.getElementById('confirmMsg'), 'Konfirmasi password tidak cocok.', 'error');
                     return;
                 }
+
                 const btn = document.getElementById('btnSubmit');
                 btn.classList.add('loading');
                 btn.disabled = true;
-                setTimeout(() => {
-                    btn.classList.remove('loading');
-                    btn.disabled = false;
-                    document.getElementById('panelForm').style.display = 'none';
-                    document.getElementById('panelSuccess').style.display = 'block';
-                    document.querySelector('.form-scroll').scrollTop = 0;
-                }, 1800);
+                // Form will proceed to server naturally
             });
 
             function setMsg(el, text, type) {
@@ -1269,6 +1272,7 @@
                     </div>
 
                     <form id="formReset" novalidate method="POST" action="{{ route('password.store') }}">
+                        @csrf
                         <!-- Password Reset Token -->
                         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 

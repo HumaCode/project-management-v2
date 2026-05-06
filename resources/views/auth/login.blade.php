@@ -45,58 +45,145 @@
                     <span id="alertMsg"></span>
                 </div>
 
-                <form method="POST" data-url="{{ route('login') }}" id="loginForm" novalidate>
-                    @csrf
-                    <div class="field-group">
-                        <label class="field-label" for="identitas">Email Address / Username</label>
-                        <div class="input-wrap">
-                            <i class="bi bi-envelope input-icon"></i>
-                            <input type="text" id="identitas" name="identitas" class="form-input"
-                                placeholder="nama@email.com" required autofocus />
-                            <span class="input-line"></span>
+                <div id="loginStandard">
+                    <form method="POST" data-url="{{ route('login') }}" id="loginForm" novalidate>
+                        @csrf
+                        <div class="field-group">
+                            <label class="field-label" for="identitas">Email Address / Username</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-envelope input-icon"></i>
+                                <input type="text" id="identitas" name="identitas" class="form-input"
+                                    placeholder="nama@email.com" required autofocus />
+                                <span class="input-line"></span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="field-group">
-                        <label class="field-label" for="password">Password</label>
-                        <div class="input-wrap">
-                            <i class="bi bi-lock input-icon"></i>
-                            <input type="password" id="password" name="password" class="form-input"
-                                placeholder="Masukkan password" required />
-                            <button type="button" class="input-icon-right" id="togglePass">
-                                <i class="bi bi-eye" id="eyeIcon"></i>
-                            </button>
-                            <span class="input-line"></span>
+                        <div class="field-group">
+                            <label class="field-label" for="password">Password</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-lock input-icon"></i>
+                                <input type="password" id="password" name="password" class="form-input"
+                                    placeholder="Masukkan password" required />
+                                <button type="button" class="input-icon-right" id="togglePass">
+                                    <i class="bi bi-eye" id="eyeIcon"></i>
+                                </button>
+                                <span class="input-line"></span>
+                            </div>
                         </div>
-                    </div>
 
-                    <div class="check-group">
-                        <input type="checkbox" name="remember" id="remember_me" class="custom-check">
-                        <label for="remember_me" class="check-label">Ingat Saya</label>
-                        
-                        @if (Route::has('password.request'))
-                            <a href="{{ route('password.request') }}" class="link-forgot">Lupa Password?</a>
-                        @endif
-                    </div>
+                        <div class="check-group">
+                            <input type="checkbox" name="remember" id="remember_me" class="custom-check">
+                            <label for="remember_me" class="check-label">Ingat Saya</label>
 
-                    <button type="submit" class="btn-login" id="btnLogin" style="margin-top: 24px;">
-                        <span><i class="bi bi-box-arrow-in-right"></i> Masuk Sekarang</span>
-                        <div class="spinner-ring">
-                            <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
-                                <circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)"
-                                    stroke-width="2.5" />
-                                <path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="2.5"
-                                    stroke-linecap="round" />
-                            </svg>
+                            @if (Route::has('password.request'))
+                                <a href="{{ route('password.request') }}" class="link-forgot">Lupa Password?</a>
+                            @endif
                         </div>
+
+                        <button type="submit" class="btn-login" id="btnLogin" style="margin-top: 24px;">
+                            <span><i class="bi bi-box-arrow-in-right"></i> Masuk Sekarang</span>
+                            <div class="spinner-ring">
+                                <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+                                    <circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)"
+                                        stroke-width="2.5" />
+                                    <path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="2.5"
+                                        stroke-linecap="round" />
+                                </svg>
+                            </div>
+                        </button>
+                    </form>
+
+                    <button type="button" class="btn-otp-toggle" id="btnOtpToggle" style="margin-top: 16px;">
+                        <i class="bi bi-shield-lock-fill"></i> Masuk dengan Kode OTP (Passwordless)
                     </button>
-                </form>
+                </div>
 
+                <!-- ══ OTP LOGIN FLOW ══ -->
+                <div id="loginOtp" style="display: none;">
+                    <!-- Step 1: Input Email -->
+                    <div id="otpStepEmail">
+                        <div class="field-group">
+                            <label class="field-label" for="otpEmail">Masukkan Email Terdaftar</label>
+                            <div class="input-wrap">
+                                <i class="bi bi-envelope-at input-icon"></i>
+                                <input type="email" id="otpEmail" class="form-input"
+                                    placeholder="nama@email.com" />
+                                <span class="input-line"></span>
+                            </div>
+                            <div class="field-msg" id="otpEmailMsg"></div>
+                        </div>
+                        <button type="button" class="btn-login" id="btnSendOtp">
+                            <span><i class="bi bi-send-fill"></i> Kirim Kode Verifikasi</span>
+                            <div class="spinner-ring"><svg width="22" height="22" viewBox="0 0 22 22"
+                                    fill="none">
+                                    <circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)"
+                                        stroke-width="2.5" />
+                                    <path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="2.5"
+                                        stroke-linecap="round" />
+                                </svg></div>
+                        </button>
+                    </div>
+
+                    <!-- Step 2: Input Code -->
+                    <div id="otpStepCode" style="display: none;">
+                        <div class="otp-header">
+                            <i class="bi bi-envelope-open-fill"></i>
+                            <p>Kode OTP 6 digit telah dikirim ke <strong id="displayOtpEmail"
+                                    style="color:var(--cyan)"></strong></p>
+                        </div>
+                        <div class="otp-boxes">
+                            <input type="text" class="otp-box" maxlength="1" id="o1"
+                                inputmode="numeric">
+                            <input type="text" class="otp-box" maxlength="1" id="o2"
+                                inputmode="numeric">
+                            <input type="text" class="otp-box" maxlength="1" id="o3"
+                                inputmode="numeric">
+                            <input type="text" class="otp-box" maxlength="1" id="o4"
+                                inputmode="numeric">
+                            <input type="text" class="otp-box" maxlength="1" id="o5"
+                                inputmode="numeric">
+                            <input type="text" class="otp-box" maxlength="1" id="o6"
+                                inputmode="numeric">
+                        </div>
+                        <div class="field-msg" id="otpCodeMsg" style="text-align: center; margin-top: 12px;"></div>
+
+                        <div class="resend-text">
+                            Kirim ulang kode dalam <span id="otpTimer">02:00</span>
+                            <button type="button" id="btnResendOtp" style="position: relative;" disabled>
+                                <span>Kirim Ulang</span>
+                                <div class="spinner-ring" style="width:14px; height:14px;">
+                                    <svg width="14" height="14" viewBox="0 0 22 22" fill="none">
+                                        <circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)"
+                                            stroke-width="3" />
+                                        <path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="3"
+                                            stroke-linecap="round" />
+                                    </svg>
+                                </div>
+                            </button>
+                        </div>
+
+                        <button type="button" class="btn-login" id="btnVerifyOtp" style="margin-top: 24px;">
+                            <span><i class="bi bi-shield-check-fill"></i> Verifikasi & Masuk</span>
+                            <div class="spinner-ring"><svg width="22" height="22" viewBox="0 0 22 22"
+                                    fill="none">
+                                    <circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)"
+                                        stroke-width="2.5" />
+                                    <path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="2.5"
+                                        stroke-linecap="round" />
+                                </svg></div>
+                        </button>
+                    </div>
+
+                    <button type="button" class="btn-back-login" id="btnBackLogin" style="margin-top: 20px;">
+                        <i class="bi bi-arrow-left"></i> Kembali ke Login Biasa
+                    </button>
+                </div>
 
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 
                 <div class="social-row" style="grid-template-columns: 1fr;">
-                    <a href="{{ route('auth.google') }}" class="btn-social"><i class="bi bi-google"></i><span>Masuk dengan Google</span></a>
+                    <a href="{{ route('auth.google') }}" class="btn-social"><i class="bi bi-google"></i><span>Daftar
+                            dengan Google</span></a>
                 </div>
 
                 <div class="register-row">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></div>

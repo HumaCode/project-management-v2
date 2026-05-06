@@ -24,6 +24,8 @@
     - [x] **Inactive Flow**: Seamless onboarding for users with incomplete profiles.
     - [x] **Secure Admin Activation**: Signed URL mechanism for one-click admin approval via email.
     - [x] **Dynamic Search Integration**: Support for deep-linking search results via URL parameters.
+    - [x] **Passwordless OTP Login**: 2-step OTP verification with professional HTML email and 6-digit box UI.
+    - [x] **Forgot Password Simplification**: Streamlined reset link flow with premium single-form UI.
 - [x] **Menu System**: Database-driven sidebar menus with caching.
 
 ## 🚀 To-Do (Upcoming/Planned)

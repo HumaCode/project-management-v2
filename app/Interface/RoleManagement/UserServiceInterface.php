@@ -14,4 +14,5 @@ interface UserServiceInterface
     public function rejectUser(string $id);
     public function resetUserPassword(string $id, array $data);
     public function getActiveRoles();
+    public function getUsersByRole(string $role);
 }

@@ -16,8 +16,8 @@
             <option value="done">Done</option>
         </select>
         <!-- Tombol tambah — halaman create terpisah -->
-        <button class="btn-pms btn-pms-primary" onclick="alert('Fitur tambah project segera hadir!')">
-            <span><i class="bi bi-plus-lg"></i>Tambah Project</span>
+        <button class="btn-pms btn-pms-primary" onclick="window.location.href = '{{ route('projects.create') }}'">
+            <span><i class="bi bi-plus-lg"></i> Tambah Project</span>
         </button>
     </div>
 </div>

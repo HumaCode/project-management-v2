@@ -70,4 +70,9 @@ class UserService implements UserServiceInterface
     {
         return $this->userRepository->getRoleActive();
     }
+
+    public function getUsersByRole(string $role)
+    {
+        return $this->userRepository->getUsersByRole($role);
+    }
 }

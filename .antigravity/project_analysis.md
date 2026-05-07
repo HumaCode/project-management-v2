@@ -10,6 +10,8 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Tailwind CSS 4.0 (Modern styling)
   - Alpine.js (Lightweight interactivity)
   - Vite 7 (Build tool)
+  - **CKEditor 5** (Rich text editing with media support)
+  - **Flatpickr** (Premium date picker with custom themes)
 - **Database**: MySQL/MariaDB
 - **Key Packages**:
   - `spatie/laravel-permission`: Manajemen Role & Permission.
@@ -44,6 +46,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
     - Setiap modul memiliki class `Messages` (misal: `UserMessages`) untuk mengelola semua string statis.
     - String yang dikelola meliputi: Title, Subtitle, View Path, Route Name, Table ID, dan Pesan Success/Error.
     - Hal ini memudahkan manajemen konten tanpa harus menyentuh logika controller.
+6.  **Advanced Resource Pagination**:
+    - `PaginateResource.php` dikustomisasi untuk mendukung pembungkusan item (wrapping) dengan resource class tertentu.
+    - Hal ini memungkinkan standarisasi format pagination sambil tetap menjaga transformasi data yang spesifik untuk setiap model.
+9.  **Automatic Content Handling**:
+    - Implementasi **Auto-Slug** pada model Project untuk URL yang SEO-friendly.
+    - Penggunaan **Base64 Upload Adapter** pada CKEditor untuk menangani gambar tanpa konfigurasi storage yang rumit di awal.
 
 ## Current Modules & Features
 - **Dashboard**: Panel ringkasan utama.
@@ -64,6 +72,8 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Manajemen list proyek dengan status & progress.
   - Hubungan PIC (User) many-to-many.
   - Server-side data table & filtering.
+  - **Premium PIC Rendering**: Logika otomatis untuk menampilkan Avatar (Google/Spatie) atau Inisial Nama (Fallback).
+  - **Advanced Project Creation**: Form input premium dengan dukungan Rich Text, Media Embed, dan penanggalan dinamis.
   - Integrasi desain premium (Glassmorphism).
 
 ## Database Schema (Current)
@@ -71,5 +81,5 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `permissions`, `roles`, `model_has_permissions`, dll (Spatie standard).
 - `menus`, `menu_permissions`.
 - `media`: Spatie Media Library.
-- `projects`: `id` (ULID), `name`, `description`, `status` (enum), `start_date`, `deadline`, `progress`, `created_by`.
+- `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `start_date`, `deadline`, `progress`, `actual_finished_at`, `created_by`.
 - `project_user`: `project_id`, `user_id` (Pivot untuk PIC).

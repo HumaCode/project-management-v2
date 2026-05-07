@@ -14,13 +14,29 @@ class Project extends Model
 
     protected $fillable = [
         'name',
+        'slug',
         'description',
         'status',
+        'priority',
         'start_date',
         'deadline',
         'progress',
+        'notes',
+        'actual_finished_at',
         'created_by',
     ];
+
+    /**
+     * The "booted" method of the model.
+     */
+    protected static function booted(): void
+    {
+        static::creating(function ($project) {
+            if (empty($project->slug)) {
+                $project->slug = \Illuminate\Support\Str::slug($project->name) . '-' . \Illuminate\Support\Str::random(5);
+            }
+        });
+    }
 
     /**
      * Get the user who created the project.

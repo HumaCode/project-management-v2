@@ -35,11 +35,20 @@
     - [x] **Premium UI**: Integration of Glassmorphism design from reference HTML.
     - [x] **Stats Overview**: Dashboard-style metrics (Total, In Progress, Done, To Do).
     - [x] **Navigation Fixes**: Singular-to-plural redirect (`/project` -> `/projects`) and menu URL syncing.
+    - [x] **Refined PIC Rendering**: Automated fallback from Google Avatar -> Spatie Media -> Initials (e.g., "HZ").
+    - [x] **PaginateResource Fix**: Enabled item-wrapping for consistent resource transformation.
 
-## 🚀 To-Do (Upcoming/Planned)
-- [ ] **Project Management (Phase 2: CRUD)**:
-    - [ ] Implementation of Create, Update, and Delete functionality with validation.
-    - [ ] Detailed View for individual projects with activity log.
+- [x] **Project Management (Phase 2: Create & Schema Enhancement)**:
+    - [x] **Database Evolution**: Migration for `slug`, `priority`, `notes`, and `actual_finished_at`.
+    - [x] **Premium Create View**: 
+        - Integrated **CKEditor 5 (v41.1.0)** with multi-line toolbar and Base64 image support.
+        - Integrated **Flatpickr** with Dark Glassmorphism theme and Indonesian locale.
+        - Dynamic **PIC Selection** with live filtering of 'anggota' role users.
+        - Robust **Bootstrap Grid** integration for 100% mobile responsiveness.
+    - [x] **Model Layer**: Auto-slug generation and priority-level management.
+    - [ ] **Store Logic**: Implementation of backend storage with validation (Next Step).
+    - [ ] **Update & Delete**: CRUD completion.
+    - [ ] **Detailed View**: Individual project dashboard with activity log.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

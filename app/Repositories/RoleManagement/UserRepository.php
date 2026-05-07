@@ -240,4 +240,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
             ->where('created_at', '>=', now()->subDays($days))
             ->count();
     }
+
+    public function getUsersByRole(string $role)
+    {
+        return $this->model->role($role)->where('is_active', '1')->get();
+    }
 }

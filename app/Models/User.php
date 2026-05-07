@@ -71,6 +71,8 @@ class User extends Authenticatable implements HasMedia
         'created_at_indo',
         'updated_at_indo',
         'role_name',
+        'display_avatar',
+        'initials',
     ];
 
     /**
@@ -195,45 +197,45 @@ class User extends Authenticatable implements HasMedia
     /**
      * Accessor untuk mendapatkan URL Avatar atau Inisial Gambar
      */
-    protected function displayAvatar(): Attribute
+    public function getDisplayAvatarAttribute(): ?string
     {
-        return Attribute::make(
-            get: function () {
-                // 1. Jika avatar ada di database
-                if (! empty($this->avatar)) {
-                    // Asumsi avatar disimpan di disk public (storage/app/public/avatar)
-                    // Pastikan kamu sudah menjalankan `php artisan storage:link`
-                    return asset('storage/avatar/'.$this->avatar);
-                }
+        // 1. Jika ini user Google, biasanya avatar berisi URL full
+        if (! empty($this->avatar) && filter_var($this->avatar, FILTER_VALIDATE_URL)) {
+            return $this->avatar;
+        }
 
-                // 2. Jika kosong, gunakan UI-Avatars API untuk membuat gambar inisial
-                $name = urlencode($this->name);
+        // 2. Jika bukan Google, cek Spatie Media Library
+        // Mengambil konversi 'thumb' jika ada, jika tidak ambil original
+        $mediaUrl = $this->getFirstMediaUrl('avatar', 'thumb');
 
-                // Kamu bisa atur background & warna hurufnya di sini
-                return "https://ui-avatars.com/api/?name={$name}&background=0D8ABC&color=fff&rounded=true";
-            }
-        );
+        if (! $mediaUrl) {
+            $mediaUrl = $this->getFirstMediaUrl('avatar');
+        }
+
+        if ($mediaUrl) {
+            return $mediaUrl;
+        }
+
+        // 3. Jika tidak ada gambar sama sekali, kembalikan null
+        // Agar frontend bisa menggunakan accessor 'initials'
+        return null;
     }
 
     /**
      * Accessor untuk mendapatkan Inisial Nama (Maksimal 2 huruf)
      */
-    protected function initials(): Attribute
+    public function getInitialsAttribute(): string
     {
-        return Attribute::make(
-            get: function () {
-                // Pecah nama berdasarkan spasi
-                $words = explode(' ', trim($this->name));
-                $initials = '';
+        // Pecah nama berdasarkan spasi
+        $words = explode(' ', trim($this->name));
+        $initials = '';
 
-                // Ambil huruf pertama dari tiap kata
-                foreach ($words as $word) {
-                    $initials .= strtoupper(substr($word, 0, 1));
-                }
+        // Ambil huruf pertama dari tiap kata
+        foreach ($words as $word) {
+            $initials .= strtoupper(substr($word, 0, 1));
+        }
 
-                // Kembalikan maksimal 2 huruf saja (Misal: Amir Zakaria Subarjo -> AZ)
-                return substr($initials, 0, 2);
-            }
-        );
+        // Kembalikan maksimal 2 huruf saja (Misal: Amir Zakaria Subarjo -> AZ)
+        return substr($initials, 0, 2);
     }
 }

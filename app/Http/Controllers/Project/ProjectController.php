@@ -8,6 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Interface\Project\ProjectServiceInterface;
+use App\Interface\RoleManagement\UserServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -22,10 +23,12 @@ class ProjectController extends Controller
     private string $aksesPermission = ProjectMessages::AKSES_PERMISSION;
 
     private ProjectServiceInterface $projectService;
+    private UserServiceInterface $userService;
 
-    public function __construct(ProjectServiceInterface $projectService)
+    public function __construct(ProjectServiceInterface $projectService, UserServiceInterface $userService)
     {
         $this->projectService = $projectService;
+        $this->userService = $userService;
     }
 
     /**
@@ -51,6 +54,26 @@ class ProjectController extends Controller
         ], $stats);
 
         return view($this->indexView, $data);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        // Gate::authorize('create ' . $this->aksesPermission);
+
+        $users = $this->userService->getUsersByRole('anggota');
+
+        $data = [
+            'title' => 'Tambah ' . $this->title,
+            'subtitle' => 'Buat project baru & tetapkan anggota tim',
+            'icon' => $this->icon,
+            'permissionAkses' => $this->aksesPermission,
+            'users' => $users,
+        ];
+
+        return view(ProjectMessages::CREATEVIEW, $data);
     }
 
     /**

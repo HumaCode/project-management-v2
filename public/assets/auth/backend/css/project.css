@@ -375,10 +375,133 @@
             td           →  td
      Wrapper: Bootstrap .table-responsive
   ═══════════════════════════════════════════ */
+/* Table Card Wrapper (Samakan dengan User Module) */
+.crd {
+    background: var(--card);
+    border: 1px solid var(--bd);
+    border-radius: var(--r);
+    overflow: hidden;
+    margin-bottom: 24px;
+}
+
+/* Table responsive wrapper — selalu siap scroll horizontal (Samakan dengan User) */
+.crd .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+}
+
+.crd .table-responsive::-webkit-scrollbar {
+    height: 5px;
+}
+
+.crd .table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 255, 0.2);
+    border-radius: 3px;
+}
+
 .table-pms {
     width: 100%;
     border-collapse: collapse;
-    min-width: 680px
+    min-width: 1200px;
+    margin: 0;
+}
+
+.table-pms thead tr {
+    background: rgba(0, 200, 255, 0.03);
+    border-bottom: 1px solid rgba(0, 200, 255, 0.12);
+}
+
+.table-pms th {
+    font-family: var(--mono);
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: var(--muted);
+    padding: 11px 14px;
+    white-space: nowrap;
+    font-weight: 600;
+    border: none;
+    text-align: left;
+}
+
+.table-pms td {
+    padding: 11px 14px;
+    border-bottom: 1px solid var(--bd);
+    font-size: 13px;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+.table-pms tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.table-pms tbody tr {
+    transition: background 0.15s;
+}
+
+.table-pms tbody tr:hover {
+    background: rgba(0, 200, 255, 0.03);
+}
+
+.td-info-name {
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.td-info-desc {
+    font-size: 11px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 2px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+/* Custom Scrollbar for Table */
+.table-responsive::-webkit-scrollbar {
+    height: 8px;
+    display: block;
+}
+
+.table-responsive::-webkit-scrollbar-track {
+    background: rgba(0, 200, 255, 0.02);
+}
+
+.table-responsive::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 255, 0.1);
+    border-radius: 10px;
+}
+
+.table-responsive::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 200, 255, 0.2);
+}
+
+.td-info-name {
+    font-weight: 600;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.4;
+}
+
+.td-info-desc {
+    font-size: 11.5px;
+    color: var(--muted);
+    font-family: var(--mono);
+    margin-top: 2px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    line-height: 1.5;
+    max-width: 300px;
 }
 
 .table-pms thead tr {
@@ -1121,4 +1244,15 @@
 
 .mb-24 {
     margin-bottom: 24px
+}
+
+/* Fix sidebar gap for collapsed state */
+.main-wrap.sb-expanded {
+    margin-left: 72px !important;
+}
+
+@media(max-width: 991.98px) {
+    .main-wrap.sb-expanded {
+        margin-left: 0 !important;
+    }
 }

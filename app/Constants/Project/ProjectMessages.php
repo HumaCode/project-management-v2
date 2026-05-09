@@ -8,6 +8,8 @@ class ProjectMessages
     const SUBTITLE                              = 'Kelola semua project & anggota tim';
     const INDEXVIEW                             = 'pages.project.index';
     const CREATEVIEW                            = 'pages.project.create';
+    const EDITVIEW                              = 'pages.project.edit';
+    const SHOWVIEW                              = 'pages.project.show';
     const FORMVIEW                              = 'pages.project.project-form';
 
     const PAGINATIONURL                         = 'projects.allPagination';

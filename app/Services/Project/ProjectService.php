@@ -61,4 +61,40 @@ class ProjectService implements ProjectServiceInterface
             return $project;
         });
     }
+
+    public function getProjectByUlid(string $ulid): Project
+    {
+        return Project::with(['pics', 'media'])->findOrFail($ulid);
+    }
+
+    public function updateProject(string $ulid, array $data): Project
+    {
+        return DB::transaction(function () use ($ulid, $data) {
+            $project = Project::findOrFail($ulid);
+
+            // Transform dates
+            if (isset($data['start_date'])) {
+                $data['start_date'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+            }
+            if (isset($data['deadline'])) {
+                $data['deadline'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['deadline'])->format('Y-m-d');
+            }
+
+            $project->update($data);
+
+            // Sync PICs
+            if (isset($data['pics'])) {
+                $project->pics()->sync($data['pics']);
+            }
+
+            // Handle Thumbnail
+            if (isset($data['thumbnail']) && $data['thumbnail'] instanceof \Illuminate\Http\UploadedFile) {
+                $project->clearMediaCollection('thumbnail');
+                $project->addMedia($data['thumbnail'])
+                    ->toMediaCollection('thumbnail');
+            }
+
+            return $project;
+        });
+    }
 }

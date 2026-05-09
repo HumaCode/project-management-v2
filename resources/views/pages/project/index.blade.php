@@ -6,6 +6,7 @@
 
     @push('js')
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
         <script>
             // Konfigurasi Global (Dinamis dari PHP)
@@ -54,13 +55,13 @@
                         <th style="width:46px">#</th>
                         <th class="th-sort" data-col="name">Nama Project <i class="bi bi-chevron-expand sort-ico"></i></th>
                         <th style="width:130px">Status</th>
-                        <th class="d-none d-md-table-cell" style="width:130px">Progress</th>
-                        <th class="d-none d-lg-table-cell" style="width:100px">PIC</th>
-                        <th class="d-none d-md-table-cell th-sort" data-col="start_date" style="width:105px">Mulai <i
+                        <th style="width:130px">Progress</th>
+                        <th style="width:100px">PIC</th>
+                        <th class="th-sort" data-col="start_date" style="width:105px">Mulai <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th class="d-none d-md-table-cell th-sort" data-col="deadline" style="width:140px">Deadline <i
+                        <th class="th-sort" data-col="deadline" style="width:140px">Deadline <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th class="d-none d-lg-table-cell th-sort" data-col="created_by" style="width:120px">Pembuat <i
+                        <th class="th-sort" data-col="created_by" style="width:120px">Pembuat <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
                         <th class="th-center" style="width:120px">Aksi</th>
                     </tr>

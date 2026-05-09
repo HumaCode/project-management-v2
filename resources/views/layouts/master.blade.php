@@ -38,7 +38,7 @@
 
     <!-- MAIN LAYOUT -->
     <div class="layout">
-        <div class="main-wrap" id="mainWrap">
+        <div class="main-wrap {{ request()->routeIs('projects.index') ? 'sb-expanded' : '' }}" id="mainWrap">
 
             <!-- Topbar -->
             @include('layouts.partials.topbar')

@@ -30,6 +30,12 @@ class Project extends Model implements HasMedia
         'icon',
     ];
 
+    protected $casts = [
+        'start_date' => 'date',
+        'deadline' => 'date',
+        'actual_finished_at' => 'datetime',
+    ];
+
     /**
      * The "booted" method of the model.
      */

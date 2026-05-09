@@ -17,10 +17,10 @@ class ProjectResource extends JsonResource
         return [
             'id' => $this->id,
             'name' => $this->name,
-            'description' => $this->description,
+            'description' => $this->description ? \Illuminate\Support\Str::limit(strip_tags($this->description), 80) : null,
             'status' => $this->status,
-            'start_date' => $this->start_date ? $this->start_date : null,
-            'deadline' => $this->deadline ? $this->deadline : null,
+            'start_date' => $this->start_date ? $this->start_date->format('Y-m-d') : null,
+            'deadline' => $this->deadline ? $this->deadline->format('Y-m-d') : null,
             'progress' => $this->progress,
             'created_by' => $this->creator ? $this->creator->name : 'Unknown',
             'pics' => $this->pics->map(fn($u) => [

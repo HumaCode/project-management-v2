@@ -17,6 +17,7 @@ class ProjectController extends Controller
     private string $title = ProjectMessages::TITLE;
     private string $subtitle = ProjectMessages::SUBTITLE;
     private string $indexView = ProjectMessages::INDEXVIEW;
+    private string $showView = ProjectMessages::SHOWVIEW;
     private string $dataUrl = ProjectMessages::PAGINATIONURL;
     private string $dataTableId = ProjectMessages::TABLEID;
     private string $icon = ProjectMessages::ICON;
@@ -119,6 +120,66 @@ class ProjectController extends Controller
 
             return ResponseHelper::success(
                 ProjectMessages::CREATED_SUCCESS,
+                $project
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        // Gate::authorize('read ' . $this->aksesPermission);
+
+        // For now, as per user request, we use static data for the layout
+        // But we still pass the title and icon for consistency
+        $data = [
+            'title' => 'Detail ' . $this->title,
+            'subtitle' => 'Lihat detail perkembangan project',
+            'icon' => $this->icon,
+            'permissionAkses' => $this->aksesPermission,
+        ];
+
+        return view($this->showView, $data);
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        // Gate::authorize('update ' . $this->aksesPermission);
+
+        $project = $this->projectService->getProjectByUlid($id);
+        $users = $this->userService->getUsersByRole('anggota');
+
+        $data = [
+            'title' => 'Ubah ' . $this->title,
+            'subtitle' => 'Perbarui detail project & anggota tim',
+            'icon' => $this->icon,
+            'permissionAkses' => $this->aksesPermission,
+            'project' => $project,
+            'users' => $users,
+        ];
+
+        return view(ProjectMessages::EDITVIEW, $data);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(\App\Http\Requests\Project\StoreProjectRequest $request, string $id)
+    {
+        // Gate::authorize('update ' . $this->aksesPermission);
+
+        try {
+            $project = $this->projectService->updateProject($id, $request->validated());
+
+            return ResponseHelper::success(
+                ProjectMessages::UPDATED_SUCCESS,
                 $project
             );
         } catch (\Exception $e) {

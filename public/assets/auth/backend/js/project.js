@@ -114,15 +114,15 @@ $(function () {
                                 <tr>
                                     <td class="td-num">${rowIndex}</td>
                                     <td>
-                                        <div style="font-weight:600">${p.name}</div>
-                                        <div style="font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-top:2px">${p.description || '-'}</div>
+                                        <div class="td-info-name">${p.name}</div>
+                                        <div class="td-info-desc">${p.description || '-'}</div>
                                     </td>
                                     <td>${statusBadge(p.status)}</td>
-                                    <td class="d-none d-md-table-cell">${progressHTML(p.progress, p.status)}</td>
-                                    <td class="d-none d-lg-table-cell">${avatarHTML(p.pics)}</td>
-                                    <td class="d-none d-md-table-cell td-mono">${fmtDate(p.start_date)}</td>
-                                    <td class="d-none d-md-table-cell">${deadlineHTML(p.deadline, p.status)}</td>
-                                    <td class="d-none d-lg-table-cell td-mono">${p.created_by}</td>
+                                    <td>${progressHTML(p.progress, p.status)}</td>
+                                    <td>${avatarHTML(p.pics)}</td>
+                                    <td>${fmtDate(p.start_date)}</td>
+                                    <td>${deadlineHTML(p.deadline, p.status)}</td>
+                                    <td>${p.created_by}</td>
                                     <td class="td-center">
                                         <div style="display:inline-flex;gap:5px">
                                             <button class="btn-act btn-show" data-url="${showUrl}" title="Detail"><i class="bi bi-eye"></i></button>
@@ -159,6 +159,48 @@ $(function () {
         window.tableState.status = $(this).val();
         window.tableState.page = 1;
         window.loadData();
+    });
+
+    $('#btnReset').on('click', function () {
+        $('#fSearch').val('');
+        $('#fStatus').val('');
+        window.tableState.search = '';
+        window.tableState.status = '';
+        window.tableState.page = 1;
+        window.loadData();
+    });
+
+    // Action Listeners
+    $(document).on('click', '.btn-show', function () {
+        window.location.href = $(this).data('url');
+    });
+
+    $(document).on('click', '.btn-edit', function () {
+        window.location.href = $(this).data('url');
+    });
+
+    $(document).on('click', '.btn-destroy', function () {
+        const url = $(this).data('url');
+        if (confirm('Apakah Anda yakin ingin menghapus project ini?')) {
+            axios.delete(url)
+                .then(res => {
+                    SCA.toast({
+                        type: "success",
+                        title: "Berhasil!",
+                        message: res.data?.message || "Project berhasil dihapus.",
+                        position: "top-right",
+                    });
+                    window.loadData();
+                })
+                .catch(err => {
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: err.response?.data?.message || err.message || "Gagal menghapus project.",
+                        position: "top-right",
+                    });
+                });
+        }
     });
 
     // FAB

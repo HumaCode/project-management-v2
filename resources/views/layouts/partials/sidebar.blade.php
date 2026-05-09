@@ -1,4 +1,4 @@
-<aside class="sidebar" id="sidebar">
+<aside class="sidebar {{ request()->routeIs('projects.index') ? 'collapsed' : '' }}" id="sidebar">
     <div class="sb-brand">
         <div class="sb-logo"><i class="bi bi-diagram-3-fill"></i></div>
         <div class="sb-title">

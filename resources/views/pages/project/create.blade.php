@@ -157,6 +157,44 @@
                     </div>
                 </div>
 
+                <div class="fsec-title" style="margin-top:28px"><i class="bi bi-palette-fill"></i> Media & Estetika</div>
+
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="fg">
+                            <label>Thumbnail Project</label>
+                            <div class="thumb-upload" id="thumbUpload">
+                                <button type="button" class="tu-remove" id="btnRemoveThumb" title="Hapus Gambar">
+                                    <i class="bi bi-x-lg"></i>
+                                </button>
+                                <div class="tu-preview" id="tuPreview">
+                                    <i class="bi bi-image"></i>
+                                </div>
+                                <div class="tu-info">
+                                    <div class="tu-title">Klik atau seret gambar ke sini</div>
+                                    <div class="tu-sub">Format: JPG, PNG, WEBP (Maks. 2MB)</div>
+                                    <input type="file" name="thumbnail" id="fThumb" accept="image/*" style="display:none" />
+                                    <button type="button" class="btn-tu" onclick="document.getElementById('fThumb').click()">
+                                        <i class="bi bi-cloud-upload"></i> Pilih Gambar
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="fg">
+                            <label>Warna Tema Project</label>
+                            <div class="color-picker-wrapper">
+                                <input type="color" name="color" class="fcolor" id="fColor" value="#4f46e5" />
+                                <div class="color-info">
+                                    <span id="colorHex">#4f46e5</span>
+                                    <small>Warna ini akan digunakan sebagai aksen di dashboard.</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="fsec-title" style="margin-top:28px"><i class="bi bi-bar-chart-fill"></i> Progress Awal</div>
 
                 <div class="row">
@@ -209,6 +247,7 @@
         <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
         <script>
             window.projectIndexUrl = "{{ route('projects.index') }}";
         </script>

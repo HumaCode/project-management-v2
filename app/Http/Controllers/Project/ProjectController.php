@@ -106,4 +106,23 @@ class ProjectController extends Controller
             return ResponseHelper::error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(\App\Http\Requests\Project\StoreProjectRequest $request)
+    {
+        // Gate::authorize('create ' . $this->aksesPermission);
+
+        try {
+            $project = $this->projectService->storeProject($request->validated());
+
+            return ResponseHelper::success(
+                ProjectMessages::CREATED_SUCCESS,
+                $project
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
 }

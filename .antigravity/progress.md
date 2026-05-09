@@ -38,15 +38,16 @@
     - [x] **Refined PIC Rendering**: Automated fallback from Google Avatar -> Spatie Media -> Initials (e.g., "HZ").
     - [x] **PaginateResource Fix**: Enabled item-wrapping for consistent resource transformation.
 
-- [x] **Project Management (Phase 2: Create & Schema Enhancement)**:
-    - [x] **Database Evolution**: Migration for `slug`, `priority`, `notes`, and `actual_finished_at`.
+- [x] **Project Management (Phase 2: Create & Store Logic)**:
+    - [x] **Database Evolution**: Migration for `slug`, `priority`, `notes`, `actual_finished_at`, `color`, and `icon`.
     - [x] **Premium Create View**: 
         - Integrated **CKEditor 5 (v41.1.0)** with multi-line toolbar and Base64 image support.
         - Integrated **Flatpickr** with Dark Glassmorphism theme and Indonesian locale.
         - Dynamic **PIC Selection** with live filtering of 'anggota' role users.
+        - **Thumbnail Upload**: Integrated with Spatie Media Library and live preview.
+        - **Project Color**: Custom color picker for dashboard accents.
         - Robust **Bootstrap Grid** integration for 100% mobile responsiveness.
-    - [x] **Model Layer**: Auto-slug generation and priority-level management.
-    - [ ] **Store Logic**: Implementation of backend storage with validation (Next Step).
+    - [x] **Store Logic**: Implementation of backend storage with AJAX (Axios), validation (StoreProjectRequest), and PIC syncing.
     - [ ] **Update & Delete**: CRUD completion.
     - [ ] **Detailed View**: Individual project dashboard with activity log.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).

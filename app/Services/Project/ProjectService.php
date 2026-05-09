@@ -35,4 +35,30 @@ class ProjectService implements ProjectServiceInterface
 
         return $query->latest()->paginate($rowPerPage);
     }
+
+    public function storeProject(array $data): Project
+    {
+        return DB::transaction(function () use ($data) {
+            // Transform dates
+            $data['start_date'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['start_date'])->format('Y-m-d');
+            $data['deadline'] = \Carbon\Carbon::createFromFormat('d-m-Y', $data['deadline'])->format('Y-m-d');
+            
+            $data['created_by'] = auth()->id();
+
+            $project = Project::create($data);
+
+            // Sync PICs
+            if (isset($data['pics'])) {
+                $project->pics()->sync($data['pics']);
+            }
+
+            // Handle Thumbnail
+            if (isset($data['thumbnail']) && $data['thumbnail'] instanceof \Illuminate\Http\UploadedFile) {
+                $project->addMedia($data['thumbnail'])
+                    ->toMediaCollection('thumbnail');
+            }
+
+            return $project;
+        });
+    }
 }

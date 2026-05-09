@@ -22,7 +22,6 @@
     }
     
     initCC('fNama', 'cNama', 120);
-    // initCC('fDesc', 'cDesc', 500); // Disabled for CKEditor
     initCC('fNotes', 'cNotes', 300);
 
     /* CKEditor Initialization */
@@ -41,7 +40,6 @@
                     ],
                     shouldNotGroupWhenFull: true
                 },
-                // Enable Base64 Upload
                 extraPlugins: [
                     function(editor) {
                         editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
@@ -61,7 +59,6 @@
             });
     }
 
-    // Simple Base64 Adapter
     class Base64UploadAdapter {
         constructor(loader) {
             this.loader = loader;
@@ -179,6 +176,9 @@
     }
 
     /* Form: Flatpickr (Date Picker) */
+    var fs = document.getElementById('fStart');
+    var fd = document.getElementById('fDeadline');
+
     var fpStart = flatpickr("#fStart", {
         locale: "id",
         dateFormat: "d-m-Y",
@@ -198,67 +198,79 @@
         disableMobile: "true"
     });
 
+    /* Form: Thumbnail Upload */
+    var fThumb = document.getElementById('fThumb'),
+        tuPreview = document.getElementById('tuPreview'),
+        tuBox = document.getElementById('thumbUpload'),
+        btnRemoveThumb = document.getElementById('btnRemoveThumb');
+
+    if (fThumb) {
+        fThumb.addEventListener('change', function() {
+            if (this.files && this.files[0]) {
+                var reader = new FileReader();
+                reader.onload = function(e) {
+                    tuPreview.innerHTML = '<img src="' + e.target.result + '" alt="Preview">';
+                    tuBox.classList.add('has-file');
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    }
+
+    if (btnRemoveThumb) {
+        btnRemoveThumb.addEventListener('click', function() {
+            fThumb.value = '';
+            tuPreview.innerHTML = '<i class="bi bi-image"></i>';
+            tuBox.classList.remove('has-file');
+        });
+    }
+
+    /* Form: Color Picker */
+    var fColor = document.getElementById('fColor'),
+        colorHex = document.getElementById('colorHex');
+
+    if (fColor && colorHex) {
+        fColor.addEventListener('input', function() {
+            colorHex.textContent = this.value.toUpperCase();
+        });
+    }
+
     /* Form: reset */
     var btnReset = document.getElementById('btnReset');
     if (btnReset) {
         btnReset.addEventListener('click', function() {
-            ['fNama', 'fDesc', 'fNotes'].forEach(function(id) {
-                var el = document.getElementById(id);
-                if (el) el.value = '';
-            });
-            var fStatus = document.getElementById('fStatus');
-            if (fStatus) fStatus.value = 'to_do';
-            if (fs) fs.value = '';
-            if (fd) fd.value = '';
-            if (sl) sl.value = 0;
-            updSl();
+            document.getElementById('formCreateProject').reset();
+            if (editorInstance) editorInstance.setData('');
+            if (fpStart) fpStart.clear();
+            if (fpDeadline) fpDeadline.clear();
+            tuPreview.innerHTML = '<i class="bi bi-image"></i>';
+            tuBox.classList.remove('has-file');
+            colorHex.textContent = '#4F46E5';
             ps = {};
             picChips();
             picState();
-            ['cNama', 'cDesc', 'cNotes'].forEach(function(id) {
-                var e = document.getElementById(id);
-                if (e) {
-                    var p = e.textContent.split(' / ');
-                    e.textContent = '0 / ' + p[1];
-                    e.className = 'ccnt';
-                }
-            });
-            document.querySelectorAll('.fi.err,.fa.err,.fsl.err').forEach(function(e) {
-                e.classList.remove('err');
-            });
-            document.querySelectorAll('.fg.has-err').forEach(function(e) {
-                e.classList.remove('has-err');
-            });
+            updSl();
+            document.querySelectorAll('.fg.has-err').forEach(e => e.classList.remove('has-err'));
+            document.querySelectorAll('.err').forEach(e => e.classList.remove('err'));
         });
     }
 
-    /* Form: submit */
+    /* Form: submit (AJAX) */
     var btnSave = document.getElementById('btnSave');
     if (btnSave) {
         btnSave.addEventListener('click', function() {
-            // Sync CKEditor
             if (editorInstance) {
                 editorInstance.updateSourceElement();
             }
 
             var ok = true;
-            var checks = [{
-                    el: document.getElementById('fNama'),
-                    fg: document.getElementById('fNama') ? document.getElementById('fNama').closest('.fg') : null
-                },
-                {
-                    el: document.getElementById('fStatus'),
-                    fg: document.getElementById('fStatus') ? document.getElementById('fStatus').closest('.fg') : null
-                },
-                {
-                    el: fs,
-                    fg: fs ? fs.closest('.fg') : null
-                },
-                {
-                    el: fd,
-                    fg: fd ? fd.closest('.fg') : null
-                }
+            var checks = [
+                { el: document.getElementById('fNama'), fg: document.getElementById('fNama').closest('.fg') },
+                { el: document.getElementById('fStatus'), fg: document.getElementById('fStatus').closest('.fg') },
+                { el: fs, fg: fs.closest('.fg') },
+                { el: fd, fg: fd.closest('.fg') }
             ];
+
             checks.forEach(function(c) {
                 if (c.el && !c.el.value.trim()) {
                     if (c.fg) c.fg.classList.add('has-err');
@@ -269,26 +281,77 @@
                     c.el.classList.remove('err');
                 }
             });
-            if (fs && fd && fs.value && fd.value && fd.value < fs.value) {
-                fd.closest('.fg').classList.add('has-err');
-                fd.classList.add('err');
-                ok = false;
-            }
+
             if (ok) {
-                var btn = document.getElementById('btnSave');
-                btn.innerHTML = '<span><i class="bi bi-hourglass-split"></i>&nbsp;Menyimpan...</span>';
-                btn.style.opacity = '.7';
-                btn.style.pointerEvents = 'none';
-                setTimeout(function() {
-                    window.location.href = window.projectIndexUrl || '/projects';
-                }, 1400);
+                submitForm();
             } else {
                 var first = document.querySelector('.fg.has-err');
-                if (first) first.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center'
-                });
+                if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
             }
         });
+    }
+
+    function submitForm() {
+        var form = document.getElementById('formCreateProject');
+        var formData = new FormData(form);
+
+        // Add PICs
+        Object.keys(ps).forEach(id => {
+            formData.append('pics[]', id);
+        });
+
+        btnSave.innerHTML = '<span><i class="bi bi-hourglass-split"></i>&nbsp;Menyimpan...</span>';
+        btnSave.style.opacity = '.7';
+        btnSave.style.pointerEvents = 'none';
+
+        axios.post(form.action, formData)
+            .then(res => {
+                SCA.toast({
+                    type: "success",
+                    title: "Berhasil!",
+                    message: res.data?.message || "Project berhasil disimpan.",
+                    position: "top-right",
+                });
+                setTimeout(() => {
+                    window.location.href = window.projectIndexUrl || '/projects';
+                }, 1000);
+            })
+            .catch(err => {
+                btnSave.innerHTML = '<span><i class="bi bi-check2-circle"></i> Simpan Project</span>';
+                btnSave.style.opacity = '1';
+                btnSave.style.pointerEvents = 'auto';
+
+                if (err.response && err.response.status === 422) {
+                    var errors = err.response.data.errors;
+                    
+                    SCA.toast({
+                        type: "error",
+                        title: "Gagal!",
+                        message: "Silakan periksa kembali isian form Anda.",
+                        position: "top-right",
+                    });
+
+                    Object.keys(errors).forEach(key => {
+                        var el = document.getElementsByName(key)[0];
+                        if (el) {
+                            var fg = el.closest('.fg');
+                            if (fg) {
+                                fg.classList.add('has-err');
+                                var msg = fg.querySelector('.emsg');
+                                if (msg) msg.textContent = errors[key][0];
+                            }
+                        }
+                    });
+                    var first = document.querySelector('.fg.has-err');
+                    if (first) first.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: err.response?.data?.message || err.message || "Terjadi kesalahan sistem.",
+                        position: "top-right",
+                    });
+                }
+            });
     }
 })();

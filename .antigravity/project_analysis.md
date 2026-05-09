@@ -73,7 +73,8 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Hubungan PIC (User) many-to-many.
   - Server-side data table & filtering.
   - **Premium PIC Rendering**: Logika otomatis untuk menampilkan Avatar (Google/Spatie) atau Inisial Nama (Fallback).
-  - **Advanced Project Creation**: Form input premium dengan dukungan Rich Text, Media Embed, dan penanggalan dinamis.
+  - **Advanced Project Creation**: Form input premium dengan dukungan Rich Text, Media Embed, Thumbnail Upload (Media Library), dan Project Color.
+  - **AJAX Store Logic**: Pengiriman data menggunakan Axios dengan validasi StoreProjectRequest.
   - Integrasi desain premium (Glassmorphism).
 
 ## Database Schema (Current)
@@ -81,5 +82,5 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `permissions`, `roles`, `model_has_permissions`, dll (Spatie standard).
 - `menus`, `menu_permissions`.
 - `media`: Spatie Media Library.
-- `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `start_date`, `deadline`, `progress`, `actual_finished_at`, `created_by`.
+- `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `color`, `icon`, `start_date`, `deadline`, `progress`, `actual_finished_at`, `created_by`.
 - `project_user`: `project_id`, `user_id` (Pivot untuk PIC).

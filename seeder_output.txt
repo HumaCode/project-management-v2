@@ -1,0 +1,28 @@
+
+   INFO  Seeding database.  
+
+
+   Illuminate\Database\QueryException 
+
+  SQLSTATE[HY000]: General error: 1364 Field 'slug' doesn't have a default value (Connection: mysql, Host: 127.0.0.1, Port: 3306, Database: project_management_db, SQL: insert into `roles` (`guard_name`, `name`, `id`, `updated_at`, `created_at`) values (web, user, 01krbj7zve8pqmyqmkjbgk9pth, 2026-05-11 13:04:55, 2026-05-11 13:04:55))
+
+  at vendor/laravel/framework/src/Illuminate/Database/Connection.php:838
+    834▕             $exceptionType = $this->isUniqueConstraintError($e)
+    835▕                 ? UniqueConstraintViolationException::class
+    836▕                 : QueryException::class;
+    837▕ 
+  ➜ 838▕             throw new $exceptionType(
+    839▕                 $this->getNameWithReadWriteType(),
+    840▕                 $query,
+    841▕                 $this->prepareBindings($bindings),
+    842▕                 $e,
+
+      [2m+19 vendor frames [22m
+
+  20  database/seeders/UserSeeder.php:39
+      Illuminate\Database\Eloquent\Model::__callStatic()
+      [2m+23 vendor frames [22m
+
+  44  artisan:16
+      Illuminate\Foundation\Application::handleCommand()
+

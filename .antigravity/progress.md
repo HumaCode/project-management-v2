@@ -50,6 +50,16 @@
     - [x] **Store Logic**: Implementation of backend storage with AJAX (Axios), validation (StoreProjectRequest), and PIC syncing.
     - [ ] **Update & Delete**: CRUD completion.
     - [ ] **Detailed View**: Individual project dashboard with activity log.
+- [x] **Documentation Builder Module**:
+    - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface`.
+    - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX) with category and project filters.
+    - [x] **Media Library**: Integrated with Spatie Media Library for file storage and human-readable metadata.
+    - [x] **Document Types**: Support for Single File, Article/Article (Manual Book), and Code Documentation.
+    - [x] **Monaco Editor**: Integrated for professional code documentation authoring.
+    - [x] **Smart Preview**: Real-time image preview in drop-zone for file uploads.
+    - [x] **CRUD Completion**: Implementation of Create, Read (Show/Detail), and Update (Edit) functionalities.
+    - [x] **UI Polish**: Clean UI with partials-based modals and premium dashboard-style metrics.
+    - [x] **Breadcrumbs**: Restored "Home > Dokumen" navigation for better UX.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

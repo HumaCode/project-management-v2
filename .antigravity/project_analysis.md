@@ -12,6 +12,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Vite 7 (Build tool)
   - **CKEditor 5** (Rich text editing with media support)
   - **Flatpickr** (Premium date picker with custom themes)
+  - **Monaco Editor** (Professional code editing for documentation)
 - **Database**: MySQL/MariaDB
 - **Key Packages**:
   - `spatie/laravel-permission`: Manajemen Role & Permission.
@@ -76,6 +77,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - **Advanced Project Creation**: Form input premium dengan dukungan Rich Text, Media Embed, Thumbnail Upload (Media Library), dan Project Color.
   - **AJAX Store Logic**: Pengiriman data menggunakan Axios dengan validasi StoreProjectRequest.
   - Integrasi desain premium (Glassmorphism).
+- **Documentation Builder**:
+  - Manajemen dokumen (Single File, Manual Book, Code).
+  - Integrasi penuh dengan Spatie Media Library.
+  - Editor penulisan kode profesional via Monaco Editor.
+  - CRUD & Detail modal interaktif dengan pratinjau cerdas.
+  - Filter data yang kuat (Kategori, Project, Tipe).
 
 ## Database Schema (Current)
 - `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.
@@ -84,3 +91,6 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `media`: Spatie Media Library.
 - `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `color`, `icon`, `start_date`, `deadline`, `progress`, `actual_finished_at`, `created_by`.
 - `project_user`: `project_id`, `user_id` (Pivot untuk PIC).
+- `dokumens`: `id` (ULID), `nama`, `versi`, `kategori`, `type` (file/article/code), `project_id`, `user_id`.
+- `dokumen_items`: `id` (ULID), `dokumen_id`, `title`, `content`, `order`.
+

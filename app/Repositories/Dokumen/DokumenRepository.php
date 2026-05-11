@@ -13,7 +13,7 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
         parent::__construct($model);
     }
 
-    public function getPaginated($search, $kategori, $project_id, $perPage)
+    public function getPaginated($search, $kategori, $project_id, $perPage, $type = null)
     {
         $query = $this->model->newQuery()->with(['project', 'uploader']);
 
@@ -27,6 +27,10 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
 
         if ($project_id) {
             $query->where('project_id', $project_id);
+        }
+
+        if ($type) {
+            $query->where('type', $type);
         }
 
         return $query->latest()->paginate($perPage);

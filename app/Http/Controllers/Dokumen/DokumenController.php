@@ -54,6 +54,7 @@ class DokumenController extends Controller
                 $request->kategori,
                 $request->project_id,
                 $request->row_per_page,
+                $request->type,
             );
 
             return ResponseHelper::jsonResponse(
@@ -68,8 +69,61 @@ class DokumenController extends Controller
     }
 
     /**
-     * Tampilkan antarmuka Documentation Builder.
+     * Simpan dokumen baru ke database.
      */
+    public function store(\App\Http\Requests\Dokumen\DokumenStoreRequest $request): JsonResponse
+    {
+        try {
+            $dokumen = $this->dokumenService->createDokumen($request->validated());
+
+            return ResponseHelper::jsonResponse(
+                true,
+                DokumenMessages::CREATED_SUCCESS,
+                new DokumenResource($dokumen),
+                201
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
+    /**
+     * Ambil data dokumen tunggal.
+     */
+    public function show(string $id): JsonResponse
+    {
+        try {
+            $dokumen = $this->dokumenService->getDokumenById($id);
+
+            return ResponseHelper::jsonResponse(
+                true,
+                DokumenMessages::RETRIEVED_SUCCESS,
+                new DokumenResource($dokumen),
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
+    /**
+     * Perbarui data dokumen.
+     */
+    public function update(\App\Http\Requests\Dokumen\DokumenUpdateRequest $request, string $id): JsonResponse
+    {
+        try {
+            $dokumen = $this->dokumenService->updateDokumen($id, $request->validated());
+
+            return ResponseHelper::jsonResponse(
+                true,
+                DokumenMessages::UPDATED_SUCCESS,
+                new DokumenResource($dokumen),
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
     public function builder(string $id): View
     {
         $dokumen = \App\Models\Dokumen::with(['items', 'project', 'uploader'])->findOrFail($id);

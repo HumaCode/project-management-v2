@@ -9,6 +9,7 @@ $(function() {
         search: '',
         kategori: '',
         project_id: '',
+        type: '',
         page: 1,
         per_page: 10
     };
@@ -23,6 +24,7 @@ $(function() {
                 search: window.tableState.search,
                 kategori: window.tableState.kategori,
                 project_id: window.tableState.project_id,
+                type: window.tableState.type,
                 page: window.tableState.page,
                 row_per_page: window.tableState.per_page
             },
@@ -42,9 +44,32 @@ $(function() {
     };
 
     // 3. Start Loading Data
-    window.loadData();
+    setTimeout(() => {
+        window.loadData();
+    }, 300);
 
-    // 4. Filter Handlers
+    initSelect2();
+    initDropZone();
+    initDropZoneEdit();
+
+    // Inisialisasi submit form menggunakan helper global dari main.js
+    if (typeof handleFormSubmit === 'function') {
+        handleFormSubmit("#formDokumen").onSuccess(function(res) {
+            $('#addModal').modal('hide');
+            $('#formDokumen')[0].reset();
+            $('#previewContainer').hide();
+            $('#dropZoneContent').show();
+            $('#fileName').html('PDF, DOCX, XLSX, PPTX, ZIP, PNG &mdash; Maks. 50 MB');
+            window.loadData();
+        }).init();
+
+        handleFormSubmit("#formEditDokumen").onSuccess(function(res) {
+            $('#editModal').modal('hide');
+            window.loadData();
+        }).init();
+    }
+
+    /* ── Filter Handlers ── */
     $('#fKategori').on('change', function() {
         window.tableState.kategori = $(this).val();
         window.tableState.page = 1;
@@ -57,21 +82,140 @@ $(function() {
         window.loadData();
     });
 
-    // 5. Modal Behaviors
+    $('#fType').on('change', function() {
+        window.tableState.type = $(this).val();
+        window.tableState.page = 1;
+        window.loadData();
+    });
+
+    $('#btnReset').on('click', function() {
+        window.tableState.search = '';
+        window.tableState.kategori = '';
+        window.tableState.project_id = '';
+        window.tableState.type = '';
+        window.tableState.page = 1;
+
+        $('#searchInput').val('');
+        $('#fKategori').val('').trigger('change.select2');
+        $('#fProject').val('').trigger('change.select2');
+        $('#fType').val('').trigger('change.select2');
+
+        window.loadData();
+    });
+
+    $('#searchInput').on('keyup', _.debounce(function() {
+        window.tableState.search = $(this).val();
+        window.tableState.page = 1;
+        window.loadData();
+    }, 500));
+
+    $('#tampilData').on('change', function() {
+        window.tableState.per_page = $(this).val();
+        window.tableState.page = 1;
+        window.loadData();
+    });
+
+    /* ── Modal Behaviors ── */
     initDrain('delModal', 'drainDel');
 
-    // Inject document name to delete modal
     $(document).on('click', '.ib-x', function() {
         $('#delDocName').text($(this).data('nm') || 'ini');
     });
 
-    // Drop zone
-    initDropZone();
+    // Detail Logic
+    $(document).on('click', '.ib-v:not(a)', function() {
+        const id = $(this).data('id');
+        const url = `${window.urlBuilderBase}/${id}`;
+        
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(res) {
+                if (res.success) {
+                    const d = res.data;
+                    const ext = d.file_info.extension;
+                    
+                    $('#detailNama').text(d.nama);
+                    $('#detailMeta').html(`${ext.toUpperCase()} &bull; ${d.file_info.size}`);
+                    $('#detailKategori').text(d.kategori_label).attr('class', `cat cat-${d.kategori}`);
+                    $('#detailProject').text(d.project.name);
+                    $('#detailVersi').text(d.versi || '-');
+                    $('#detailTanggal').text(d.tanggal_upload);
+                    $('#detailUploaderName').text(d.uploader.name);
+                    $('#detailUploaderAvatar').text(getInitials(d.uploader.name));
+                    $('#detailKeterangan').text(d.keterangan || 'Tidak ada keterangan.');
+                    
+                    if (d.file_info.url) {
+                        $('#btnDownloadDetail').attr('href', d.file_info.url).show();
+                    } else {
+                        $('#btnDownloadDetail').hide();
+                    }
 
-    // Select2 init
+                    // Preview logic
+                    if (d.file_info.url && ext.match(/(jpg|jpeg|png|webp|gif)$/i)) {
+                        $('#detailImagePreview img').attr('src', d.file_info.url);
+                        $('#detailImagePreview').show();
+                        $('#detailFileIcon').hide();
+                    } else {
+                        $('#detailImagePreview').hide();
+                        $('#detailFileIcon').show().attr('class', `detail-icon-large ${getFileIconClass(ext)}`)
+                            .html(`<i class="${getFileIcon(ext)}"></i>`);
+                    }
+
+                    $('#showModal').modal('show');
+                }
+            }
+        });
+    });
+
+    // Edit Logic
+    $(document).on('click', '.ib-e', function() {
+        const id = $(this).data('id');
+        const url = `${window.urlBuilderBase}/${id}`;
+        
+        // Reset and loading state
+        $('#formEditDokumen')[0].reset();
+        $('#previewContainerEdit').hide();
+        $('#dropZoneContentEdit').show();
+
+        $.ajax({
+            url: url,
+            method: 'GET',
+            success: function(res) {
+                if (res.success) {
+                    const d = res.data;
+                    $('#formEditDokumen').attr('action', `${window.urlBuilderBase}/${d.id}`);
+                    $('#editNama').val(d.nama);
+                    $('#editVersi').val(d.versi);
+                    $('#editTanggal').val(d.tanggal_upload_raw || '');
+                    $('#editKeterangan').val(d.keterangan);
+                    
+                    $('#sel2TypeEdit').val(d.type).trigger('change');
+                    $('#sel2KatEdit').val(d.kategori).trigger('change');
+                    $('#sel2ProjEdit').val(d.project.id).trigger('change');
+                    $('#sel2UserEdit').val(d.uploader.id).trigger('change');
+
+                    if (d.file_info && d.file_info.url && (d.file_info.extension.match(/(jpg|jpeg|png|webp|gif)$/i))) {
+                        $('#imagePreviewEdit').attr('src', d.file_info.url);
+                        $('#previewContainerEdit').show();
+                        $('#dropZoneContentEdit').hide();
+                    }
+
+                    $('#editModal').modal('show');
+                }
+            }
+        });
+    });
+
     $('#addModal').on('shown.bs.modal', function() {
         if (!$('#sel2Kat').hasClass('select2-hidden-accessible')) {
             initSelect2();
+        }
+    });
+
+    $('#editModal').on('shown.bs.modal', function() {
+        if (!$('#sel2KatEdit').hasClass('select2-hidden-accessible')) {
+            initSelect2Edit();
         }
     });
 });
@@ -119,9 +263,9 @@ function renderTable(data) {
                 <td>
                     <div class="act-row">
                         ${item.type !== 'file' ? `<a href="${builderUrl}" class="ibtn ib-v" title="Open Builder" style="background:rgba(168,85,247,0.1); color:#a855f7;"><i class="bi bi-magic"></i></a>` : ''}
-                        <button class="ibtn ib-v" title="Lihat"><i class="bi bi-eye"></i></button>
-                        <button class="ibtn ib-d" title="Unduh"><i class="bi bi-download"></i></button>
-                        <button class="ibtn ib-e" title="Edit"><i class="bi bi-pencil-square"></i></button>
+                        <button class="ibtn ib-v" title="Lihat" data-id="${item.id}"><i class="bi bi-eye"></i></button>
+                        ${item.file_info.url ? `<a href="${item.file_info.url}" target="_blank" class="ibtn ib-d" title="Unduh" download><i class="bi bi-download"></i></a>` : ''}
+                        <button class="ibtn ib-e" title="Edit" data-id="${item.id}"><i class="bi bi-pencil-square"></i></button>
                         <button class="ibtn ib-x" title="Hapus" data-nm="${item.nama}" data-bs-toggle="modal" data-bs-target="#delModal">
                             <i class="bi bi-trash3"></i>
                         </button>
@@ -144,23 +288,75 @@ function initDrain(mid, fid) {
 }
 
 function initDropZone() {
-    var dz = document.getElementById('dropZone');
-    if (!dz) return;
-    dz.addEventListener('dragover', function(e) { e.preventDefault(); this.classList.add('drag'); });
-    dz.addEventListener('dragleave', function() { this.classList.remove('drag'); });
-    dz.addEventListener('drop', function(e) { e.preventDefault(); this.classList.remove('drag'); });
+    const $zone = $('#dropZone');
+    const $input = $('#fileInput');
+    const $name = $('#fileName');
+    if (!$zone.length) return;
+    $zone.on('click', function() { $input.click(); });
+    $input.on('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            $name.html(`<strong style="color:var(--cyan)">${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreview').attr('src', e.target.result);
+                    $('#previewContainer').fadeIn(300);
+                    $('#dropZoneContent').fadeOut(300);
+                }
+                reader.readAsDataURL(file);
+            } else { $('#previewContainer').hide(); $('#dropZoneContent').show(); }
+        }
+    });
+    $('#btnRemovePreview').on('click', function(e) {
+        e.stopPropagation(); $input.val('');
+        $('#previewContainer').fadeOut(200); $('#dropZoneContent').fadeIn(200);
+        $name.html('PDF, DOCX, XLSX, PPTX, ZIP, PNG &mdash; Maks. 50 MB');
+    });
+}
+
+function initDropZoneEdit() {
+    const $zone = $('#dropZoneEdit');
+    const $input = $('#fileInputEdit');
+    const $name = $('#fileNameEdit');
+    if (!$zone.length) return;
+    $zone.on('click', function() { $input.click(); });
+    $input.on('change', function() {
+        if (this.files && this.files[0]) {
+            const file = this.files[0];
+            $name.html(`<strong style="color:var(--cyan)">${file.name}</strong> (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
+            if (file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    $('#imagePreviewEdit').attr('src', e.target.result);
+                    $('#previewContainerEdit').fadeIn(300);
+                    $('#dropZoneContentEdit').fadeOut(300);
+                }
+                reader.readAsDataURL(file);
+            } else { $('#previewContainerEdit').hide(); $('#dropZoneContentEdit').show(); }
+        }
+    });
+    $('#btnRemovePreviewEdit').on('click', function(e) {
+        e.stopPropagation(); $input.val('');
+        $('#previewContainerEdit').fadeOut(200); $('#dropZoneContentEdit').fadeIn(200);
+        $name.html('Biarkan kosong jika tidak ingin mengubah file');
+    });
 }
 
 function initSelect2() {
     var opts = { dropdownParent: $('#addModal'), placeholder: '-- Pilih --', allowClear: true, theme: 'default' };
     $('#sel2Type').select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
-        if ($(this).val() === 'file') {
-            $('#dropZone').slideDown(300);
-        } else {
-            $('#dropZone').slideUp(300);
-        }
+        if ($(this).val() === 'file') { $('#dropZone').slideDown(300); } else { $('#dropZone').slideUp(300); }
     });
     $('#sel2Kat, #sel2Proj, #sel2User').select2(opts);
+}
+
+function initSelect2Edit() {
+    var opts = { dropdownParent: $('#editModal'), placeholder: '-- Pilih --', allowClear: true, theme: 'default' };
+    $('#sel2TypeEdit').select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
+        if ($(this).val() === 'file') { $('#dropZoneEdit').slideDown(300); } else { $('#dropZoneEdit').slideUp(300); }
+    });
+    $('#sel2KatEdit, #sel2ProjEdit, #sel2UserEdit').select2(opts);
 }
 
 function getFileIconClass(ext) {

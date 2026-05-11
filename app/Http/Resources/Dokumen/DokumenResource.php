@@ -21,6 +21,7 @@ class DokumenResource extends JsonResource
             'kategori' => $this->kategori,
             'kategori_label' => $this->kategori_label,
             'tanggal_upload' => $this->tanggal_upload->format('d M Y'),
+            'tanggal_upload_raw' => $this->tanggal_upload->format('Y-m-d'),
             'keterangan' => $this->keterangan,
             'type' => $this->type,
             'status' => $this->status,
@@ -34,8 +35,9 @@ class DokumenResource extends JsonResource
                 'avatar_url' => $this->uploader->avatar_url ?? null,
             ],
             'file_info' => [
-                'extension' => 'pdf', // Placeholder
-                'size' => '4.2 MB', // Placeholder
+                'extension' => $this->getFirstMedia('files')->extension ?? ($this->type === 'article' ? 'article' : ($this->type === 'code' ? 'code' : 'file')),
+                'size' => $this->getFirstMedia('files')->human_readable_size ?? '-',
+                'url' => $this->getFirstMediaUrl('files'),
             ],
             'created_at' => $this->created_at->format('d M Y H:i'),
         ];

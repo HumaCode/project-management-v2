@@ -17,6 +17,7 @@ class DokumenPaginationRequest extends FormRequest
             'search'       => 'nullable|string',
             'kategori'     => 'nullable|string',
             'project_id'   => 'nullable|string',
+            'type'         => 'nullable|string|in:file,article,code',
             'row_per_page' => 'required|integer|min:1|max:100',
         ];
     }

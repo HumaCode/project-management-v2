@@ -2,6 +2,27 @@
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/user.css') }}">
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/dokumen.css') }}">
+        <style>
+            .btn-reset {
+                background: rgba(255, 255, 255, 0.05);
+                border: 1px solid var(--bd);
+                color: var(--muted);
+                width: 40px;
+                height: 40px;
+                border-radius: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.2s;
+                cursor: pointer;
+            }
+            .btn-reset:hover {
+                background: rgba(255, 255, 255, 0.1);
+                color: var(--cyan);
+                border-color: var(--cyan);
+                transform: rotate(-45deg);
+            }
+        </style>
     @endpush
 
     @push('js')
@@ -29,7 +50,7 @@
         </div>
         <div class="pg-actions">
             <div class="bc d-none d-xl-flex">
-                <a href="#"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
+                <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
                 <span class="sep"><i class="bi bi-chevron-right"></i></span>
                 <span class="here">{{ $title }}</span>
             </div>
@@ -93,6 +114,15 @@
                 <option value="{{ $pj->id }}">{{ $pj->name }}</option>
             @endforeach
         </select>
+        <select class="nsel" id="fType" style="min-width:140px">
+            <option value="">Semua Tipe</option>
+            <option value="file">File Tunggal</option>
+            <option value="article">Koleksi / Manual Book</option>
+            <option value="code">Dokumentasi Koding</option>
+        </select>
+        <button class="btn-reset" id="btnReset" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
         <select class="nsel" id="tampilData" style="min-width:110px">
             <option value="10">10 Baris</option>
             <option value="25">25 Baris</option>
@@ -129,142 +159,17 @@
         </div>
         <!-- Pagination -->
         <div class="tbl-foot">
-            <div class="tbl-info">Menampilkan <b>12</b> dari <b>48</b> data</div>
+            <div class="tbl-info">Menampilkan <b>0</b> dari <b>0</b> data</div>
             <div class="pag">
-                <button class="pb" disabled><i class="bi bi-chevron-left"></i></button>
-                <button class="pb active">1</button>
-                <button class="pb">2</button>
-                <button class="pb">3</button>
-                <span class="pag-dot">&hellip;</span>
-                <button class="pb">4</button>
-                <button class="pb"><i class="bi bi-chevron-right"></i></button>
+                <!-- Diterjemahkan oleh custom-table.js -->
             </div>
         </div>
     </div>
 
     @push('modals')
-        <!-- MODALS -->
-        <!-- Modal Tambah -->
-        <div class="modal fade m-dark m-cyan" id="addModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
-                <div class="modal-content">
-                    <div class="m-hd">
-                        <h5 class="m-hd-title"><i class="bi bi-cloud-upload-fill"></i> Tambah Dokumen Baru</h5>
-                        <button class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <div class="m-bd">
-                        <!-- Drop zone -->
-                        <div class="drop-zone" id="dropZone">
-                            <i class="bi bi-cloud-arrow-up-fill"></i>
-                            <div class="dt">Drag &amp; drop file di sini</div>
-                            <div class="ds">atau <span style="color:var(--cyan);cursor:pointer">klik untuk memilih file</span></div>
-                            <div class="dk">PDF, DOCX, XLSX, PPTX, ZIP, PNG &mdash; Maks. 50 MB</div>
-                        </div>
-
-                        <div class="row g-3">
-                            <div class="col-12">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">TIPE DOKUMEN<span class="req">*</span></label>
-                                    <select id="sel2Type" style="width:100%">
-                                        <option value="file">File Tunggal (Upload PDF, DOCX, dll)</option>
-                                        <option value="article">Koleksi / Manual Book (Documentation Builder)</option>
-                                        <option value="code">Dokumentasi Koding (Snippet & Penjelasan)</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">NAMA DOKUMEN<span class="req">*</span></label>
-                                    <input type="text" class="fmi" placeholder="Masukkan nama dokumen..."/>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">VERSI DOKUMEN</label>
-                                    <input type="text" class="fmi" placeholder="Contoh: v1.0, v2.3..."/>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">KATEGORI<span class="req">*</span></label>
-                                    <select id="sel2Kat" style="width:100%">
-                                        <option value="">-- Pilih Kategori --</option>
-                                        <option value="s">Spesifikasi</option>
-                                        <option value="r">RAB / Anggaran</option>
-                                        <option value="l">Laporan</option>
-                                        <option value="c">Source Code</option>
-                                        <option value="b">Berita Acara</option>
-                                        <option value="d">Desain</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">PROJECT TERKAIT<span class="req">*</span></label>
-                                    <select id="sel2Proj" style="width:100%">
-                                        <option value="">-- Pilih Project --</option>
-                                        @foreach($projects as $pj)
-                                            <option value="{{ $pj->id }}">{{ $pj->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">DIUNGGAH OLEH<span class="req">*</span></label>
-                                    <select id="sel2User" style="width:100%">
-                                        <option value="">-- Pilih Pengguna --</option>
-                                        @foreach($users as $u)
-                                            <option value="{{ $u->id }}" {{ $u->id == auth()->id() ? 'selected' : '' }}>{{ $u->name }}</option>
-                                        @endforeach
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="col-12 col-md-6">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">TANGGAL UPLOAD</label>
-                                    <input type="date" class="fmi" style="color-scheme:dark" value="{{ date('Y-m-d') }}"/>
-                                </div>
-                            </div>
-                            <div class="col-12">
-                                <div class="fm-row mb-0">
-                                    <label class="fm-lbl">KETERANGAN</label>
-                                    <textarea class="fmta" placeholder="Deskripsi singkat dokumen ini (opsional)..." style="height: 80px;"></textarea>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="m-ft">
-                        <button class="btn-mcancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batal</button>
-                        <button class="btn-msave"><span><i class="bi bi-floppy-fill"></i> Simpan Dokumen</span></button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Modal Hapus -->
-        <div class="modal fade m-dark m-red" id="delModal" tabindex="-1">
-            <div class="modal-dialog modal-dialog-centered">
-                <div class="modal-content">
-                    <div class="m-hd">
-                        <h5 class="m-hd-title"><i class="bi bi-trash3-fill"></i> Hapus Dokumen</h5>
-                        <button class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
-                    </div>
-                    <div class="m-bd">
-                        <div class="warn-box">
-                            <i class="bi bi-exclamation-triangle-fill"></i>
-                            <p>Anda akan menghapus dokumen <strong id="delDocName">ini</strong>. Semua versi dan riwayat akan ikut terhapus secara permanen.</p>
-                        </div>
-                        <p style="font-size:12px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-info-circle"></i>&nbsp;Tindakan ini tidak dapat dibatalkan.</p>
-                    </div>
-                    <div class="m-ft">
-                        <button class="btn-mcancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batalkan</button>
-                        <button class="btn-mdel"><span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span></button>
-                    </div>
-                    <div class="modal-drain"><div class="drain-fill" id="drainDel"></div></div>
-                </div>
-            </div>
-        </div>
+        @include('pages.dokumen.partials.modal-create')
+        @include('pages.dokumen.partials.modal-edit')
+        @include('pages.dokumen.partials.modal-show')
+        @include('pages.dokumen.partials.modal-delete')
     @endpush
 </x-master-layout>
-

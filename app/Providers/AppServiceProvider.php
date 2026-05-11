@@ -46,6 +46,10 @@ class AppServiceProvider extends ServiceProvider
 
         // project
         $this->app->bind(ProjectServiceInterface::class, ProjectService::class);
+
+        // dokumen
+        $this->app->bind(\App\Interface\Dokumen\DokumenRepositoryInterface::class, \App\Repositories\Dokumen\DokumenRepository::class);
+        $this->app->bind(\App\Interface\Dokumen\DokumenServiceInterface::class, \App\Services\Dokumen\DokumenService::class);
     }
 
     /**

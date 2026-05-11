@@ -72,8 +72,9 @@ Route::middleware(['auth'])->group(function () {
             Route::get('projects/getAllPagination', [\App\Http\Controllers\Project\ProjectController::class, 'getAllPaginated'])->name('projects.allPagination');
             Route::resource('projects', \App\Http\Controllers\Project\ProjectController::class);
 
-            // dokumen
             Route::get('dokumen', [\App\Http\Controllers\Dokumen\DokumenController::class, 'index'])->name('dokumen.index');
+            Route::get('dokumen/pagination', [\App\Http\Controllers\Dokumen\DokumenController::class, 'getAllPaginated'])->name('dokumen.pagination');
+            Route::get('dokumen/{id}/builder', [\App\Http\Controllers\Dokumen\DokumenController::class, 'builder'])->name('dokumen.builder');
         }
     );
 });

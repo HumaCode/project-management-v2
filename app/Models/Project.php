@@ -63,4 +63,12 @@ class Project extends Model implements HasMedia
     {
         return $this->belongsToMany(User::class, 'project_user');
     }
+
+    /**
+     * Get the documents for the project.
+     */
+    public function dokumens(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Dokumen::class);
+    }
 }

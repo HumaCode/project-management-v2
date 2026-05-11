@@ -181,7 +181,17 @@ $(function () {
 
     $(document).on('click', '.btn-destroy', function () {
         const url = $(this).data('url');
-        if (confirm('Apakah Anda yakin ingin menghapus project ini?')) {
+        
+        SCA.dialog({
+            type: "danger",
+            title: "Hapus Project?",
+            message: "Project yang dihapus tidak dapat dikembalikan.",
+            confirmText: "Ya, Hapus",
+            cancelText: "Batal",
+            showCancel: true,
+        }).then((confirmed) => {
+            if (!confirmed) return;
+
             axios.delete(url)
                 .then(res => {
                     SCA.toast({
@@ -200,7 +210,7 @@ $(function () {
                         position: "top-right",
                     });
                 });
-        }
+        });
     });
 
     // FAB

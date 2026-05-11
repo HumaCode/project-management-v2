@@ -9,4 +9,5 @@ interface ProjectServiceInterface
     public function storeProject(array $data): \App\Models\Project;
     public function getProjectByUlid(string $ulid): \App\Models\Project;
     public function updateProject(string $ulid, array $data): \App\Models\Project;
+    public function deleteProject(string $ulid): bool;
 }

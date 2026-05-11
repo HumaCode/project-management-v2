@@ -97,4 +97,20 @@ class ProjectService implements ProjectServiceInterface
             return $project;
         });
     }
+
+    public function deleteProject(string $ulid): bool
+    {
+        return DB::transaction(function () use ($ulid) {
+            $project = Project::findOrFail($ulid);
+
+            // Bersihkan relasi many-to-many dengan PIC (agar bersih di pivot table)
+            $project->pics()->detach();
+
+            // Hapus project (karena trait InteractsWithMedia, file fisik di public/storage 
+            // umumnya otomatis terhapus saat model di-delete, namun jika diperlukan bisa dipanggil clearMediaCollection)
+            $project->clearMediaCollection('thumbnail');
+
+            return $project->delete();
+        });
+    }
 }

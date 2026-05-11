@@ -186,4 +186,23 @@ class ProjectController extends Controller
             return ResponseHelper::error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        // Gate::authorize('delete ' . $this->aksesPermission);
+
+        try {
+            $this->projectService->deleteProject($id);
+
+            return ResponseHelper::success(
+                ProjectMessages::DELETED_SUCCESS,
+                null
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
 }

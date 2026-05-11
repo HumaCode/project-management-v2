@@ -71,6 +71,9 @@ Route::middleware(['auth'])->group(function () {
             Route::redirect('project', 'projects');
             Route::get('projects/getAllPagination', [\App\Http\Controllers\Project\ProjectController::class, 'getAllPaginated'])->name('projects.allPagination');
             Route::resource('projects', \App\Http\Controllers\Project\ProjectController::class);
+
+            // dokumen
+            Route::get('dokumen', [\App\Http\Controllers\Dokumen\DokumenController::class, 'index'])->name('dokumen.index');
         }
     );
 });

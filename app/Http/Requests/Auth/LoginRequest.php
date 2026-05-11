@@ -65,14 +65,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // Cek apakah user aktif
-        if ($user->is_active == '0') {
-            RateLimiter::hit($this->throttleKey());
-
-            throw ValidationException::withMessages([
-                'identitas' => 'Akun Anda belum aktif atau dinonaktifkan. Silakan hubungi Administrator.',
-            ]);
-        }
+        // Pengecekan user aktif dipindahkan ke middleware user.active
+        // if ($user->is_active == '0') {
+        //     RateLimiter::hit($this->throttleKey());
+        //
+        //     throw ValidationException::withMessages([
+        //         'identitas' => 'Akun Anda belum aktif atau dinonaktifkan. Silakan hubungi Administrator.',
+        //     ]);
+        // }
 
         Auth::login($user, $this->boolean('remember'));
 

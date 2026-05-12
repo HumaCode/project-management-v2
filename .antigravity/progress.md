@@ -71,8 +71,14 @@
 - [ ] **UI Polish**: Terus memantau konsistensi UI/UX pada modul baru.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
-## 📝 Notes
-- Project ini menggunakan pendekatan **Premium Design**, jadi setiap fitur baru harus dipastikan memiliki UI/UX yang modern.
-- Pastikan menjalankan `php artisan storage:link` jika avatar tidak muncul.
-- Cache menu harus di-clear jika ada perubahan data pada tabel `menus`.
-- Laravel Debugbar telah diinstal untuk mempermudah debugging query dan performa (dev only).
+## 📝 Notes & Maintenance
+- **PHP Code Changes**: Karena menggunakan Laravel Octane (FrankenPHP), setiap ada perubahan pada Controller, Service, Model, atau Route, **WAJIB** jalankan:
+  `docker exec pm_v2_app php artisan octane:reload`
+- **UI/Blade Changes**: Jika perubahan pada file `.blade.php` tidak muncul, jalankan:
+  `docker exec pm_v2_app php artisan view:clear`
+- **Image/Storage Issues**: Jika gambar atau avatar tidak muncul (Error 403/404), jalankan perintah ini dari dalam container:
+  `docker exec pm_v2_app php artisan storage:link`
+- **Frontend Assets**: Untuk perubahan pada file `.js` atau `.css`, lakukan **Hard Refresh (Ctrl + F5)** pada browser.
+- **Project Aesthetics**: Project ini menggunakan pendekatan **Premium Design**, jadi setiap fitur baru harus dipastikan memiliki UI/UX yang modern.
+- **Menu System**: Cache menu harus di-clear jika ada perubahan data pada tabel `menus`.
+- **Laravel Debugbar**: Telah diinstal untuk mempermudah debugging query dan performa (dev only).

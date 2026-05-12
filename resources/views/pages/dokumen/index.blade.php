@@ -129,7 +129,7 @@
             <option value="50">50 Baris</option>
         </select>
         <div class="tbar-right">
-            <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
+            <button class="btn-add" data-bs-target="#addModal">
                 <span><i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Tambah</span></span>
             </button>
         </div>

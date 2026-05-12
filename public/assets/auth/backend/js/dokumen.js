@@ -165,10 +165,16 @@ $(function() {
         const id = $(this).data('id');
         const url = `${window.urlBuilderBase}/${id}`;
         
+        if (typeof showLoading === 'function') {
+            showLoading(true, { title: 'Memuat Detail', message: 'Sedang mengambil data dokumen...' });
+        }
+        
         $.ajax({
             url: url,
             method: 'GET',
             success: function(res) {
+                if (typeof showLoading === 'function') showLoading(false);
+                
                 if (res.success) {
                     const d = res.data;
                     const ext = d.file_info.extension;
@@ -200,8 +206,14 @@ $(function() {
                             .html(`<i class="${getFileIcon(ext)}"></i>`);
                     }
 
-                    $('#showModal').modal('show');
+                    setTimeout(() => {
+                        $('#showModal').modal('show');
+                    }, 400);
                 }
+            },
+            error: function() {
+                if (typeof showLoading === 'function') showLoading(false);
+                SCA.toast({ type: 'danger', title: 'Error', message: 'Gagal memuat data.' });
             }
         });
     });
@@ -211,15 +223,20 @@ $(function() {
         const id = $(this).data('id');
         const url = `${window.urlBuilderBase}/${id}`;
         
-        // Reset and loading state
         $('#formEditDokumen')[0].reset();
         $('#previewContainerEdit').hide();
         $('#dropZoneContentEdit').show();
+
+        if (typeof showLoading === 'function') {
+            showLoading(true, { title: 'Menyiapkan Data', message: 'Mohon tunggu sebentar...' });
+        }
 
         $.ajax({
             url: url,
             method: 'GET',
             success: function(res) {
+                if (typeof showLoading === 'function') showLoading(false);
+                
                 if (res.success) {
                     const d = res.data;
                     $('#formEditDokumen').attr('action', `${window.urlBuilderBase}/${d.id}`);
@@ -239,8 +256,14 @@ $(function() {
                         $('#dropZoneContentEdit').hide();
                     }
 
-                    $('#editModal').modal('show');
+                    setTimeout(() => {
+                        $('#editModal').modal('show');
+                    }, 400);
                 }
+            },
+            error: function() {
+                if (typeof showLoading === 'function') showLoading(false);
+                SCA.toast({ type: 'danger', title: 'Error', message: 'Gagal mengambil data untuk diedit.' });
             }
         });
     });
@@ -255,6 +278,24 @@ $(function() {
         if (!$('#sel2KatEdit').hasClass('select2-hidden-accessible')) {
             initSelect2Edit();
         }
+    });
+
+    // Add Modal Loading Effect
+    $(document).on('click', '.btn-add', function(e) {
+        const target = $(this).data('bs-target');
+        if (!target) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        if (typeof showLoading === 'function') {
+            showLoading(true, { title: 'Membuka Form', message: 'Sedang menyiapkan formulir...' });
+        }
+
+        setTimeout(() => {
+            if (typeof showLoading === 'function') showLoading(false);
+            $(target).modal('show');
+        }, 400);
     });
 });
 

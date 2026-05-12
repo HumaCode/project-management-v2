@@ -6,6 +6,7 @@
   <title>Akun Belum Aktif — Project Management System</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
+  <link href="{{ asset('assets/auth/backend/css/sca.css') }}" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
   /* ─── Variables ─── */
@@ -130,8 +131,7 @@
   .prog-label{display:flex;justify-content:space-between;align-items:center;font-family:var(--mono);font-size:11px;color:var(--muted);margin-bottom:7px}
   .prog-label .prog-pct{color:var(--warn);font-weight:700}
   .prog-track{height:5px;border-radius:4px;background:rgba(255,255,255,.06);overflow:hidden}
-  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--warn),var(--err));width:60%;transition:width .6s var(--ease);animation:progIn .8s .5s var(--ease) both}
-  @keyframes progIn{from{width:0%}to{width:60%}}
+  .prog-fill{height:100%;border-radius:4px;background:linear-gradient(90deg,var(--warn),var(--err));transition:width .6s var(--ease)}
 
   /* section label */
   .fsec{font-family:var(--mono);font-size:10px;text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);padding-bottom:10px;border-bottom:1px solid var(--bd);margin-bottom:16px;display:flex;align-items:center;gap:7px}
@@ -314,6 +314,9 @@
 <div class="blob blob-2"></div>
 <div class="blob blob-3"></div>
 <canvas id="bgc"></canvas>
+<form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+  @csrf
+</form>
 
 <div class="page-wrap">
   <div class="main-card container-fluid px-0" style="max-width:1060px">
@@ -347,25 +350,37 @@
                 <div class="st-sub">Akun dibuat</div>
               </div>
             </div>
-            <div class="step-item active">
-              <div class="step-num sn-pending">2</div>
+            <div class="step-item {{ !empty(auth()->user()->bio) ? '' : 'active' }}" id="step2">
+              <div class="step-num {{ !empty(auth()->user()->bio) ? 'sn-done' : 'sn-pending' }}" id="sn2">
+                @if(!empty(auth()->user()->bio))
+                  <i class="bi bi-check-lg"></i>
+                @else
+                  2
+                @endif
+              </div>
               <div class="step-info">
                 <div class="st-title">Lengkapi Profil</div>
-                <div class="st-sub">Sedang dilakukan</div>
+                <div class="st-sub" id="ss2">{{ !empty(auth()->user()->bio) ? 'Selesai' : 'Sedang dilakukan' }}</div>
               </div>
             </div>
-            <div class="step-item">
-              <div class="step-num sn-wait">3</div>
+            <div class="step-item {{ !empty(auth()->user()->bio) ? '' : '' }}" id="step3">
+              <div class="step-num {{ !empty(auth()->user()->bio) ? 'sn-done' : 'sn-wait' }}" id="sn3">
+                @if(!empty(auth()->user()->bio))
+                  <i class="bi bi-check-lg"></i>
+                @else
+                  3
+                @endif
+              </div>
               <div class="step-info">
                 <div class="st-title">Verifikasi Admin</div>
-                <div class="st-sub">Menunggu</div>
+                <div class="st-sub" id="ss3">{{ !empty(auth()->user()->bio) ? 'Selesai' : 'Menunggu' }}</div>
               </div>
             </div>
-            <div class="step-item">
-              <div class="step-num sn-wait">4</div>
+            <div class="step-item {{ !empty(auth()->user()->bio) ? 'active' : '' }}" id="step4">
+              <div class="step-num {{ !empty(auth()->user()->bio) ? 'sn-pending' : 'sn-wait' }}" id="sn4">4</div>
               <div class="step-info">
                 <div class="st-title">Akun Aktif</div>
-                <div class="st-sub">Belum</div>
+                <div class="st-sub" id="ss4">{{ !empty(auth()->user()->bio) ? 'Sedang diproses' : 'Belum' }}</div>
               </div>
             </div>
           </div>
@@ -377,6 +392,7 @@
       <div class="col-12 col-lg-7 right-panel">
         <div class="rp-scroll">
 
+          @if(empty(auth()->user()->bio))
           <!-- Header -->
           <div class="rp-head">
             <div class="rp-tag">
@@ -390,81 +406,93 @@
           <!-- Warning box -->
           <div class="warn-box">
             <i class="bi bi-exclamation-triangle-fill"></i>
-            <p>Akun <strong>budi@pmssystem.id</strong> terdaftar pada <strong>08 Mar 2025</strong> namun belum diaktifkan. Lengkapi data berikut untuk melanjutkan proses aktivasi.</p>
+            <p>Akun <strong>{{ auth()->user()->email }}</strong> terdaftar pada <strong>{{ auth()->user()->created_at->format('d M Y') }}</strong> namun belum diaktifkan. Lengkapi data berikut untuk melanjutkan proses aktivasi.</p>
           </div>
 
+          @php
+            $countFields = ['name', 'username', 'email', 'gender', 'city', 'phone'];
+            $filledCount = 0;
+            foreach($countFields as $f) {
+                if(!empty(auth()->user()->$f)) $filledCount++;
+            }
+            $initialPct = !empty(auth()->user()->bio) ? 100 : round(($filledCount / count($countFields)) * 100);
+          @endphp
           <!-- Progress -->
           <div class="profile-prog">
             <div class="prog-label">
               <span>Kelengkapan Profil</span>
-              <span class="prog-pct" id="progPct">60%</span>
+              <span class="prog-pct" id="progPct">{{ $initialPct }}%</span>
             </div>
-            <div class="prog-track"><div class="prog-fill" id="progFill"></div></div>
+            <div class="prog-track"><div class="prog-fill" id="progFill" style="width: {{ $initialPct }}%"></div></div>
           </div>
+          @endif
 
           <!-- ── FORM ── -->
-          <div id="formArea" class="form-area">
+          <div id="formArea" class="form-area {{ !empty(auth()->user()->bio) ? 'hidden' : '' }}">
 
+            @if(empty(auth()->user()->name) || empty(auth()->user()->username) || empty(auth()->user()->email) || empty(auth()->user()->gender))
             <div class="fsec"><i class="bi bi-person-circle"></i> Identitas Diri</div>
+            @endif
 
+            @if(empty(auth()->user()->name))
             <!-- Nama Lengkap (readonly, dari register) -->
             <div class="fg">
               <label class="fl">Nama Lengkap</label>
               <div class="fiw">
                 <i class="bi bi-person-fill fi-ic"></i>
-                <input type="text" class="fi" value="Budi Santoso" readonly style="opacity:.6;cursor:not-allowed"/>
+                <input type="text" class="fi" value="{{ auth()->user()->name }}" readonly style="opacity:.6;cursor:not-allowed"/>
               </div>
             </div>
+            @endif
 
+            @if(empty(auth()->user()->username))
+            <!-- Username -->
+            <div class="fg" id="fgUsername">
+              <label class="fl">Username <span class="req">*</span></label>
+              <div class="fiw">
+                <i class="bi bi-at fi-ic"></i>
+                <input type="text" class="fi" id="fUsername" placeholder="Contoh: budi_santoso" autocomplete="off"/>
+              </div>
+              <div class="emsg">Username wajib diisi (minimal 3 karakter).</div>
+            </div>
+            @endif
+
+            @if(empty(auth()->user()->email))
             <!-- Email (readonly) -->
             <div class="fg">
               <label class="fl">Email</label>
               <div class="fiw">
                 <i class="bi bi-envelope-fill fi-ic"></i>
-                <input type="email" class="fi" value="budi@pmssystem.id" readonly style="opacity:.6;cursor:not-allowed"/>
+                <input type="email" class="fi" value="{{ auth()->user()->email }}" readonly style="opacity:.6;cursor:not-allowed"/>
               </div>
             </div>
+            @endif
 
+            @if(empty(auth()->user()->gender))
             <!-- Jenis Kelamin -->
             <div class="fg" id="fgGender">
               <label class="fl">Jenis Kelamin <span class="req">*</span></label>
               <div class="gender-pills">
                 <label class="gpill" id="pillL">
-                  <input type="radio" name="gender" value="laki-laki" id="gL"/>
+                  <input type="radio" name="gender" value="L" id="gL"/>
                   <i class="bi bi-gender-male"></i> Laki-laki
                 </label>
                 <label class="gpill" id="pillP">
-                  <input type="radio" name="gender" value="perempuan" id="gP"/>
+                  <input type="radio" name="gender" value="P" id="gP"/>
                   <i class="bi bi-gender-female"></i> Perempuan
                 </label>
               </div>
               <div class="emsg" id="emGender">Jenis kelamin wajib dipilih.</div>
             </div>
+            @endif
 
-            <div class="fsec" style="margin-top:22px"><i class="bi bi-geo-alt-fill"></i> Lokasi</div>
+            @if(!empty(auth()->user()->gender))
+              <input type="hidden" name="gender" value="{{ auth()->user()->gender }}" id="g{{ auth()->user()->gender }}">
+            @endif
 
-            <!-- Provinsi -->
-            <div class="fg" id="fgProv">
-              <label class="fl">Provinsi <span class="req">*</span></label>
-              <select class="fsl" id="fProv">
-                <option value="">-- Pilih Provinsi --</option>
-                <option value="jateng" selected>Jawa Tengah</option>
-                <option value="jabar">Jawa Barat</option>
-                <option value="jatim">Jawa Timur</option>
-                <option value="jakarta">DKI Jakarta</option>
-                <option value="diy">DI Yogyakarta</option>
-                <option value="banten">Banten</option>
-                <option value="sumut">Sumatera Utara</option>
-                <option value="sumsel">Sumatera Selatan</option>
-                <option value="riau">Riau</option>
-                <option value="kaltim">Kalimantan Timur</option>
-                <option value="sulsel">Sulawesi Selatan</option>
-                <option value="bali">Bali</option>
-                <option value="other">Lainnya</option>
-              </select>
-              <div class="emsg">Provinsi wajib dipilih.</div>
-            </div>
 
+
+            @if(empty(auth()->user()->city))
             <!-- Kota -->
             <div class="fg" id="fgKota">
               <label class="fl">Kota / Kabupaten <span class="req">*</span></label>
@@ -474,7 +502,9 @@
               </div>
               <div class="emsg">Kota / Kabupaten wajib diisi.</div>
             </div>
+            @endif
 
+            @if(empty(auth()->user()->phone))
             <!-- No. Telepon -->
             <div class="fg">
               <label class="fl">No. Telepon / WhatsApp</label>
@@ -483,18 +513,9 @@
                 <input type="tel" class="fi" id="fTelp" placeholder="Contoh: 0812-3456-7890" autocomplete="off"/>
               </div>
             </div>
+            @endif
 
-            <div class="fsec" style="margin-top:22px"><i class="bi bi-card-text"></i> Keterangan</div>
 
-            <!-- Jabatan / Instansi -->
-            <div class="fg">
-              <label class="fl">Jabatan / Instansi <span class="req">*</span></label>
-              <div class="fiw">
-                <i class="bi bi-briefcase-fill fi-ic"></i>
-                <input type="text" class="fi" id="fJabatan" placeholder="Contoh: Staff IT — Dinas Kominfo" maxlength="100" autocomplete="off"/>
-              </div>
-              <div class="emsg">Jabatan / Instansi wajib diisi.</div>
-            </div>
 
             <!-- Keterangan / Bio -->
             <div class="fg" id="fgKet">
@@ -508,7 +529,7 @@
             <div class="act-row">
               <div class="act-row-left">
                 <i class="bi bi-box-arrow-left" style="color:var(--muted)"></i>
-                <a href="login.html">Kembali ke Login</a>
+                <a href="#" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">Kembali ke Login</a>
               </div>
               <button class="btn-submit" id="btnSubmit">
                 <span><i class="bi bi-send-fill"></i> Kirim & Tunggu Verifikasi</span>
@@ -524,16 +545,16 @@
           </div><!-- /form-area -->
 
           <!-- ── SUCCESS STATE ── -->
-          <div class="success-overlay" id="successOverlay">
+          <div class="success-overlay {{ !empty(auth()->user()->bio) ? 'show' : '' }}" id="successOverlay">
             <div class="sc-ring"><i class="bi bi-check-lg"></i></div>
             <h2 class="sc-title">Data Terkirim!</h2>
             <p class="sc-sub">Profil Anda telah berhasil dilengkapi dan sedang menunggu verifikasi dari administrator sistem.</p>
             <div class="sc-info">
               <div class="sci-row"><i class="bi bi-clock-fill"></i><span>Proses verifikasi biasanya <strong>1×24 jam</strong> hari kerja</span></div>
-              <div class="sci-row"><i class="bi bi-envelope-fill"></i><span>Notifikasi akan dikirim ke <strong>budi@pmssystem.id</strong></span></div>
+              <div class="sci-row"><i class="bi bi-envelope-fill"></i><span>Notifikasi akan dikirim ke <strong>{{ auth()->user()->email }}</strong></span></div>
               <div class="sci-row"><i class="bi bi-shield-fill-check"></i><span>Data Anda <strong>aman</strong> dan terenkripsi</span></div>
             </div>
-            <button class="btn-logout-sc" onclick="window.location.href='login.html'">
+            <button class="btn-logout-sc" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
               <i class="bi bi-box-arrow-left"></i> Kembali ke Halaman Login
             </button>
           </div>
@@ -546,6 +567,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="{{ asset('assets/auth/backend/js/sca.js') }}"></script>
 <script>
 /* ─── Canvas ─── */
 (function(){
@@ -572,59 +594,143 @@
 var pillL=document.getElementById('pillL'),pillP=document.getElementById('pillP');
 var gL=document.getElementById('gL'),gP=document.getElementById('gP');
 function selGender(v){
-  pillL.classList.toggle('sel-l', v==='laki-laki');
-  pillP.classList.toggle('sel-p', v==='perempuan');
-  document.getElementById('fgGender').classList.remove('has-err');
+  if(pillL) pillL.classList.toggle('sel-l', v==='L');
+  if(pillP) pillP.classList.toggle('sel-p', v==='P');
+  var fg = document.getElementById('fgGender');
+  if(fg) fg.classList.remove('has-err');
   updateProgress();
 }
-pillL.addEventListener('click',function(){gL.checked=true;selGender('laki-laki');});
-pillP.addEventListener('click',function(){gP.checked=true;selGender('perempuan');});
+if(pillL) pillL.addEventListener('click',function(){ if(gL){ gL.checked=true; selGender('L'); } });
+if(pillP) pillP.addEventListener('click',function(){ if(gP){ gP.checked=true; selGender('P'); } });
 
 /* ─── Char counter ─── */
 var ketEl=document.getElementById('fKet'),cntEl=document.getElementById('cKet');
-function updKet(){var n=ketEl.value.length;cntEl.textContent=n+' / 400';cntEl.className='ccnt'+(n>=400?' full':n>=340?' near':'');updateProgress();}
-ketEl.addEventListener('input',updKet);
+function updKet(){
+  if(!ketEl) return;
+  var n=ketEl.value.length;
+  if(cntEl){
+    cntEl.textContent=n+' / 400';
+    cntEl.className='ccnt'+(n>=400?' full':n>=340?' near':'');
+  }
+  updateProgress();
+}
+if(ketEl) ketEl.addEventListener('input',updKet);
 
 /* ─── Progress bar ─── */
 function updateProgress(){
-  var filled=0,total=5;
-  if(gL.checked||gP.checked)filled++;
-  if(document.getElementById('fProv').value)filled++;
-  if(document.getElementById('fKota').value.trim())filled++;
-  if(document.getElementById('fJabatan').value.trim())filled++;
-  if(document.getElementById('fKet').value.trim().length>=20)filled++;
-  // base 60% (name + email already done) + 40% from 5 new fields
-  var base=60, add=Math.round((filled/total)*40);
-  var pct=base+add;
-  document.getElementById('progFill').style.width=pct+'%';
-  document.getElementById('progPct').textContent=pct+'%';
+  var fields = {
+    name: '{{ !empty(auth()->user()->name) }}',
+    username: document.getElementById('fUsername') ? document.getElementById('fUsername').value.trim() : '{{ !empty(auth()->user()->username) }}',
+    email: '{{ !empty(auth()->user()->email) }}',
+    gender: (document.querySelector('input[name="gender"]:checked') || document.querySelector('input[name="gender"][type="hidden"]')) ? true : false,
+    city: document.getElementById('fKota') ? document.getElementById('fKota').value.trim() : '{{ !empty(auth()->user()->city) }}',
+    phone: document.getElementById('fTelp') ? document.getElementById('fTelp').value.trim() : '{{ !empty(auth()->user()->phone) }}'
+  };
+
+  var total = Object.keys(fields).length;
+  var filled = 0;
+  
+  for (var key in fields) {
+    if (fields[key] && fields[key] !== '0' && fields[key] !== '') filled++;
+  }
+
+  var pct = Math.round((filled / total) * 100);
+  
+  var fillEl = document.getElementById('progFill');
+  var pctEl = document.getElementById('progPct');
+  var step2 = document.getElementById('step2');
+  var sn2 = document.getElementById('sn2');
+  var ss2 = document.getElementById('ss2');
+  var step3 = document.getElementById('step3');
+  var sn3 = document.getElementById('sn3');
+  var ss3 = document.getElementById('ss3');
+
+  if(fillEl) {
+    fillEl.style.width=pct+'%';
+    if(pct >= 100) {
+      fillEl.style.background = 'linear-gradient(90deg, var(--ok), var(--cyan))';
+      if(pctEl) pctEl.style.color = 'var(--ok)';
+      
+      // Step 2 -> Done
+      if(step2) step2.classList.remove('active');
+      if(sn2) { sn2.className = 'step-num sn-done'; sn2.innerHTML = '<i class="bi bi-check-lg"></i>'; }
+      if(ss2) ss2.textContent = 'Selesai';
+      
+      // Step 3 -> Done
+      if(step3) step3.classList.remove('active');
+      if(sn3) { sn3.className = 'step-num sn-done'; sn3.innerHTML = '<i class="bi bi-check-lg"></i>'; }
+      if(ss3) ss3.textContent = 'Selesai';
+
+      // Step 4 -> Active
+      var step4 = document.getElementById('step4'), sn4 = document.getElementById('sn4'), ss4 = document.getElementById('ss4');
+      if(step4) step4.classList.add('active');
+      if(sn4) { sn4.className = 'step-num sn-pending'; sn4.textContent = '4'; }
+      if(ss4) ss4.textContent = 'Sedang diproses';
+    } else {
+      fillEl.style.background = '';
+      if(pctEl) pctEl.style.color = '';
+      
+      // Step 2 -> Active
+      if(step2) step2.classList.add('active');
+      if(sn2) { sn2.className = 'step-num sn-pending'; sn2.textContent = '2'; }
+      if(ss2) ss2.textContent = 'Sedang dilakukan';
+      
+      // Step 3 -> Wait
+      if(step3) step3.classList.remove('active');
+      if(sn3) { sn3.className = 'step-num sn-wait'; sn3.textContent = '3'; }
+      if(ss3) ss3.textContent = 'Menunggu';
+
+      // Step 4 -> Wait
+      var step4 = document.getElementById('step4'), sn4 = document.getElementById('sn4'), ss4 = document.getElementById('ss4');
+      if(step4) step4.classList.remove('active');
+      if(sn4) { sn4.className = 'step-num sn-wait'; sn4.textContent = '4'; }
+      if(ss4) ss4.textContent = 'Belum';
+    }
+  }
+  if(pctEl) pctEl.textContent=pct+'%';
 }
-// bind to all inputs
-['fProv','fKota','fJabatan'].forEach(function(id){
-  document.getElementById(id).addEventListener('input',updateProgress);
-  document.getElementById(id).addEventListener('change',updateProgress);
+
+// Initial run
+updateProgress();
+
+// bind to existing inputs
+['fUsername','fKota','fTelp'].forEach(function(id){
+  var el = document.getElementById(id);
+  if(el){
+    el.addEventListener('input',updateProgress);
+    el.addEventListener('change',updateProgress);
+  }
 });
 
 /* ─── Validation & Submit ─── */
 document.getElementById('btnSubmit').addEventListener('click',function(){
   var ok=true;
 
-  // gender
-  if(!gL.checked&&!gP.checked){
-    document.getElementById('fgGender').classList.add('has-err');
-    ok=false;
-  } else {
-    document.getElementById('fgGender').classList.remove('has-err');
+  // gender validation if visible
+  var gField = document.getElementById('fgGender');
+  if(gField){
+    var gChecked = document.querySelector('input[name="gender"]:checked');
+    if(!gChecked){
+      gField.classList.add('has-err');
+      ok=false;
+    } else {
+      gField.classList.remove('has-err');
+    }
   }
 
-  // fields
-  var fields=[
-    {id:'fProv',  fgId:'fgProv',  check:function(v){return !!v;}},
-    {id:'fKota',  fgId:'fgKota',  check:function(v){return v.trim().length>1;}},
-    {id:'fJabatan',fgId:null,     check:function(v){return v.trim().length>1;}},
-    {id:'fKet',   fgId:'fgKet',   check:function(v){return v.trim().length>=20;}},
-  ];
-  fields.forEach(function(f){
+  // fields validation
+  var fieldsToValidate = [];
+  if(document.getElementById('fUsername')) {
+    fieldsToValidate.push({id:'fUsername', fgId:'fgUsername', check:function(v){return v.trim().length>=3;}});
+  }
+  if(document.getElementById('fKota')) {
+    fieldsToValidate.push({id:'fKota', fgId:'fgKota', check:function(v){return v.trim().length>1;}});
+  }
+  if(document.getElementById('fKet')) {
+    fieldsToValidate.push({id:'fKet', fgId:'fgKet', check:function(v){return v.trim().length>=20;}});
+  }
+
+  fieldsToValidate.forEach(function(f){
     var el=document.getElementById(f.id);
     var fg=f.fgId?document.getElementById(f.fgId):el.closest('.fg');
     if(!f.check(el.value)){
@@ -635,7 +741,7 @@ document.getElementById('btnSubmit').addEventListener('click',function(){
   });
 
   if(!ok){
-    var first=document.querySelector('.fg.has-err,.gpill-err');
+    var first=document.querySelector('.fg.has-err');
     if(first)first.scrollIntoView({behavior:'smooth',block:'center'});
     return;
   }
@@ -644,29 +750,76 @@ document.getElementById('btnSubmit').addEventListener('click',function(){
   var btn=this;
   btn.classList.add('loading');
 
-  setTimeout(function(){
+  // Prepare Data
+  var formData = new FormData();
+  formData.append('_token', '{{ csrf_token() }}');
+  
+  var genderVal = document.querySelector('input[name="gender"]:checked') || document.querySelector('input[name="gender"][type="hidden"]');
+  if(genderVal) formData.append('gender', genderVal.value);
+  
+  var cityEl = document.getElementById('fKota');
+  if(cityEl) formData.append('city', cityEl.value);
+
+  var usernameEl = document.getElementById('fUsername');
+  if(usernameEl) formData.append('username', usernameEl.value);
+  
+  var telpEl = document.getElementById('fTelp');
+  if(telpEl) formData.append('phone', telpEl.value);
+  
+  var ketEl = document.getElementById('fKet');
+  if(ketEl) formData.append('bio', ketEl.value);
+
+  // AJAX Submit
+  fetch('{{ route('inactive.update') }}', {
+    method: 'POST',
+    body: formData,
+    headers: {
+      'X-Requested-With': 'XMLHttpRequest'
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
     btn.classList.remove('loading');
-    // Show success
-    document.getElementById('formArea').classList.add('hidden');
-    document.getElementById('successOverlay').classList.add('show');
-    // Update progress to 100%
-    document.getElementById('progFill').style.width='100%';
-    document.getElementById('progPct').textContent='100%';
-    // Scroll to top of right panel
-    var rp=document.querySelector('.rp-scroll');
-    if(rp)rp.scrollTo({top:0,behavior:'smooth'});
-  },1800);
+    if(data.success){
+      SCA.toast({
+        type: "success",
+        title: "Berhasil!",
+        message: data.message || "Profil berhasil dilengkapi dan dikirim ke admin.",
+        position: "top-right",
+      });
+      // Show success
+      document.getElementById('formArea').classList.add('hidden');
+      document.getElementById('successOverlay').classList.add('show');
+      // Update progress to 100%
+      if(document.getElementById('progFill')) document.getElementById('progFill').style.width='100%';
+      if(document.getElementById('progPct')) document.getElementById('progPct').textContent='100%';
+      // Scroll to top of right panel
+      var rp=document.querySelector('.rp-scroll');
+      if(rp)rp.scrollTo({top:0,behavior:'smooth'});
+    } else {
+      SCA.toast({
+        type: "error",
+        title: "Gagal!",
+        message: data.message || "Terjadi kesalahan. Silakan coba lagi.",
+        position: "top-right",
+      });
+    }
+  })
+  .catch(error => {
+    btn.classList.remove('loading');
+    console.error('Error:', error);
+    SCA.toast({
+      type: "error",
+      title: "Gagal!",
+      message: "Terjadi kesalahan jaringan. Silakan coba lagi.",
+      position: "top-right",
+    });
+  });
 });
 
 /* ─── Live clear errors on input ─── */
 document.querySelectorAll('.fi,.fsl,.fta').forEach(function(el){
   el.addEventListener('input',function(){
-    if(this.value){
-      this.classList.remove('err');
-      var fg=this.closest('.fg');if(fg)fg.classList.remove('has-err');
-    }
-  });
-  el.addEventListener('change',function(){
     if(this.value){
       this.classList.remove('err');
       var fg=this.closest('.fg');if(fg)fg.classList.remove('has-err');

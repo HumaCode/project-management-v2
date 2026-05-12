@@ -21,7 +21,7 @@
     - Avatar upload with automatic thumbnail conversion.
 - [x] **Authentication & Onboarding**:
     - [x] **Google Socialite**: Integration for Google login.
-    - [x] **Inactive Flow**: Seamless onboarding for users with incomplete profiles.
+    - [x] **Inactive Flow 2.0**: Onboarding super dinamis dengan real-time progress bar (6 fields), visual step-tracking (checklist), dan proteksi pengiriman ganda.
     - [x] **Secure Admin Activation**: Signed URL mechanism for one-click admin approval via email.
     - [x] **Dynamic Search Integration**: Support for deep-linking search results via URL parameters.
     - [x] **Passwordless OTP Login**: 2-step OTP verification with professional HTML email and 6-digit box UI.

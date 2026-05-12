@@ -13,10 +13,13 @@ Dokumentasi alur autentikasi lanjutan yang diimplementasikan pada Proyek V2.
 ## 2. Inactive User Handling
 - **Middleware**: `EnsureProfileIsComplete` (custom logic di `InactiveUserController`)
 - **UI**: `auth/inactive.blade.php`
-- **Fitur**:
-    - User diminta melengkapi `username`, `phone`, dan `gender`.
-    - Menggunakan **AJAX submission** dengan dialog konfirmasi `SCA.confirm`.
-    - Setelah profil lengkap, user berstatus `is_active = 0` dan sistem mengirim notifikasi email ke Admin.
+- **Fitur Baru & Optimasi**:
+    - **Progress Bar Dinamis**: Perhitungan % kelengkapan profil secara real-time berdasarkan 6 kolom utama (`name`, `username`, `email`, `gender`, `city`, `phone`).
+    - **Visual Step Tracking**: Panel kiri dengan 4 tahapan proses yang berubah menjadi checklist (sn-done) secara dinamis saat data dilengkapi.
+    - **Redundant Submission Protection**: Form otomatis disembunyikan jika kolom `bio` sudah terisi di database, menampilkan status "Menunggu Verifikasi" secara instan.
+    - **SCA Toast Integration**: Menggunakan library `SCA.toast` untuk notifikasi sukses/gagal yang konsisten dengan desain sistem.
+    - **Session Logout**: Link "Kembali ke Login" otomatis melakukan logout POST request untuk membersihkan sesi aktif.
+    - **Auto-Fill Detection**: Data yang sudah ada di database otomatis dideteksi untuk mengisi progress bar saat halaman pertama kali dimuat.
 
 ## 3. Secure Admin Notification
 - **Notification**: `App\Notifications\AccountCompletionNotification`

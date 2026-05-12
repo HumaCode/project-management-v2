@@ -5,8 +5,9 @@
 > Load with: `aider --read CONVENTIONS.md` or add `read: CONVENTIONS.md` to `.aider.conf.yml`.
 
 ## Tech Stack
-- **Backend:** PHP ^8.2 · Laravel ^12.0
+- **Backend:** PHP ^8.4 · Laravel ^12.0 (Octane + FrankenPHP)
 - **Frontend:** Vite · Tailwind CSS
+- **Infrastructure:** Docker (App & MariaDB)
 
 ## Architecture
 - 68 Routes

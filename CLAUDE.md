@@ -6,8 +6,9 @@
 This file provides guidance to Claude Code when working with the **Laravel** codebase.
 
 ## Tech Stack
-- **Backend:** PHP ^8.2 · Laravel ^12.0
+- **Backend:** PHP ^8.4 · Laravel ^12.0 (Octane + FrankenPHP)
 - **Frontend:** Vite · Tailwind CSS
+- **Infrastructure:** Docker (App & MariaDB)
 
 ## Architecture
 - 68 Routes

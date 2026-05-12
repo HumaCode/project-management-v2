@@ -1,0 +1,48 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: project-management-v2-app
+    container_name: pm_v2_app
+    ports:
+      - "8000:80"
+      - "443:443"
+      - "443:443/udp"
+    volumes:
+      - .:/app
+    environment:
+      - APP_ENV=local
+      - APP_KEY=${APP_KEY}
+      - DB_CONNECTION=mysql
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+    depends_on:
+      - db
+    networks:
+      - pm-network
+
+  db:
+    image: mariadb:latest
+    container_name: pm_v2_db
+    ports:
+      - "${DB_PORT}:3306"
+    environment:
+      - MYSQL_DATABASE=${DB_DATABASE}
+      - MYSQL_ROOT_PASSWORD=${DB_PASSWORD}
+      - MYSQL_USER=${DB_USERNAME}
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+    volumes:
+      - pm_db_data:/var/lib/mysql
+    networks:
+      - pm-network
+
+networks:
+  pm-network:
+    driver: bridge
+
+volumes:
+  pm_db_data:

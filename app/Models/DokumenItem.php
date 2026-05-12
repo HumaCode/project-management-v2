@@ -17,7 +17,12 @@ class DokumenItem extends Model implements HasMedia
         'dokumen_id',
         'type',
         'content',
+        'metadata',
         'order',
+    ];
+
+    protected $casts = [
+        'metadata' => 'array',
     ];
 
     /**

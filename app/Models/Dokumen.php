@@ -13,6 +13,15 @@ use Spatie\MediaLibrary\InteractsWithMedia;
 class Dokumen extends Model implements HasMedia
 {
     use HasFactory, HasUlids, InteractsWithMedia;
+    
+    protected static function boot()
+    {
+        parent::boot();
+        static::deleting(function ($dokumen) {
+            // Hapus item-item builder jika ada
+            $dokumen->items()->delete();
+        });
+    }
 
     protected $fillable = [
         'project_id',

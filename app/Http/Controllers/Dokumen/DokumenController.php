@@ -137,4 +137,42 @@ class DokumenController extends Controller
 
         return view('pages.dokumen.builder', $data);
     }
+
+    /**
+     * Simpan konten dari Document Builder.
+     */
+    public function saveBuilder(\Illuminate\Http\Request $request, string $id): JsonResponse
+    {
+        try {
+            $this->dokumenService->saveDokumenItems($id, $request->items ?? []);
+
+            return ResponseHelper::jsonResponse(
+                true,
+                DokumenMessages::UPDATED_SUCCESS,
+                null,
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
+    /**
+     * Hapus data dokumen dari database.
+     */
+    public function destroy(string $id): JsonResponse
+    {
+        try {
+            $this->dokumenService->deleteDokumen($id);
+
+            return ResponseHelper::jsonResponse(
+                true,
+                DokumenMessages::DELETED_SUCCESS,
+                null,
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
 }

@@ -10,17 +10,25 @@ class ProjectService implements ProjectServiceInterface
 {
     public function getIndexData(): array
     {
+        $counts = Project::selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
+            SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done_count,
+            SUM(CASE WHEN status = 'to_do' THEN 1 ELSE 0 END) as to_do_count
+        ")->first();
+
         return [
-            'total_projects' => Project::count(),
-            'in_progress' => Project::where('status', 'in_progress')->count(),
-            'done' => Project::where('status', 'done')->count(),
-            'to_do' => Project::where('status', 'to_do')->count(),
+            'total_projects' => (int) ($counts->total ?? 0),
+            'in_progress' => (int) ($counts->in_progress_count ?? 0),
+            'done' => (int) ($counts->done_count ?? 0),
+            'to_do' => (int) ($counts->to_do_count ?? 0),
         ];
     }
 
     public function getPaginatedProjects(?string $search, ?string $status, int $rowPerPage)
     {
-        $query = Project::with(['creator', 'pics']);
+        // Eager load media juga untuk menghindari N+1 saat memproses avatar di Resource
+        $query = Project::with(['creator.media', 'pics.media']);
 
         if ($search) {
             $query->where(function($q) use ($search) {

@@ -9,4 +9,6 @@ interface DokumenServiceInterface
     public function createDokumen(array $data);
     public function updateDokumen(string $id, array $data);
     public function getDokumenById(string $id);
+    public function saveDokumenItems(string $id, array $items);
+    public function deleteDokumen(string $id);
 }

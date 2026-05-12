@@ -55,9 +55,9 @@
                                     </div>
                                 </span>
                             </div>
-                            <div class="info-item border-0">
+                            <div class="info-item border-0 mt-2 vertical">
                                 <span class="label">KETERANGAN</span>
-                                <p class="value text-muted small mt-1" id="detailKeterangan">Tidak ada keterangan.</p>
+                                <p class="value-desc" id="detailKeterangan">Tidak ada keterangan.</p>
                             </div>
                         </div>
                     </div>
@@ -106,15 +106,34 @@
         justify-content: space-between;
         align-items: center;
     }
+    .detail-info-list .info-item.vertical {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+    }
     .detail-info-list .label {
         font-family: var(--mono);
-        font-size: 10px;
-        color: var(--muted);
+        font-size: 11px;
+        color: var(--cyan);
+        opacity: 0.8;
+        font-weight: 700;
         letter-spacing: 1px;
     }
     .detail-info-list .value {
-        font-weight: 500;
-        color: #eee;
+        font-weight: 600;
+        color: #fff;
+        font-size: 14px;
+    }
+    .value-desc {
+        color: #ccc;
+        font-size: 13px;
+        line-height: 1.6;
+        background: rgba(255,255,255,0.03);
+        padding: 12px;
+        border-radius: 10px;
+        border: 1px solid rgba(255,255,255,0.05);
+        margin: 0;
+        width: 100%;
     }
     .btn-outline-cyan {
         border-color: var(--cyan);

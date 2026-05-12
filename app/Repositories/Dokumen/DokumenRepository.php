@@ -45,4 +45,26 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
             'new_this_month' => $this->model->whereMonth('created_at', now()->month)->count(),
         ];
     }
+
+    public function saveItems(string $id, array $items)
+    {
+        return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $items) {
+            $dokumen = $this->model->findOrFail($id);
+
+            // Hapus item lama (jika ingin clean rebuild)
+            $dokumen->items()->delete();
+
+            // Simpan item baru
+            foreach ($items as $index => $item) {
+                $dokumen->items()->create([
+                    'type'     => $item['type'],
+                    'content'  => $item['content'] ?? null,
+                    'metadata' => $item['metadata'] ?? null,
+                    'order'    => $index,
+                ]);
+            }
+
+            return $dokumen->load('items');
+        });
+    }
 }

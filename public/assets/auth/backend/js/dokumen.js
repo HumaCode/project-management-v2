@@ -118,8 +118,46 @@ $(function() {
     /* ── Modal Behaviors ── */
     initDrain('delModal', 'drainDel');
 
+    let deleteId = null;
     $(document).on('click', '.ib-x', function() {
+        deleteId = $(this).data('id');
         $('#delDocName').text($(this).data('nm') || 'ini');
+    });
+
+    $(document).on('click', '.btn-mdel', function() {
+        if (!deleteId) return;
+        const btn = $(this);
+        
+        // Add loading state if you have one, or just disable
+        btn.prop('disabled', true).html('<span><i class="bi bi-hourglass-split"></i> Menghapus...</span>');
+
+        $.ajax({
+            url: `${window.urlBuilderBase}/${deleteId}`,
+            method: 'DELETE',
+            data: { _token: $('meta[name="csrf-token"]').attr('content') },
+            success: function(res) {
+                btn.prop('disabled', false).html('<span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span>');
+                $('#delModal').modal('hide');
+                
+                SCA.toast({
+                    type: res.success ? "success" : "danger",
+                    title: res.success ? "Berhasil!" : "Gagal!",
+                    message: res.message ?? "Dokumen berhasil dihapus.",
+                });
+
+                if (res.success) {
+                    window.loadData();
+                }
+            },
+            error: function(err) {
+                btn.prop('disabled', false).html('<span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span>');
+                SCA.toast({
+                    type: "danger",
+                    title: "Error!",
+                    message: "Terjadi kesalahan sistem saat menghapus data."
+                });
+            }
+        });
     });
 
     // Detail Logic
@@ -245,7 +283,7 @@ function renderTable(data) {
                         <div class="f-ico ${iconClass}"><i class="${icon}"></i></div>
                         <div>
                             <div class="f-nm">${item.nama}</div>
-                            <div class="f-meta">${ext.toUpperCase()} &bull; ${item.file_info.size}</div>
+                            <div class="f-meta">${ext} &bull; ${item.file_info.size}</div>
                         </div>
                     </div>
                 </td>
@@ -266,7 +304,7 @@ function renderTable(data) {
                         <button class="ibtn ib-v" title="Lihat" data-id="${item.id}"><i class="bi bi-eye"></i></button>
                         ${item.file_info.url ? `<a href="${item.file_info.url}" target="_blank" class="ibtn ib-d" title="Unduh" download><i class="bi bi-download"></i></a>` : ''}
                         <button class="ibtn ib-e" title="Edit" data-id="${item.id}"><i class="bi bi-pencil-square"></i></button>
-                        <button class="ibtn ib-x" title="Hapus" data-nm="${item.nama}" data-bs-toggle="modal" data-bs-target="#delModal">
+                        <button class="ibtn ib-x" title="Hapus" data-id="${item.id}" data-nm="${item.nama}" data-bs-toggle="modal" data-bs-target="#delModal">
                             <i class="bi bi-trash3"></i>
                         </button>
                     </div>
@@ -360,12 +398,24 @@ function initSelect2Edit() {
 }
 
 function getFileIconClass(ext) {
-    const map = { pdf: 'pdf', xls: 'xls', xlsx: 'xls', doc: 'doc', docx: 'doc', zip: 'zip' };
+    const map = { 
+        pdf: 'pdf', xls: 'xls', xlsx: 'xls', doc: 'doc', docx: 'doc', zip: 'zip',
+        article: 'pdf', code: 'xls'
+    };
     return map[ext.toLowerCase()] || 'doc';
 }
 
 function getFileIcon(ext) {
-    const map = { pdf: 'bi bi-file-earmark-pdf-fill', xls: 'bi bi-file-earmark-spreadsheet-fill', xlsx: 'bi bi-file-earmark-spreadsheet-fill', doc: 'bi bi-file-earmark-word-fill', docx: 'bi bi-file-earmark-word-fill', zip: 'bi bi-file-zip-fill' };
+    const map = { 
+        pdf: 'bi bi-file-earmark-pdf-fill', 
+        xls: 'bi bi-file-earmark-spreadsheet-fill', 
+        xlsx: 'bi bi-file-earmark-spreadsheet-fill', 
+        doc: 'bi bi-file-earmark-word-fill', 
+        docx: 'bi bi-file-earmark-word-fill', 
+        zip: 'bi bi-file-zip-fill',
+        article: 'bi bi-file-earmark-richtext-fill',
+        code: 'bi bi-file-earmark-code-fill'
+    };
     return map[ext.toLowerCase()] || 'bi bi-file-earmark-fill';
 }
 

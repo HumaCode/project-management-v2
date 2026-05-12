@@ -5,9 +5,8 @@
 > Recognised by: Cursor, Windsurf, Junie, Copilot, Aider, OpenAI Codex, Google Jules, Zed, and 60+ tools.
 
 ## Tech Stack
-- **Backend:** PHP ^8.4 · Laravel ^12.0 (Octane + FrankenPHP)
+- **Backend:** PHP ^8.2 · Laravel ^12.0
 - **Frontend:** Vite · Tailwind CSS
-- **Infrastructure:** Docker (App & MariaDB)
 
 ## Architecture
 - 68 Routes

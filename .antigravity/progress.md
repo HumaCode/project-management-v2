@@ -54,10 +54,14 @@
     - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface`.
     - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX) with category and project filters.
     - [x] **Media Library**: Integrated with Spatie Media Library for file storage and human-readable metadata.
-    - [x] **Document Types**: Support for Single File, Article/Article (Manual Book), and Code Documentation.
+    - [x] **Document Types**: Support for Single File, Article/Manual Book, and Code Documentation.
     - [x] **Monaco Editor**: Integrated for professional code documentation authoring.
-    - [x] **Smart Preview**: Real-time image preview in drop-zone for file uploads.
-    - [x] **CRUD Completion**: Implementation of Create, Read (Show/Detail), and Update (Edit) functionalities.
+    - [x] **Dynamic Metadata**: Added JSON metadata support to `dokumen_items` for persistent language settings in code blocks.
+    - [x] **Sticky Save & Redirect**: Professional floating save button with automated redirection to index.
+    - [x] **Premium UI/UX**: Re-styled controls (custom select, trash button) with micro-animations and consistent design.
+    - [x] **Cascade Delete**: Implementation of model-level cascading delete for document items and associated media files.
+    - [x] **Environment Hardening**: Fixed symlink issues and Octane caching protocols for Docker/FrankenPHP.
+    - [x] **CRUD Completion**: Implementation of Create, Read (Detail Modal), Update, and Delete functionalities.
     - [x] **UI Polish**: Clean UI with partials-based modals and premium dashboard-style metrics.
     - [x] **Breadcrumbs**: Restored "Home > Dokumen" navigation for better UX.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).

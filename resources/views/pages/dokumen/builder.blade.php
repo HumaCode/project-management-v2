@@ -48,6 +48,50 @@
                 display: flex; align-items: center; gap: 10px; transition: 0.3s;
             }
             .btn-save-all:hover { transform: scale(1.05); filter: brightness(1.1); }
+
+            /* Premium Controls */
+            .lang-select {
+                appearance: none;
+                background-color: rgba(255, 255, 255, 0.03);
+                border: 1px solid var(--bd);
+                border-radius: 8px;
+                padding: 6px 32px 6px 12px;
+                font-size: 11px;
+                font-weight: 600;
+                color: var(--muted);
+                cursor: pointer;
+                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236c757d' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+                background-repeat: no-repeat;
+                background-position: right 10px center;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                outline: none;
+            }
+            .lang-select:hover { 
+                border-color: var(--cyan); 
+                color: var(--cyan); 
+                background-color: rgba(0, 200, 255, 0.05);
+                box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
+            }
+            .lang-select:focus { border-color: var(--cyan); }
+
+            .btn-mdel-sm {
+                width: 32px; height: 32px;
+                background: rgba(255, 60, 60, 0.05);
+                border: 1px solid rgba(255, 60, 60, 0.15);
+                color: #ff5e5e;
+                border-radius: 8px;
+                display: flex; align-items: center; justify-content: center;
+                transition: all 0.3s ease;
+                cursor: pointer;
+            }
+            .btn-mdel-sm:hover { 
+                background: #ff4d4d; 
+                color: white; 
+                border-color: #ff4d4d;
+                transform: translateY(-2px) rotate(8deg);
+                box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
+            }
+            .btn-mdel-sm i { font-size: 14px; }
         </style>
     @endpush
 
@@ -110,12 +154,13 @@
                             <div class="item-hd">
                                 <div class="item-type code"><i class="bi bi-code-slash"></i> Snippet Kode</div>
                                 <div style="display:flex; gap:10px; align-items:center;">
-                                    <select class="nsel-sm" style="background:transparent; border:1px solid var(--bd); font-size:11px; color:var(--muted);">
+                                    <select class="lang-select">
                                         <option value="javascript">JavaScript</option>
                                         <option value="php">PHP</option>
                                         <option value="html">HTML</option>
                                         <option value="css">CSS</option>
                                         <option value="sql">SQL</option>
+                                        <option value="json">JSON</option>
                                     </select>
                                     <button class="btn-mdel-sm" onclick="$('#${id}').remove()"><i class="bi bi-trash"></i></button>
                                 </div>
@@ -132,6 +177,66 @@
                 // Scroll to bottom
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
             }
+
+            $('.btn-save-all').on('click', function() {
+                const $btn = $(this);
+                const originalHtml = $btn.html();
+                const items = [];
+
+                $('.b-item').each(function() {
+                    const type = $(this).data('type');
+                    let content = '';
+                    let metadata = {};
+
+                    if (type === 'text') {
+                        content = $(this).find('textarea').val();
+                    } else {
+                        const editorId = $(this).find('.code-editor').attr('id');
+                        const editorObj = window.editors.find(e => e.id === editorId);
+                        if (editorObj) {
+                            content = editorObj.editor.getValue();
+                        }
+                        metadata.language = $(this).find('.lang-select').val();
+                    }
+
+                    items.push({ type, content, metadata });
+                });
+
+                // Loading state
+                $btn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Menyimpan...');
+
+                $.ajax({
+                    url: "{{ route('dokumen.builder.save', $dokumen->id) }}",
+                    method: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        items: items
+                    },
+                    success: function(res) {
+                        SCA.toast({
+                            type: res.success ? "success" : "danger",
+                            title: res.success ? "Berhasil!" : "Gagal!",
+                            message: res.message ?? "Dokumentasi berhasil disimpan.",
+                        });
+
+                        if (res.success) {
+                            setTimeout(() => {
+                                window.location.href = "{{ route('dokumen.index') }}";
+                            }, 1500);
+                        }
+                    },
+                    error: function(err) {
+                        SCA.toast({
+                            type: "danger",
+                            title: "Gagal!",
+                            message: err.responseJSON?.message || "Terjadi kesalahan sistem.",
+                        });
+                    },
+                    complete: function() {
+                        $btn.prop('disabled', false).html(originalHtml);
+                    }
+                });
+            });
         </script>
     @endpush
 
@@ -163,13 +268,26 @@
                             <i class="bi {{ $item->type == 'text' ? 'bi-text-left' : 'bi-code-slash' }}"></i>
                             {{ $item->type == 'text' ? 'Paragraf Teks' : 'Snippet Kode' }}
                         </div>
-                        <button class="btn-mdel-sm" onclick="$('#item-{{ $item->id }}').remove()"><i class="bi bi-trash"></i></button>
+                        @if($item->type == 'code')
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <select class="lang-select">
+                                    @foreach(['javascript', 'php', 'html', 'css', 'sql', 'json'] as $lang)
+                                        <option value="{{ $lang }}" {{ ($item->metadata['language'] ?? '') == $lang ? 'selected' : '' }}>
+                                            {{ ucfirst($lang) }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                <button class="btn-mdel-sm" onclick="$('#item-{{ $item->id }}').remove()"><i class="bi bi-trash"></i></button>
+                            </div>
+                        @else
+                            <button class="btn-mdel-sm" onclick="$('#item-{{ $item->id }}').remove()"><i class="bi bi-trash"></i></button>
+                        @endif
                     </div>
                     <div class="item-bd">
                         @if($item->type == 'text')
                             <textarea class="fmta" style="height: 120px;">{{ $item->content }}</textarea>
                         @else
-                            <div id="editor-{{ $item->id }}" class="code-editor" data-content="{{ $item->content }}" data-lang="javascript"></div>
+                            <div id="editor-{{ $item->id }}" class="code-editor" data-content="{{ $item->content }}" data-lang="{{ $item->metadata['language'] ?? 'javascript' }}"></div>
                         @endif
                     </div>
                 </div>

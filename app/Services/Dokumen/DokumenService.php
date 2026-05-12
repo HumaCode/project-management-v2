@@ -58,4 +58,14 @@ class DokumenService implements DokumenServiceInterface
     {
         return $this->dokumenRepository->getById($id);
     }
+
+    public function saveDokumenItems(string $id, array $items)
+    {
+        return $this->dokumenRepository->saveItems($id, $items);
+    }
+
+    public function deleteDokumen(string $id)
+    {
+        return $this->dokumenRepository->delete($id);
+    }
 }

@@ -36,7 +36,7 @@
             window.urlBuilderBase = "{{ url('dokumen') }}";
         </script>
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>
-        <script src="{{ asset('assets/auth/backend/js/dokumen.js') }}"></script>
+        <script src="{{ asset('assets/auth/backend/js/dokumen.js') }}?v={{ time() }}"></script>
     @endpush
 
     <!-- Page Header -->

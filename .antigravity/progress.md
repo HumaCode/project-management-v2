@@ -64,6 +64,21 @@
     - [x] **CRUD Completion**: Implementation of Create, Read (Detail Modal), Update, and Delete functionalities.
     - [x] **UI Polish**: Clean UI with partials-based modals and premium dashboard-style metrics.
     - [x] **Breadcrumbs**: Restored "Home > Dokumen" navigation for better UX.
+- [x] **Project Management (Phase 3: Detail Page)**:
+    - [x] **Premium Detail UI**: Implementation of Project Dashboard with stats, activity logs, and team overview.
+- [x] **Catatan (Notes) Module (Phase 1: UI/UX)**:
+    - [x] **Architecture**: Service-Controller pattern with `CatatanController` and `CatatanMessages` constants.
+    - [x] **Premium UI**: Dark glassmorphism dashboard with 4 stat cards and interactive data table.
+    - [x] **Modular Assets**: Separated logic into `catatan.css` and `catatan.js` with intersection-observer based count-up animations.
+    - [x] **Dynamic Modals**: 
+        - Integrated **TinyMCE 6** with dark skin and auto-init logic.
+        - Implementation of "Drain-Fill" loading animations for all modals (Add, Edit, View, Delete).
+        - Responsive breadcrumbs in header action area (Home > Catatan).
+    - [x] **Data Integration**: Prepared Blade structures for dynamic data injection (PICs, Categories, Priorities).
+- [ ] **Catatan (Notes) Module (Phase 2: Backend Logic)**:
+    - [ ] CRUD implementation (Store, Update, Delete).
+    - [ ] Dynamic stats calculation.
+    - [ ] Category & Project filters integration.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
@@ -72,13 +87,13 @@
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 ## 📝 Notes & Maintenance
-- **PHP Code Changes**: Karena menggunakan Laravel Octane (FrankenPHP), setiap ada perubahan pada Controller, Service, Model, atau Route, **WAJIB** jalankan:
-  `docker exec pm_v2_app php artisan octane:reload`
-- **UI/Blade Changes**: Jika perubahan pada file `.blade.php` tidak muncul, jalankan:
-  `docker exec pm_v2_app php artisan view:clear`
-- **Image/Storage Issues**: Jika gambar atau avatar tidak muncul (Error 403/404), jalankan perintah ini dari dalam container:
-  `docker exec pm_v2_app php artisan storage:link`
-- **Frontend Assets**: Untuk perubahan pada file `.js` atau `.css`, lakukan **Hard Refresh (Ctrl + F5)** pada browser.
+- **Development Rituals (Wajib)**:
+  1. Setiap ada perubahan pada **Controller, Service, Model, atau Route**, jalankan:
+     `docker exec pm_v2_app php artisan octane:reload`
+  2. Setiap ada perubahan pada file **.blade.php** (jika tidak ter-update), jalankan:
+     `docker exec pm_v2_app php artisan view:clear`
+  3. Setiap ada perubahan pada file **.js** atau **.css**, lakukan **Hard Refresh (Ctrl + F5)** pada browser.
 - **Project Aesthetics**: Project ini menggunakan pendekatan **Premium Design**, jadi setiap fitur baru harus dipastikan memiliki UI/UX yang modern.
 - **Menu System**: Cache menu harus di-clear jika ada perubahan data pada tabel `menus`.
 - **Laravel Debugbar**: Telah diinstal untuk mempermudah debugging query dan performa (dev only).
+

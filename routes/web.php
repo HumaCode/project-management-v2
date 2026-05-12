@@ -80,6 +80,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('dokumen/{id}/builder', [\App\Http\Controllers\Dokumen\DokumenController::class, 'builder'])->name('dokumen.builder');
             Route::post('dokumen/{id}/builder', [\App\Http\Controllers\Dokumen\DokumenController::class, 'saveBuilder'])->name('dokumen.builder.save');
             Route::delete('dokumen/{id}', [\App\Http\Controllers\Dokumen\DokumenController::class, 'destroy'])->name('dokumen.destroy');
+
+            // catatan
+            Route::get('catatan', [\App\Http\Controllers\Catatan\CatatanController::class, 'index'])->name('catatan.index');
+
         }
     );
 });

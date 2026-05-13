@@ -10,4 +10,6 @@ interface ProjectServiceInterface
     public function getProjectByUlid(string $ulid): \App\Models\Project;
     public function updateProject(string $ulid, array $data): \App\Models\Project;
     public function deleteProject(string $ulid): bool;
+    public function getProjectDetailData(string $ulid): array;
+    public function storeDiskusi(string $projectId, array $data): \App\Models\Diskusi;
 }

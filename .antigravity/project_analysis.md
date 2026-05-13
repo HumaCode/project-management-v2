@@ -12,7 +12,8 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Vite 7 (Build tool)
   - **CKEditor 5** (Rich text editing with media support)
   - **Flatpickr** (Premium date picker with custom themes)
-  - **Monaco Editor** (Professional code editing for documentation)
+  - **Monaco Editor**: Professional code editing for documentation.
+  - **fslightbox**: Premium lightbox for image and media previews.
 - **Database**: MySQL/MariaDB
 - **Key Packages**:
   - `spatie/laravel-permission`: Manajemen Role & Permission.
@@ -73,6 +74,10 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Manajemen list proyek dengan status & progress.
   - Hubungan PIC (User) many-to-many.
   - Server-side data table & filtering.
+  - **WhatsApp-Style Diskusi**: Sistem obrolan interaktif terintegrasi dengan gaya WhatsApp (Me vs Others, bottom-to-top flow).
+  - **Secure Media System**: Penanganan lampiran file/gambar secara privat menggunakan Spatie Media Library dengan akses aman via controller.
+  - **Reply & Quote Logic**: Fitur balas pesan dengan kutipan teks/gambar dan navigasi scroll otomatis ke pesan asli.
+  - **Edit & Delete Policy**: Kontrol integritas diskusi dengan gembok waktu 5 menit untuk pengeditan dan penghapusan pesan oleh pemilik.
   - **Premium PIC Rendering**: Logika otomatis untuk menampilkan Avatar (Google/Spatie) atau Inisial Nama (Fallback).
   - **Advanced Project Creation**: Form input premium dengan dukungan Rich Text, Media Embed, Thumbnail Upload (Media Library), dan Project Color.
   - **AJAX Store Logic**: Pengiriman data menggunakan Axios dengan validasi StoreProjectRequest.
@@ -100,4 +105,5 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `dokumens`: `id` (ULID), `nama`, `versi`, `kategori`, `type` (file/article/code), `project_id`, `user_id`.
 - `dokumen_items`: `id` (ULID), `dokumen_id`, `title`, `content`, `order`.
 - `catatans`: `id` (ULID), `title`, `category`, `priority`, `content`, `project_id`, `user_id`.
+- `diskusis`: `id` (ULID), `project_id`, `user_id`, `parent_id` (Reply reference), `content`.
 

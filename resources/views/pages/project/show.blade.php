@@ -4,20 +4,22 @@
 
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/project-detail.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/dokumen.css') }}">
     @endpush
 
     @push('js')
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
         <script src="{{ asset('assets/auth/backend/js/project-detail.js') }}"></script>
     @endpush
 
     <!-- Page Header -->
-    <div class="ph-wrap" data-aos="fade-down">
+    <div class="ph-wrap" data-aos="fade-down" id="projectContainer" data-id="{{ $projectId }}" data-url="{{ $detailDataUrl }}" data-current-user-id="{{ auth()->id() }}">
       <div class="ph-left">
-        <div class="ph-icon"><i class="bi bi-kanban-fill"></i></div>
+        <div class="ph-icon"><i id="projectIcon" class="bi {{ $icon }}"></i></div>
         <div>
-          <div class="ph-title">Sistem Informasi PPID Kota Pekalongan</div>
-          <div class="ph-meta">
-            <span class="tag tag-prog"><span class="tdot"></span>In Progress</span>
+          <div class="ph-title" id="projectName">{{ $title }}</div>
+          <div class="ph-meta" id="projectMeta">
+            <span class="tag tag-prog" id="projectStatus"><span class="tdot"></span>Memuat...</span>
             <span class="sep d-none d-sm-inline">·</span>
             <span class="breadcrumb-bar d-none d-sm-flex">
               <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
@@ -31,7 +33,7 @@
       </div>
       <div class="ph-actions">
         <a href="{{ route('projects.index') }}" class="btn-act btn-outline"><i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Kembali</span></a>
-        <a href="#" class="btn-act btn-outline"><i class="bi bi-pencil-fill"></i> <span class="d-none d-sm-inline">Edit</span></a>
+        <a href="#" id="editBtn" class="btn-act btn-outline"><i class="bi bi-pencil-fill"></i> <span class="d-none d-sm-inline">Edit</span></a>
         <button class="btn-act btn-primary-alt" data-bs-toggle="modal" data-bs-target="#uploadModal">
           <span><i class="bi bi-cloud-upload-fill"></i> <span class="d-none d-sm-inline">Upload Dokumen</span><span class="d-sm-none">Upload</span></span>
         </button>
@@ -46,28 +48,28 @@
       <div class="msc">
         <div class="msc-ico c"><i class="bi bi-folder2-open"></i></div>
         <div>
-          <div class="msc-val" data-count="24">0</div>
+          <div class="msc-val" id="statDocs" data-count="0">0</div>
           <div class="msc-lbl">Dokumen</div>
         </div>
       </div>
       <div class="msc">
         <div class="msc-ico g"><i class="bi bi-journal-check"></i></div>
         <div>
-          <div class="msc-val" data-count="8">0</div>
-          <div class="msc-lbl">Catatan</div>
+          <div class="msc-val" id="statNotes" data-count="0">0</div>
+          <div class="msc-lbl">Diskusi</div>
         </div>
       </div>
       <div class="msc">
         <div class="msc-ico w"><i class="bi bi-people-fill"></i></div>
         <div>
-          <div class="msc-val" data-count="5">0</div>
+          <div class="msc-val" id="statMembers" data-count="0">0</div>
           <div class="msc-lbl">Anggota</div>
         </div>
       </div>
       <div class="msc">
-        <div class="msc-ico r"><i class="bi bi-clock-history"></i></div>
+        <div class="msc-ico r" id="statDaysIcon"><i class="bi bi-clock-history"></i></div>
         <div>
-          <div class="msc-val" data-count="14">0</div>
+          <div class="msc-val" id="statDays" data-count="0">0</div>
           <div class="msc-lbl">Hari Tersisa</div>
         </div>
       </div>
@@ -95,54 +97,39 @@
           <div class="info-grid" style="flex:1">
             <div class="info-item">
               <div class="info-label">Status</div>
-              <div class="info-val"><span class="tag tag-prog" style="padding:2px 8px"><span class="tdot"></span>In Progress</span></div>
+              <div class="info-val"><span class="tag tag-prog" id="infoStatus"><span class="tdot"></span>-</span></div>
             </div>
             <div class="info-item">
               <div class="info-label">Dibuat Oleh</div>
-              <div class="info-val">Budi Santoso</div>
+              <div class="info-val" id="infoCreator">-</div>
             </div>
             <div class="info-item">
               <div class="info-label">Tgl Mulai</div>
-              <div class="info-val mono">01 Jan 2025</div>
+              <div class="info-val mono" id="infoStartDate">-</div>
             </div>
             <div class="info-item">
               <div class="info-label">Deadline</div>
               <div class="info-val">
-                <div class="mono" style="margin-bottom:3px">19 Mar 2025</div>
-                <span class="dl-badge dl-warn"><i class="bi bi-exclamation-circle-fill"></i>H-14</span>
+                <div class="mono" id="infoDeadline" style="margin-bottom:3px">-</div>
+                <span class="dl-badge" id="infoDaysBadge"></span>
               </div>
             </div>
             <div class="info-item" style="grid-column:1/-1;border-bottom:1px solid var(--bd)">
               <div class="info-label">Deskripsi</div>
-              <div class="info-val" style="font-weight:400;font-size:13px;color:var(--dim);line-height:1.65">
-                Pengembangan sistem informasi untuk mendukung keterbukaan informasi publik di lingkungan Pemerintah Kota Pekalongan sesuai UU KIP No. 14 Tahun 2008.
+              <div class="info-val" id="infoDesc" style="font-weight:400;font-size:13px;color:var(--dim);line-height:1.65">
+                Memuat deskripsi...
               </div>
             </div>
             <div class="info-item" style="grid-column:1/-1">
               <div class="info-label" style="margin-bottom:10px">Person In Charge</div>
-              <div style="display:flex;flex-direction:column;gap:8px">
+              <div style="display:flex;flex-direction:column;gap:8px" id="picListWrap">
                 <div style="display:flex;align-items:center;gap:8px">
-                  <div class="av-stack">
-                    <div class="av" title="Andi Wijaya" style="background:linear-gradient(135deg,#0072c6,#00c8ff)">AW</div>
-                    <div class="av" title="Siti Rahayu" style="background:linear-gradient(135deg,#6d28d9,#a78bfa)">SR</div>
-                    <div class="av" title="Deni Kurnia" style="background:linear-gradient(135deg,#065f46,#00e5a0)">DK</div>
-                    <div class="av" title="Rina Marlina" style="background:linear-gradient(135deg,#92400e,#f59e0b)">RM</div>
-                    <div class="av more" title="+1 lainnya">+1</div>
+                  <div class="av-stack" id="picStack">
+                    <!-- Loaded via JS -->
                   </div>
                 </div>
-                <div style="display:flex;flex-direction:column;gap:5px">
-                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px">
-                    <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#0072c6,#00c8ff);display:grid;place-items:center;font-size:8px;font-weight:700;font-family:var(--mono);color:#fff;flex-shrink:0">AW</div>
-                    <span>Andi Wijaya</span><span style="font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-left:auto">Developer</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px">
-                    <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#6d28d9,#a78bfa);display:grid;place-items:center;font-size:8px;font-weight:700;font-family:var(--mono);color:#fff;flex-shrink:0">SR</div>
-                    <span>Siti Rahayu</span><span style="font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-left:auto">Designer</span>
-                  </div>
-                  <div style="display:flex;align-items:center;gap:8px;font-size:12.5px">
-                    <div style="width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,#065f46,#00e5a0);display:grid;place-items:center;font-size:8px;font-weight:700;font-family:var(--mono);color:#fff;flex-shrink:0">DK</div>
-                    <span>Deni Kurnia</span><span style="font-size:10.5px;color:var(--muted);font-family:var(--mono);margin-left:auto">Backend Dev</span>
-                  </div>
+                <div style="display:flex;flex-direction:column;gap:5px" id="picList">
+                  <!-- Loaded via JS -->
                 </div>
               </div>
             </div>
@@ -160,12 +147,12 @@
             <button class="tab-btn active" data-tab="dokumen">
               <i class="bi bi-folder2-open"></i>
               <span>Dokumen</span>
-              <span class="tb-cnt">24</span>
+              <span class="tb-cnt" id="tabDocCount">0</span>
             </button>
             <button class="tab-btn" data-tab="catatan">
-              <i class="bi bi-journal-text"></i>
-              <span>Catatan</span>
-              <span class="tb-cnt">8</span>
+              <i class="bi bi-chat-left-text"></i>
+              <span>Diskusi</span>
+              <span class="tb-cnt" id="tabNoteCount">0</span>
             </button>
             <button class="tab-btn" data-tab="aktivitas">
               <i class="bi bi-activity"></i>
@@ -185,7 +172,7 @@
               </button>
             </div>
             <div class="tbl-wrap">
-              <table class="doc-tbl">
+              <table class="doc-tbl" id="docTbl">
                 <thead>
                   <tr>
                     <th style="width:36px">#</th>
@@ -198,111 +185,70 @@
                   </tr>
                 </thead>
                 <tbody>
-                  <tr>
-                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">01</td>
-                    <td><div class="doc-name"><div class="doc-ico pdf"><i class="bi bi-file-earmark-pdf-fill"></i></div><div><div class="doc-nm">Dokumen Spesifikasi Teknis<span class="doc-ver">v3</span></div><div style="font-size:11px;color:var(--muted)">PDF · 4.2 MB</div></div></div></td>
-                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v3.0</span></td>
-                    <td class="d-none d-sm-table-cell doc-size">4.2 MB</td>
-                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">12 Feb 2025</td>
-                    <td class="d-none d-md-table-cell" style="font-size:12.5px">Andi Wijaya</td>
-                    <td><div style="display:flex;gap:4px;justify-content:center">
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);color:var(--cyan);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Download"><i class="bi bi-download"></i></button>
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:var(--err);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Hapus"><i class="bi bi-trash3"></i></button>
-                    </div></td>
-                  </tr>
-                  <tr>
-                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">02</td>
-                    <td><div class="doc-name"><div class="doc-ico xls"><i class="bi bi-file-earmark-spreadsheet-fill"></i></div><div><div class="doc-nm">RAB Proyek 2025<span class="doc-ver">v2</span></div><div style="font-size:11px;color:var(--muted)">XLSX · 1.8 MB</div></div></div></td>
-                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v2.1</span></td>
-                    <td class="d-none d-sm-table-cell doc-size">1.8 MB</td>
-                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">08 Feb 2025</td>
-                    <td class="d-none d-md-table-cell" style="font-size:12.5px">Rina Marlina</td>
-                    <td><div style="display:flex;gap:4px;justify-content:center">
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);color:var(--cyan);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Download"><i class="bi bi-download"></i></button>
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:var(--err);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Hapus"><i class="bi bi-trash3"></i></button>
-                    </div></td>
-                  </tr>
-                  <tr>
-                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">03</td>
-                    <td><div class="doc-name"><div class="doc-ico doc"><i class="bi bi-file-earmark-word-fill"></i></div><div><div class="doc-nm">Berita Acara Kick-off<span class="doc-ver">v1</span></div><div style="font-size:11px;color:var(--muted)">DOCX · 680 KB</div></div></div></td>
-                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v1.0</span></td>
-                    <td class="d-none d-sm-table-cell doc-size">680 KB</td>
-                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">03 Jan 2025</td>
-                    <td class="d-none d-md-table-cell" style="font-size:12.5px">Budi Santoso</td>
-                    <td><div style="display:flex;gap:4px;justify-content:center">
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);color:var(--cyan);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Download"><i class="bi bi-download"></i></button>
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:var(--err);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Hapus"><i class="bi bi-trash3"></i></button>
-                    </div></td>
-                  </tr>
-                  <tr>
-                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">04</td>
-                    <td><div class="doc-name"><div class="doc-ico zip"><i class="bi bi-file-earmark-zip-fill"></i></div><div><div class="doc-nm">Source Code Sprint 3<span class="doc-ver">v1</span></div><div style="font-size:11px;color:var(--muted)">ZIP · 18.4 MB</div></div></div></td>
-                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v1.0</span></td>
-                    <td class="d-none d-sm-table-cell doc-size">18.4 MB</td>
-                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">20 Feb 2025</td>
-                    <td class="d-none d-md-table-cell" style="font-size:12.5px">Deni Kurnia</td>
-                    <td><div style="display:flex;gap:4px;justify-content:center">
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);color:var(--cyan);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Download"><i class="bi bi-download"></i></button>
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:var(--err);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Hapus"><i class="bi bi-trash3"></i></button>
-                    </div></td>
-                  </tr>
-                  <tr>
-                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">05</td>
-                    <td><div class="doc-name"><div class="doc-ico pdf"><i class="bi bi-file-earmark-pdf-fill"></i></div><div><div class="doc-nm">Laporan Progress Bulan 1<span class="doc-ver">v1</span></div><div style="font-size:11px;color:var(--muted)">PDF · 2.1 MB</div></div></div></td>
-                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v1.0</span></td>
-                    <td class="d-none d-sm-table-cell doc-size">2.1 MB</td>
-                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">31 Jan 2025</td>
-                    <td class="d-none d-md-table-cell" style="font-size:12.5px">Rina Marlina</td>
-                    <td><div style="display:flex;gap:4px;justify-content:center">
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(0,200,255,.08);border:1px solid rgba(0,200,255,.15);color:var(--cyan);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Download"><i class="bi bi-download"></i></button>
-                      <button style="width:28px;height:28px;border-radius:6px;background:rgba(255,77,109,.07);border:1px solid rgba(255,77,109,.2);color:var(--err);cursor:pointer;display:grid;place-items:center;font-size:13px;transition:all .2s" title="Hapus"><i class="bi bi-trash3"></i></button>
-                    </div></td>
-                  </tr>
+                  <!-- Loaded via AJAX -->
                 </tbody>
               </table>
             </div>
-            <div style="padding:10px 0 4px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted)">
-              Menampilkan 5 dari 24 dokumen &mdash; <a href="#" style="color:var(--cyan)">Lihat semua</a>
+            <div style="padding:10px 0 4px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted)" id="docFooter">
+              <!-- Loaded via AJAX -->
             </div>
           </div>
 
           <!-- Tab: Catatan -->
           <div class="tab-pane" id="tab-catatan">
-            <div style="display:flex;flex-direction:column;gap:10px;margin-bottom:0" id="noteWrap">
-              <div class="note-card">
-                <div class="note-head">
-                  <div class="note-av">AW</div>
-                  <div class="note-author">Andi Wijaya</div>
-                  <div class="note-time">2 jam lalu</div>
-                </div>
-                <div class="note-body">Sprint 4 sudah dimulai. Fokus bulan ini adalah finalisasi modul permohonan informasi dan pengujian integrasi dengan sistem e-mail pemerintah. Tim backend sedang handle beberapa bug di API endpoint.</div>
-                <div class="note-actions">
-                  <button class="note-btn"><i class="bi bi-reply-fill"></i> Balas</button>
-                  <button class="note-btn"><i class="bi bi-pencil"></i> Edit</button>
-                  <button class="note-btn" style="color:rgba(255,77,109,.5)"><i class="bi bi-trash3"></i> Hapus</button>
-                </div>
-              </div>
-              <div class="note-card">
-                <div class="note-head">
-                  <div class="note-av" style="background:linear-gradient(135deg,#6d28d9,#a78bfa)">SR</div>
-                  <div class="note-author">Siti Rahayu</div>
-                  <div class="note-time">1 hari lalu</div>
-                </div>
-                <div class="note-body">Desain UI untuk halaman dashboard pemohon sudah direvisi sesuai feedback dari Pak Budi. Wireframe versi final sudah diupload ke folder Dokumen. Mohon review sebelum lanjut ke development.</div>
-                <div class="note-actions">
-                  <button class="note-btn"><i class="bi bi-reply-fill"></i> Balas</button>
-                  <button class="note-btn"><i class="bi bi-pencil"></i> Edit</button>
-                  <button class="note-btn" style="color:rgba(255,77,109,.5)"><i class="bi bi-trash3"></i> Hapus</button>
-                </div>
-              </div>
+            <div id="noteWrap">
+              <!-- Loaded via AJAX -->
             </div>
             <div class="add-note-wrap">
               <div class="add-note-row">
-                <div class="add-note-av">BS</div>
-                <div style="flex:1">
-                  <textarea class="add-note-box" placeholder="Tambahkan catatan atau komentar..." rows="3" id="noteInput"></textarea>
-                  <div class="add-note-footer">
-                    <button class="btn-note-submit" id="btnAddNote"><i class="bi bi-send-fill"></i> Kirim Catatan</button>
+                <div class="add-note-av">
+                    @php
+                        $user = auth()->user();
+                        $avatar = $user->display_avatar;
+                        $initials = $user->initials;
+                    @endphp
+                    @if($avatar)
+                        <img src="{{ $avatar }}" alt="{{ $user->name }}" style="width:100%;height:100%;object-fit:cover;border-radius:inherit">
+                    @else
+                        {{ $initials }}
+                    @endif
+                </div>
+                <div class="chat-input-group" style="flex:1; display:flex; flex-direction:column; gap:0;">
+                  <!-- Reply Preview -->
+                  <div id="chatReplyWrap" class="chat-reply-wrap" style="display:none">
+                    <div class="reply-content">
+                        <div class="reply-author" id="replyAuthor">Nama User</div>
+                        <div class="reply-text" id="replyText">Isi pesan yang dibalas...</div>
+                    </div>
+                    <button type="button" class="btn-remove-reply" id="btnCancelReply">&times;</button>
+                  </div>
+
+                  <!-- Edit Preview -->
+                  <div id="chatEditWrap" class="chat-reply-wrap" style="display:none; border-left-color: var(--warn);">
+                    <div class="reply-content">
+                        <div class="reply-author" style="color: var(--warn);">Sedang mengedit pesan...</div>
+                        <div class="reply-text" id="editText">Isi pesan yang diedit...</div>
+                    </div>
+                    <button type="button" class="btn-remove-reply" id="btnCancelEdit">&times;</button>
+                  </div>
+
+                  <!-- Preview above the input row -->
+                  <div id="chatPreviewWrap" class="chat-preview-wrap" style="display:none">
+                    <!-- Preview will be injected here -->
+                  </div>
+
+                  <div class="add-note-container">
+                    <div class="chat-box-wrap">
+                      <textarea class="add-note-box" placeholder="Tulis komentar atau diskusi untuk project ini..." rows="1" id="noteInput"></textarea>
+                      <div class="chat-actions">
+                          <button type="button" class="chat-btn-act" title="Emoji" id="btnEmoji"><i class="bi bi-emoji-smile"></i></button>
+                          <button type="button" class="chat-btn-act" title="Lampirkan File" id="btnAttach"><i class="bi bi-paperclip"></i></button>
+                          <input type="file" id="chatFileInput" style="display:none" multiple>
+                      </div>
+                    </div>
+                    <div class="add-note-footer">
+                      <button class="btn-note-submit" id="btnAddNote"><span><i class="bi bi-send-fill"></i></span></button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -311,25 +257,8 @@
 
           <!-- Tab: Aktivitas -->
           <div class="tab-pane" id="tab-aktivitas">
-            <div class="timeline">
-              <div class="tl-item">
-                <div class="tl-dot-wrap"><div class="tl-dot fill"></div><div class="tl-line"></div></div>
-                <div class="tl-content">
-                  <div class="tl-title">Dokumen Source Code Sprint 3 diunggah</div>
-                  <div class="tl-desc">File <strong>source-code-sprint3.zip</strong> (18.4 MB) berhasil diunggah ke sistem versioning.</div>
-                  <div class="tl-user"><div class="tl-av">DK</div> Deni Kurnia</div>
-                  <div class="tl-time">20 Feb 2025, 14:32</div>
-                </div>
-              </div>
-              <div class="tl-item">
-                <div class="tl-dot-wrap"><div class="tl-dot green"></div><div class="tl-line"></div></div>
-                <div class="tl-content">
-                  <div class="tl-title">Progress diperbarui: 65% → 72%</div>
-                  <div class="tl-desc">Sprint 3 berhasil diselesaikan. Modul autentikasi dan manajemen pengguna sudah live di staging.</div>
-                  <div class="tl-user"><div class="tl-av">AW</div> Andi Wijaya</div>
-                  <div class="tl-time">19 Feb 2025, 09:15</div>
-                </div>
-              </div>
+            <div class="timeline" id="activityTimeline">
+              <!-- Loaded via AJAX -->
             </div>
           </div>
 
@@ -365,7 +294,7 @@
       </div>
     </div>
 
-    <!-- Delete Confirm Modal -->
+    <!-- Delete Project Confirm Modal (Existing) -->
     <div class="modal fade modal-dark" id="deleteModal" tabindex="-1">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content">
@@ -378,7 +307,7 @@
               <i class="bi bi-exclamation-triangle-fill"></i>
               <p>Apakah Anda yakin ingin <strong>menghapus project</strong> ini? Semua dokumen dan catatan terkait akan ikut terhapus secara permanen.</p>
             </div>
-            <p style="font-size:13px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-kanban"></i> Project: <span style="color:var(--cyan)">Sistem Informasi PPID Kota Pekalongan</span></p>
+            <p style="font-size:13px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-kanban"></i> Project: <span style="color:var(--cyan)">{{ $project->name }}</span></p>
           </div>
           <div class="modal-footer">
             <button class="btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batalkan</button>
@@ -388,5 +317,172 @@
         </div>
       </div>
     </div>
+
+    <!-- Delete Document Confirm Modal -->
+    <div class="modal fade m-dark m-red" id="delDocModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="m-hd">
+                    <h5 class="m-hd-title"><i class="bi bi-trash3-fill"></i> Hapus Dokumen</h5>
+                    <button type="button" class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="m-bd">
+                    <div class="warn-box">
+                        <i class="bi bi-exclamation-triangle-fill"></i>
+                        <p>Anda akan menghapus dokumen <strong id="delDocTitle">ini</strong> secara permanen dari project ini.</p>
+                    </div>
+                    <p style="font-size:12px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-info-circle"></i>&nbsp;Tindakan ini tidak dapat dibatalkan.</p>
+                </div>
+                <div class="m-ft">
+                    <button type="button" class="btn-mcancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batalkan</button>
+                    <button type="button" class="btn-mdel-doc btn-mdel"><span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span></button>
+                </div>
+                <div class="modal-drain"><div class="drain-fill" id="drainDelDoc"></div></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Document Detail Modal -->
+    <div class="modal m-dark m-cyan" id="modalDocDetail" tabindex="-1" style="z-index: 1060;">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+                <div class="m-hd">
+                    <h5 class="m-hd-title"><i class="bi bi-info-circle-fill"></i> Detail Dokumen</h5>
+                    <button type="button" class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
+                </div>
+                <div class="m-bd">
+                    <div class="row g-4">
+                        <!-- File Preview & Info -->
+                        <div class="col-12 col-md-5">
+                            <div class="detail-preview-card">
+                                <div id="detailFileIcon" class="detail-icon-large pdf">
+                                    <i class="bi bi-file-earmark-pdf-fill"></i>
+                                </div>
+                                <div id="detailImagePreview" class="detail-img-box" style="display:none">
+                                    <img src="" alt="Preview" style="width:100%; height:auto;">
+                                </div>
+                                <div class="mt-3 text-center">
+                                    <h6 class="mb-1 text-white" id="detailNama">Nama Dokumen</h6>
+                                    <p class="text-muted small" id="detailMeta">PDF &bull; 2.5 MB</p>
+                                    <a href="" id="btnDownloadDetail" class="btn btn-sm btn-outline-cyan w-100 mt-2" download>
+                                        <i class="bi bi-download"></i> Unduh Dokumen
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Metadata -->
+                        <div class="col-12 col-md-7">
+                            <div class="detail-info-list">
+                                <div class="info-item">
+                                    <span class="label">KATEGORI</span>
+                                    <span class="value"><span class="cat cat-s" id="detailKategori">Spesifikasi</span></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">PROJECT</span>
+                                    <span class="value text-cyan" id="detailProject">Project Name</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">VERSI</span>
+                                    <span class="value"><span class="vbadge" id="detailVersi">v1.0</span></span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">TANGGAL UPLOAD</span>
+                                    <span class="value" id="detailTanggal">12 Mei 2026</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="label">DIUNGGAH OLEH</span>
+                                    <span class="value">
+                                        <div class="td-usr">
+                                            <div class="uav" id="detailUploaderAvatar" style="background:linear-gradient(135deg,#1e3a5f,#3d6080)">JD</div>
+                                            <span id="detailUploaderName">John Doe</span>
+                                        </div>
+                                    </span>
+                                </div>
+                                <div class="info-item border-0 mt-2 vertical">
+                                    <span class="label">KETERANGAN</span>
+                                    <p class="value-desc" id="detailKeterangan">Tidak ada keterangan.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="m-ft">
+                    <button type="button" class="btn-mcancel w-100" data-bs-dismiss="modal">Tutup</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .detail-preview-card {
+            background: rgba(255,255,255,0.03);
+            border: 1px solid var(--bd);
+            border-radius: 15px;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+        .detail-icon-large {
+            font-size: 80px;
+            line-height: 1;
+            margin-bottom: 15px;
+            filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));
+        }
+        .detail-img-box {
+            width: 100%;
+            border-radius: 10px;
+            overflow: hidden;
+            border: 2px solid var(--bd);
+        }
+        .detail-info-list .info-item {
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .detail-info-list .info-item.vertical {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .detail-info-list .label {
+            font-family: var(--mono);
+            font-size: 11px;
+            color: var(--cyan);
+            opacity: 0.8;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .detail-info-list .value {
+            font-weight: 600;
+            color: #fff;
+            font-size: 14px;
+        }
+        .value-desc {
+            color: #ccc;
+            font-size: 13px;
+            line-height: 1.6;
+            background: rgba(255,255,255,0.03);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.05);
+            margin: 0;
+            width: 100%;
+        }
+        .btn-outline-cyan {
+            border-color: var(--cyan);
+            color: var(--cyan);
+            transition: 0.3s;
+        }
+        .btn-outline-cyan:hover {
+            background: var(--cyan);
+            color: #000;
+        }
+    </style>
 
 </x-master-layout>

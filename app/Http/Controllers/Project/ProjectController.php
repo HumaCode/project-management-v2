@@ -133,17 +133,33 @@ class ProjectController extends Controller
     public function show(string $id)
     {
         // Gate::authorize('read ' . $this->aksesPermission);
+        
+        $project = $this->projectService->getProjectByUlid($id);
 
-        // For now, as per user request, we use static data for the layout
-        // But we still pass the title and icon for consistency
         $data = [
             'title' => 'Detail ' . $this->title,
             'subtitle' => 'Lihat detail perkembangan project',
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
+            'detailDataUrl' => route('projects.detailData', ['project' => $id]),
+            'projectId' => $id,
+            'project' => $project,
         ];
 
         return view($this->showView, $data);
+    }
+
+    /**
+     * Get project detail data for AJAX.
+     */
+    public function getDetailData(string $id)
+    {
+        try {
+            $data = $this->projectService->getProjectDetailData($id);
+            return ResponseHelper::success('Data detail project berhasil diambil', $data);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
     }
 
     /**
@@ -203,6 +219,74 @@ class ProjectController extends Controller
             );
         } catch (\Exception $e) {
             return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Store a new discussion comment with optional attachments.
+     */
+    public function storeDiskusi(Request $request, string $id)
+    {
+        $params = $request->validate([
+            'content' => 'nullable|string',
+            'parent_id' => 'nullable|exists:diskusis,id',
+            'files' => 'nullable|array',
+            'files.*' => 'file|max:20480', // 20MB max per file
+        ]);
+
+        try {
+            $diskusi = $this->projectService->storeDiskusi($id, $params);
+            return ResponseHelper::success('Komentar berhasil dikirim', $diskusi);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    public function updateDiskusi(Request $request, string $id)
+    {
+        $params = $request->validate([
+            'content' => 'required|string',
+        ]);
+
+        try {
+            $diskusi = $this->projectService->updateDiskusi($id, $params);
+            return ResponseHelper::success('Komentar berhasil diperbarui', $diskusi);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    public function destroyDiskusi(string $id)
+    {
+        try {
+            $this->projectService->deleteDiskusi($id);
+            return ResponseHelper::success('Komentar berhasil dihapus');
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    /**
+     * Securely serve media files from Diskusi attachments.
+     */
+    public function showMedia(string $mediaId)
+    {
+        try {
+            $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::findOrFail($mediaId);
+            
+            if (!auth()->check()) abort(403);
+
+            $path = $media->getPath();
+            
+            // If it's an image, serve as file (inline) for lightbox
+            if (str_starts_with($media->mime_type, 'image/')) {
+                return response()->file($path);
+            }
+
+            // Otherwise, force download
+            return response()->download($path, $media->file_name);
+        } catch (\Exception $e) {
+            abort(404);
         }
     }
 }

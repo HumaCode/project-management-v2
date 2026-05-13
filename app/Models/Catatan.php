@@ -6,10 +6,19 @@ use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Catatan extends Model
 {
-    use HasFactory, HasUlids;
+    use HasFactory, HasUlids, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('catatan');
+    }
 
     protected $fillable = [
         'title',
@@ -19,6 +28,13 @@ class Catatan extends Model
         'project_id',
         'user_id',
     ];
+
+    protected $appends = ['created_at_human'];
+
+    public function getCreatedAtHumanAttribute(): string
+    {
+        return $this->created_at ? $this->created_at->diffForHumans() : '-';
+    }
 
     /**
      * Get the user who owns the note.

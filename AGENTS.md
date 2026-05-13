@@ -79,6 +79,7 @@
 | `nunomaduro/collision` | ^8.6 | ✓ |
 | `pestphp/pest` | ^4.4 | ✓ |
 | `pestphp/pest-plugin-laravel` | ^4.1 | ✓ |
+| `spatie/laravel-activitylog` | ^5.0 |  |
 | `spatie/laravel-medialibrary` | ^11.21 |  |
 | `spatie/laravel-permission` | ^7.2 |  |
 
@@ -95,3 +96,30 @@
 | `postcss` | ^8.4.31 | ✓ |
 | `tailwindcss` | ^3.1.0 | ✓ |
 | `vite` | ^7.0.7 | ✓ |
+## Module: Diskusi (WhatsApp-Style Chat)
+> A premium, interactive discussion system integrated into Project Detail.
+
+### 💬 UI & UX Features
+- **Me vs Others**: Messages from the current user are right-aligned with unique styling; others are left-aligned.
+- **Bottom-to-Top Flow**: Uses `flex-direction: column` and auto-scrolling to ensure the latest messages are always at the bottom near the input.
+- **Reply (Quote) System**: Supports nested replies with a visual quote block. Clicking a quote triggers a smooth scroll and "flash highlight" on the original message.
+- **Auto-resize Input**: Textarea grows dynamically as the user types, mimicking mobile chat apps.
+
+### 📁 Media & Attachments
+- **Library**: Powered by `Spatie Media Library` using the `diskusi_attachments` collection.
+- **Secure Serving**: Files are stored in **Private Storage**. Access is handled via `ProjectController@showMedia` with authentication checks.
+- **Interaction**:
+    - **Images**: Opens in a premium **Lightbox** (via `fslightbox`) without page reload.
+    - **Documents**: Triggers a **Direct Download** automatically.
+- **Previews**: Real-time thumbnail previews appear above the input box before sending.
+
+### 🛡️ Security & Policies
+- **Edit Policy**: Restricted to the owner and only available within **5 minutes** of sending. Displays an `(diedit)` label after modification.
+- **Delete Policy**: Owners can delete their own messages at any time.
+- **Confirmation**: All destructive actions (Delete) use the custom `SCA.confirm` premium dialog.
+- **Data Integrity**: Uses `ULID` for all primary and foreign keys (`parent_id`, `project_id`, `user_id`).
+
+### 🛠️ Key Files
+- `App\Services\Project\ProjectService.php`: Core logic for data mapping, media handling, and time-lock validation.
+- `project-detail.js`: Handles real-time rendering, AJAX FormData uploads, scroll logic, and lightbox initialization.
+- `project-detail.css`: Custom styling for chat bubbles, quotes, and attachment previews.

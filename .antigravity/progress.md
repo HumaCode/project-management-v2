@@ -66,19 +66,19 @@
     - [x] **Breadcrumbs**: Restored "Home > Dokumen" navigation for better UX.
 - [x] **Project Management (Phase 3: Detail Page)**:
     - [x] **Premium Detail UI**: Implementation of Project Dashboard with stats, activity logs, and team overview.
-- [x] **Catatan (Notes) Module (Phase 1: UI/UX)**:
-    - [x] **Architecture**: Service-Controller pattern with `CatatanController` and `CatatanMessages` constants.
-    - [x] **Premium UI**: Dark glassmorphism dashboard with 4 stat cards and interactive data table.
-    - [x] **Modular Assets**: Separated logic into `catatan.css` and `catatan.js` with intersection-observer based count-up animations.
-    - [x] **Dynamic Modals**: 
-        - Integrated **TinyMCE 6** with dark skin and auto-init logic.
-        - Implementation of "Drain-Fill" loading animations for all modals (Add, Edit, View, Delete).
-        - Responsive breadcrumbs in header action area (Home > Catatan).
-    - [x] **Data Integration**: Prepared Blade structures for dynamic data injection (PICs, Categories, Priorities).
-- [ ] **Catatan (Notes) Module (Phase 2: Backend Logic)**:
-    - [ ] CRUD implementation (Store, Update, Delete).
-    - [ ] Dynamic stats calculation.
-    - [ ] Category & Project filters integration.
+- [x] **Catatan (Notes) Module**:
+    - [x] **Database & Architecture**: Migration with ULID support, Service-Repository pattern implementation.
+    - [x] **Premium UI/UX**: 
+        - Dark glassmorphism dashboard with 4 real-time stat cards.
+        - Implementation of "Drain-Fill" loading animations for all modals.
+        - **CKEditor 5** integration with Base64 adapter for rich-text notes.
+        - **Select2** integration for project filtering with custom dark theme.
+    - [x] **Functional CRUD (AJAX)**:
+        - Server-side pagination, sorting, and debounced search.
+        - Complete Store, Update, and Delete logic with SCA Toast notifications.
+        - Automatic `user_id` attribution for logged-in users.
+        - **Reset Filter** functionality with icon-based button and rotation animation.
+    - [x] **UI Polish**: Refined toolbar layout, responsive filter wrapping, and fixed Select2 `dropdownParent` issues.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

@@ -83,6 +83,11 @@ Route::middleware(['auth'])->group(function () {
 
             // catatan
             Route::get('catatan', [\App\Http\Controllers\Catatan\CatatanController::class, 'index'])->name('catatan.index');
+            Route::get('catatan/pagination', [\App\Http\Controllers\Catatan\CatatanController::class, 'getAllPaginated'])->name('catatan.pagination');
+            Route::post('catatan', [\App\Http\Controllers\Catatan\CatatanController::class, 'store'])->name('catatan.store');
+            Route::get('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'show'])->name('catatan.show');
+            Route::put('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'update'])->name('catatan.update');
+            Route::delete('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'destroy'])->name('catatan.destroy');
 
         }
     );

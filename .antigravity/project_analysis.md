@@ -83,6 +83,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Editor penulisan kode profesional via Monaco Editor.
   - CRUD & Detail modal interaktif dengan pratinjau cerdas.
   - Filter data yang kuat (Kategori, Project, Tipe).
+- **Catatan (Notes) Module**:
+  - Manajemen catatan personal atau terkait proyek.
+  - CRUD penuh menggunakan AJAX dengan notifikasi toast.
+  - Integrasi CKEditor 5 untuk penulisan isi catatan yang kaya (rich-text).
+  - Filter interaktif berbasis Select2 (Project) dan Debounced Search.
+  - Dashboard statistik real-time untuk ringkasan catatan.
 
 ## Database Schema (Current)
 - `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.
@@ -93,4 +99,5 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `project_user`: `project_id`, `user_id` (Pivot untuk PIC).
 - `dokumens`: `id` (ULID), `nama`, `versi`, `kategori`, `type` (file/article/code), `project_id`, `user_id`.
 - `dokumen_items`: `id` (ULID), `dokumen_id`, `title`, `content`, `order`.
+- `catatans`: `id` (ULID), `title`, `category`, `priority`, `content`, `project_id`, `user_id`.
 

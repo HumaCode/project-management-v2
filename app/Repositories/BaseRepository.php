@@ -15,9 +15,14 @@ abstract class BaseRepository implements BaseRepositoryInterface
         $this->model = $model;
     }
 
+    public function findById(string $id, array $relations = [])
+    {
+        return $this->model->with($relations)->find($id);
+    }
+
     public function getById(string $id)
     {
-        return $this->model->find($id);
+        return $this->findById($id);
     }
 
     public function create(array $data)

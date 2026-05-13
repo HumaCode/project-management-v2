@@ -2,6 +2,10 @@
 
 namespace App\Providers;
 
+use App\Interface\Catatan\CatatanRepositoryInterface;
+use App\Interface\Catatan\CatatanServiceInterface;
+use App\Repositories\Catatan\CatatanRepository;
+use App\Services\Catatan\CatatanService;
 use App\Interface\RoleManagement\PermissionRepositoryInterface;
 use App\Interface\RoleManagement\PermissionServiceInterface;
 use App\Interface\RoleManagement\RoleRepositoryInterface;
@@ -50,6 +54,10 @@ class AppServiceProvider extends ServiceProvider
         // dokumen
         $this->app->bind(\App\Interface\Dokumen\DokumenRepositoryInterface::class, \App\Repositories\Dokumen\DokumenRepository::class);
         $this->app->bind(\App\Interface\Dokumen\DokumenServiceInterface::class, \App\Services\Dokumen\DokumenService::class);
+
+        // catatan
+        $this->app->bind(CatatanRepositoryInterface::class, CatatanRepository::class);
+        $this->app->bind(CatatanServiceInterface::class, CatatanService::class);
     }
 
     /**

@@ -71,6 +71,12 @@
     - [x] **Breadcrumbs**: Restored "Home > Dokumen" navigation for better UX.
 - [x] **Project Management (Phase 3: Detail Page)**:
     - [x] **Premium Detail UI**: Implementation of Project Dashboard with stats, activity logs, and team overview.
+- [x] **Project Management (Phase 4: Team-Based Migration)**:
+    - [x] **Architecture Pivot**: Migrated from individual PIC assignments to Team-based project ownership.
+    - [x] **Database & Relation**: Migration for `team_id` in `projects` table and relationship mapping.
+    - [x] **Select2 Integration**: Premium dark-themed Select2 for team selection in Create/Edit forms.
+    - [x] **UI Sync**: Updated Project Index and Detail views to render Team Name and Member Avatar Stacks dynamically.
+    - [x] **Cleanup**: Removed legacy PIC syncing logic and assets to maintain a lean codebase.
 - [x] **Catatan (Notes) Module**:
     - [x] **Database & Architecture**: Migration with ULID support, Service-Repository pattern implementation.
     - [x] **Premium UI/UX**: 

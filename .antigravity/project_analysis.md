@@ -72,7 +72,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - **Authentication**: Login, Register, Forgot Password via Laravel Breeze.
 - **Project Management**:
   - Manajemen list proyek dengan status & progress.
-  - Hubungan PIC (User) many-to-many.
+  - **Arsitektur Berbasis Tim**: Penugasan proyek kini dilakukan per-Tim (Team-based) untuk kolaborasi yang lebih baik.
   - Server-side data table & filtering.
   - **WhatsApp-Style Diskusi**: Sistem obrolan interaktif terintegrasi dengan gaya WhatsApp (Me vs Others, bottom-to-top flow).
   - **Secure Media System**: Penanganan lampiran file/gambar secara privat menggunakan Spatie Media Library dengan akses aman via controller.
@@ -111,8 +111,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `permissions`, `roles`, `model_has_permissions`, dll (Spatie standard).
 - `menus`, `menu_permissions`.
 - `media`: Spatie Media Library.
-- `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `color`, `icon`, `start_date`, `deadline`, `progress`, `actual_finished_at`, `created_by`.
-- `project_user`: `project_id`, `user_id` (Pivot untuk PIC).
+- `projects`: `id` (ULID), `name`, `slug`, `description`, `notes`, `status` (enum), `priority` (enum), `color`, `icon`, `start_date`, `deadline`, `progress`, `actual_finished_at`, `team_id`, `created_by`.
 - `dokumens`: `id` (ULID), `nama`, `versi`, `kategori`, `type` (file/article/code), `project_id`, `user_id`.
 - `dokumen_items`: `id` (ULID), `dokumen_id`, `title`, `content`, `order`.
 - `catatans`: `id` (ULID), `title`, `category`, `priority`, `content`, `project_id`, `user_id`.

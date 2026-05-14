@@ -22,6 +22,8 @@ use App\Services\Project\ProjectService;
 use App\Services\RoleManagement\PermissionService;
 use App\Services\RoleManagement\RoleService;
 use App\Services\RoleManagement\UserService;
+use App\Interface\Team\TeamServiceInterface;
+use App\Services\Team\TeamService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\ServiceProvider;
@@ -58,6 +60,10 @@ class AppServiceProvider extends ServiceProvider
         // catatan
         $this->app->bind(CatatanRepositoryInterface::class, CatatanRepository::class);
         $this->app->bind(CatatanServiceInterface::class, CatatanService::class);
+
+        // team
+        $this->app->bind(\App\Interface\Team\TeamRepositoryInterface::class, \App\Repositories\Team\TeamRepository::class);
+        $this->app->bind(TeamServiceInterface::class, TeamService::class);
     }
 
     /**

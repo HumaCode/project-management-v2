@@ -94,6 +94,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Integrasi CKEditor 5 untuk penulisan isi catatan yang kaya (rich-text).
   - Filter interaktif berbasis Select2 (Project) dan Debounced Search.
   - Dashboard statistik real-time untuk ringkasan catatan.
+- **Team Management Module**:
+  - Pengelolaan tim kerja lintas proyek.
+  - Fitur penugasan peran (role) dinamis untuk setiap anggota tim.
+  - Dashboard statistik tim dan modal detail premium.
+  - Eager loading untuk optimasi performa avatar dan role.
+  - Integrasi penuh dengan sistem loading global (SCA.loading).
 - **UI/UX Standardization (Standard Terbaru)**:
   - **Breadcrumb**: Dipindahkan ke sisi kanan atas agar konsisten dengan modul `Project Index` dan `User Management`.
   - **Header Grid**: Menggunakan struktur `ph-wrap` dengan `align-items: center` untuk perataan vertikal elemen judul dan navigasi.
@@ -111,4 +117,6 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `dokumen_items`: `id` (ULID), `dokumen_id`, `title`, `content`, `order`.
 - `catatans`: `id` (ULID), `title`, `category`, `priority`, `content`, `project_id`, `user_id`.
 - `diskusis`: `id` (ULID), `project_id`, `user_id`, `parent_id` (Reply reference), `content`.
+- `teams`: `id` (ULID), `name`, `description`, `created_by`.
+- `team_user`: `team_id`, `user_id`, `role` (Pivot untuk peran di tim).
 

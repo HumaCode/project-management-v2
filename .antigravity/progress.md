@@ -84,6 +84,20 @@
         - Automatic `user_id` attribution for logged-in users.
         - **Reset Filter** functionality with icon-based button and rotation animation.
     - [x] **UI Polish**: Refined toolbar layout, responsive filter wrapping, and fixed Select2 `dropdownParent` issues.
+- [x] **Team Management Module**:
+    - [x] **Database & Relation**: Migration for `teams` and `team_user` (pivot) with `role` column support.
+    - [x] **Architecture**: Service-Repository pattern with `TeamServiceInterface` and `TeamRepositoryInterface`.
+    - [x] **Eager Loading**: Optimized queries with `with(['creator', 'members.media', 'members.roles'])` to prevent N+1 issues.
+    - [x] **Premium UI/UX**: 
+        - Dark glassmorphism dashboard with 2 real-time stat cards.
+        - **Dynamic Role Assignment**: Interactive member selection with conditional role input (Designer, Backend, etc.).
+        - **Premium Detail Modal**: Comprehensive team profile with member cards and color-coded avatars.
+        - **Global Loading Integration**: Implementation of `SCA.loading` for smooth data transitions.
+        - **Dynamic Avatar Colors**: Unique, consistent background colors for user initials based on their ID.
+    - [x] **Functional CRUD (AJAX)**:
+        - Server-side pagination, sorting, and debounced search.
+        - Complete Store, Update, and Delete logic with SCA Toast notifications.
+        - Robust validation for associative member-role data structures.
 - [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

@@ -16,7 +16,8 @@ class UserResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'avatar' => $this->avatar,
+            'avatar' => $this->display_avatar,
+            'initials' => $this->initials,
             'name' => $this->name,
             'username' => $this->username,
             'email' => $this->email,
@@ -24,6 +25,9 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'is_active' => $this->is_active,
             'role_name' => $this->role_name,
+            'team_role' => $this->whenPivotLoaded('team_user', function () {
+                return $this->pivot->role;
+            }),
             'created_at_indo' => $this->created_at_indo,
             'updated_at_indo' => $this->updated_at_indo,
         ];

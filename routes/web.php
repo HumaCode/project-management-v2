@@ -94,6 +94,12 @@ Route::middleware(['auth'])->group(function () {
             Route::put('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'update'])->name('catatan.update');
             Route::delete('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'destroy'])->name('catatan.destroy');
 
+            // teams
+            Route::redirect('tim', 'teams');
+            Route::get('teams/getData', [\App\Http\Controllers\Team\TeamController::class, 'getData'])->name('teams.getData');
+            Route::get('teams/getUsers', [\App\Http\Controllers\Team\TeamController::class, 'getUsers'])->name('teams.getUsers');
+            Route::resource('teams', \App\Http\Controllers\Team\TeamController::class);
+
         }
     );
 });

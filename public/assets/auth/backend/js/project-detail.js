@@ -114,6 +114,7 @@ $(function() {
 
                     // Info Grid
                     $('#infoCreator').text(p.creator ? p.creator.name : '-');
+                    $('#infoTeamName').text(p.team ? p.team.name : 'No Team');
                     $('#infoStartDate').text(formatDateIndo(p.start_date));
                     $('#infoDeadline').text(formatDateIndo(p.deadline));
                     

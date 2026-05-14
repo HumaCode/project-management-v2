@@ -8,7 +8,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\PaginateResource;
 use App\Http\Resources\Project\ProjectResource;
 use App\Interface\Project\ProjectServiceInterface;
-use App\Interface\RoleManagement\UserServiceInterface;
+use App\Interface\Team\TeamServiceInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Gate;
 
@@ -24,12 +24,12 @@ class ProjectController extends Controller
     private string $aksesPermission = ProjectMessages::AKSES_PERMISSION;
 
     private ProjectServiceInterface $projectService;
-    private UserServiceInterface $userService;
+    private TeamServiceInterface $teamService;
 
-    public function __construct(ProjectServiceInterface $projectService, UserServiceInterface $userService)
+    public function __construct(ProjectServiceInterface $projectService, TeamServiceInterface $teamService)
     {
         $this->projectService = $projectService;
-        $this->userService = $userService;
+        $this->teamService = $teamService;
     }
 
     /**
@@ -64,14 +64,14 @@ class ProjectController extends Controller
     {
         // Gate::authorize('create ' . $this->aksesPermission);
 
-        $users = $this->userService->getUsersByRole('anggota');
+        $teams = $this->teamService->getAllTeams();
 
         $data = [
             'title' => 'Tambah ' . $this->title,
-            'subtitle' => 'Buat project baru & tetapkan anggota tim',
+            'subtitle' => 'Buat project baru & tetapkan tim kerja',
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
-            'users' => $users,
+            'teams' => $teams,
         ];
 
         return view(ProjectMessages::CREATEVIEW, $data);
@@ -174,15 +174,15 @@ class ProjectController extends Controller
         // Gate::authorize('update ' . $this->aksesPermission);
 
         $project = $this->projectService->getProjectByUlid($id);
-        $users = $this->userService->getUsersByRole('anggota');
+        $teams = $this->teamService->getAllTeams();
 
         $data = [
             'title' => 'Ubah ' . $this->title,
-            'subtitle' => 'Perbarui detail project & anggota tim',
+            'subtitle' => 'Perbarui detail project & tim kerja',
             'icon' => $this->icon,
             'permissionAkses' => $this->aksesPermission,
             'project' => $project,
-            'users' => $users,
+            'teams' => $teams,
         ];
 
         return view(ProjectMessages::EDITVIEW, $data);

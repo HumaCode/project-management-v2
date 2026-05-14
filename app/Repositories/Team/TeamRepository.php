@@ -84,4 +84,9 @@ class TeamRepository implements TeamRepositoryInterface
     {
         return DB::table('team_user')->distinct('user_id')->count();
     }
+
+    public function all()
+    {
+        return Team::orderBy('name')->get();
+    }
 }

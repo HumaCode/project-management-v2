@@ -46,4 +46,9 @@ class TeamService implements TeamServiceInterface
     {
         return $this->teamRepository->findById($id);
     }
+
+    public function getAllTeams()
+    {
+        return $this->teamRepository->all();
+    }
 }

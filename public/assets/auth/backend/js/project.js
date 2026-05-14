@@ -134,7 +134,12 @@ $(function () {
                                     </td>
                                     <td>${statusBadge(p.status)}</td>
                                     <td>${progressHTML(p.progress, p.status)}</td>
-                                    <td>${avatarHTML(p.pics)}</td>
+                                    <td>
+                                        <div class="td-team-cell">
+                                            <div class="td-team-name">${p.team_name}</div>
+                                            ${avatarHTML(p.pics)}
+                                        </div>
+                                    </td>
                                     <td>${fmtDate(p.start_date)}</td>
                                     <td>${deadlineHTML(p.deadline, p.status)}</td>
                                     <td class="td-mono">${p.created_by}</td>

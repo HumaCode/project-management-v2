@@ -26,7 +26,8 @@ class ProjectResource extends JsonResource
             'icon' => $this->icon ?? 'bi-kanban',
             'thumbnail' => $this->getFirstMediaUrl('thumbnail'),
             'created_by' => $this->creator ? $this->creator->name : 'Unknown',
-            'pics' => $this->pics->map(fn($u) => [
+            'team_name' => $this->team ? $this->team->name : '-',
+            'pics' => ($this->team?->members ?? collect())->map(fn($u) => [
                 'name' => $u->name,
                 'avatar' => $u->display_avatar,
                 'initials' => $u->initials,

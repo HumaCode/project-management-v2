@@ -93,102 +93,27 @@
     if (sl) sl.addEventListener('input', updSl);
     updSl();
 
-    /* Form: PIC multi-select */
-    var pb = document.getElementById('picBox'),
-        pi = document.getElementById('picIn'),
-        pd = document.getElementById('picDd'),
-        ps = {};
-
-    // Initialize with existing pics
-    if (window.existingPics && Array.isArray(window.existingPics)) {
-        window.existingPics.forEach(p => {
-            ps[p.id] = p;
-        });
-        setTimeout(() => {
-            picChips();
-            picState();
-        }, 100);
-    }
-
-    function picChips() {
-        if (!pb || !pi) return;
-        pb.querySelectorAll('.pic-chip').forEach(function(c) {
-            c.remove();
-        });
-        Object.keys(ps).forEach(function(id) {
-            var m = ps[id],
-                c = document.createElement('div');
-            c.className = 'pic-chip';
-            c.dataset.id = id;
-            c.innerHTML = '<div class="pc-av">' + m.i + '</div><span>' + m.n + '</span><button type="button" class="del-c"><i class="bi bi-x-lg"></i></button>';
-            c.querySelector('.del-c').addEventListener('click', function(e) {
-                e.stopPropagation();
-                delete ps[id];
-                picChips();
-                picState();
-            });
-            pb.insertBefore(c, pi);
-        });
-    }
-
-    function picState() {
-        if (!pd) return;
-        pd.querySelectorAll('.pic-opt').forEach(function(o) {
-            o.classList.toggle('sel', !!ps[o.dataset.id]);
-        });
-    }
-
-    if (pd) {
-        pd.querySelectorAll('.pic-opt').forEach(function(o) {
-            o.addEventListener('mousedown', function(e) {
-                e.preventDefault();
-                var id = o.dataset.id;
-                if (ps[id]) delete ps[id];
-                else ps[id] = {
-                    n: o.dataset.nm,
-                    i: o.dataset.in,
-                    r: o.dataset.role
-                };
-                picChips();
-                picState();
-                pi.value = '';
-                picFilt('');
-            });
-        });
-    }
-
-    function picFilt(q) {
-        if (!pd) return;
-        q = q.toLowerCase();
-        pd.querySelectorAll('.pic-opt').forEach(function(o) {
-            o.style.display = o.dataset.nm.toLowerCase().indexOf(q) > -1 ? '' : 'none';
-        });
-    }
-
-    if (pi) {
-        pi.addEventListener('focus', function() {
-            pd.classList.add('open');
-            picFilt(pi.value);
-        });
-        pi.addEventListener('blur', function() {
-            setTimeout(function() {
-                pd.classList.remove('open');
-            }, 160);
-        });
-        pi.addEventListener('input', function() {
-            picFilt(this.value);
-        });
-    }
-
-    if (pb) {
-        pb.addEventListener('click', function() {
-            pi.focus();
-        });
-    }
+    /* Form: submit (AJAX) */
+    var btnSave = document.getElementById('btnSave');
 
     /* Form: Flatpickr (Date Picker) */
     var fs = document.getElementById('fStart');
     var fd = document.getElementById('fDeadline');
+
+    /* Select2 Initialization */
+    if (typeof $ !== 'undefined' && $('.fsl').length) {
+        $('.fsl').each(function() {
+            var $this = $(this);
+            $this.select2({
+                placeholder: $this.find('option[value=""]').text() || '-- Pilih --',
+                allowClear: true,
+                width: '100%'
+            }).on('change', function() {
+                $(this).removeClass('err');
+                $(this).closest('.fg').removeClass('has-err');
+            });
+        });
+    }
 
     var fpStart = flatpickr("#fStart", {
         locale: "id",
@@ -258,6 +183,7 @@
             var checks = [
                 { el: document.getElementById('fNama'), fg: document.getElementById('fNama').closest('.fg') },
                 { el: document.getElementById('fStatus'), fg: document.getElementById('fStatus').closest('.fg') },
+                { el: document.getElementById('fTeam'), fg: document.getElementById('fTeam').closest('.fg') },
                 { el: fs, fg: fs.closest('.fg') },
                 { el: fd, fg: fd.closest('.fg') }
             ];
@@ -285,11 +211,6 @@
     function submitForm() {
         var form = document.getElementById('formEditProject');
         var formData = new FormData(form);
-
-        // Add PICs
-        Object.keys(ps).forEach(id => {
-            formData.append('pics[]', id);
-        });
 
         btnSave.innerHTML = '<span><i class="bi bi-hourglass-split"></i>&nbsp;Menyimpan...</span>';
         btnSave.style.opacity = '.7';

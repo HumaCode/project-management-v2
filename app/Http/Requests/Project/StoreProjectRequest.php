@@ -33,6 +33,7 @@ class StoreProjectRequest extends FormRequest
             'notes' => ['nullable', 'string', 'max:300'],
             'color' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
             'thumbnail' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:2048'],
+            'team_id' => ['required', 'exists:teams,id'],
             'pics' => ['nullable', 'array'],
             'pics.*' => ['exists:users,id'],
         ];

@@ -143,8 +143,11 @@
               </div>
             </div>
             <div class="info-item" style="grid-column:1/-1">
-              <div class="info-label" style="margin-bottom:10px">Person In Charge</div>
+              <div class="info-label" style="margin-bottom:10px">Tim Pelaksana</div>
               <div style="display:flex;flex-direction:column;gap:8px" id="picListWrap">
+                <div class="team-badge-wrap" style="margin-bottom:4px">
+                  <span class="tag tag-prog" id="infoTeamName" style="font-size:12px; font-weight:700; background:rgba(0,200,255,0.15)">-</span>
+                </div>
                 <div style="display:flex;align-items:center;gap:8px">
                   <div class="av-stack" id="picStack">
                     <!-- Loaded via JS -->

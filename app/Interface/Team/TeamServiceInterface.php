@@ -10,4 +10,5 @@ interface TeamServiceInterface
     public function updateTeam(string $id, array $data);
     public function deleteTeam(string $id);
     public function getTeamDetail(string $id);
+    public function getAllTeams();
 }

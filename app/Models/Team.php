@@ -32,4 +32,12 @@ class Team extends Model
     {
         return $this->belongsToMany(User::class, 'team_user')->withPivot('role');
     }
+
+    /**
+     * Relasi ke proyek yang ditugaskan ke tim ini
+     */
+    public function projects(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Project::class);
+    }
 }

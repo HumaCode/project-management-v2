@@ -11,4 +11,5 @@ interface TeamRepositoryInterface
     public function delete(string $id);
     public function countTeams(): int;
     public function countDistinctMembers(): int;
+    public function all();
 }

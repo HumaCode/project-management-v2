@@ -28,7 +28,7 @@ class ProjectService implements ProjectServiceInterface
     public function getPaginatedProjects(?string $search, ?string $status, int $rowPerPage, ?string $sortCol = 'created_at', ?string $sortDir = 'desc')
     {
         // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
-        $query = Project::with(['creator.media', 'pics.media', 'media']);
+        $query = Project::with(['creator.media', 'team.members.media', 'media']);
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -60,11 +60,6 @@ class ProjectService implements ProjectServiceInterface
 
             $project = Project::create($data);
 
-            // Sync PICs
-            if (isset($data['pics'])) {
-                $project->pics()->sync($data['pics']);
-            }
-
             // Handle Thumbnail
             if (isset($data['thumbnail']) && $data['thumbnail'] instanceof \Illuminate\Http\UploadedFile) {
                 $project->addMedia($data['thumbnail'])
@@ -77,7 +72,7 @@ class ProjectService implements ProjectServiceInterface
 
     public function getProjectByUlid(string $ulid): Project
     {
-        return Project::with(['pics', 'media'])->findOrFail($ulid);
+        return Project::with(['team.members.media', 'media'])->findOrFail($ulid);
     }
 
     public function updateProject(string $ulid, array $data): Project
@@ -94,11 +89,6 @@ class ProjectService implements ProjectServiceInterface
             }
 
             $project->update($data);
-
-            // Sync PICs
-            if (isset($data['pics'])) {
-                $project->pics()->sync($data['pics']);
-            }
 
             // Handle Thumbnail
             if (isset($data['thumbnail']) && $data['thumbnail'] instanceof \Illuminate\Http\UploadedFile) {
@@ -129,13 +119,13 @@ class ProjectService implements ProjectServiceInterface
 
     public function getProjectDetailData(string $ulid): array
     {
-        $project = Project::with(['pics.media', 'creator.media'])->findOrFail($ulid);
+        $project = Project::with(['team.members.media', 'creator.media'])->findOrFail($ulid);
         
         // Stats calculation
         $stats = [
             'docs_count' => $project->dokumens()->count(),
             'notes_count' => $project->diskusis()->count(),
-            'members_count' => $project->pics()->count(),
+            'members_count' => $project->team?->members()->count() ?? 0,
             'days_remaining' => now()->diffInDays($project->deadline, false) >= 0 
                 ? now()->diffInDays($project->deadline, false) 
                 : 0,
@@ -159,11 +149,14 @@ class ProjectService implements ProjectServiceInterface
                 'creator' => [
                     'name' => $project->creator?->name ?? 'System',
                 ],
-                'pics' => $project->pics->map(fn($u) => [
+                'team' => [
+                    'name' => $project->team?->name ?? 'No Team',
+                ],
+                'pics' => ($project->team?->members ?? collect())->map(fn($u) => [
                     'name' => $u->name,
                     'initials' => $u->initials,
                     'display_avatar' => $u->display_avatar,
-                    'role_name' => $u->role_name,
+                    'role_name' => $u->pivot->role ?? $u->role_name,
                 ]),
             ],
             'stats' => $stats,

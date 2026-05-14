@@ -2,6 +2,7 @@
     @push('css')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
+        <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/project-create.css') }}">
     @endpush
 
@@ -114,35 +115,21 @@
                     </div>
                 </div>
 
-                <div class="fsec-title" style="margin-top:28px"><i class="bi bi-people-fill"></i> Person In Charge (PIC)
-                </div>
+                <div class="fsec-title" style="margin-top:28px"><i class="bi bi-people-fill"></i> Tim Pelaksana</div>
 
                 <div class="row">
                     <div class="col-12">
                         <div class="fg">
-                            <label>Pilih Anggota Tim</label>
-                            <div class="pic-wrap">
-                                <div class="pic-box" id="picBox">
-                                    <input type="text" class="pic-in" id="picIn" placeholder="Ketik nama anggota..."
-                                        autocomplete="off" />
-                                </div>
-                                <div class="pic-dd" id="picDd">
-                                    @foreach ($users as $user)
-                                        <div class="pic-opt" data-id="{{ $user->id }}" data-nm="{{ $user->name }}"
-                                            data-in="{{ $user->initials }}"
-                                            data-role="{{ $user->roles->first()?->name ?? 'Anggota' }}">
-                                            <div class="po-av">{{ $user->initials }}</div>
-                                            <div>
-                                                <div class="po-nm">{{ $user->name }}</div>
-                                                <div class="po-role">{{ $user->roles->first()?->name ?? 'Anggota' }}</div>
-                                            </div><i class="bi bi-check2-circle po-chk"></i>
-                                        </div>
-                                    @endforeach
-                                </div>
-                            </div>
+                            <label>Pilih Tim <span class="req">*</span></label>
+                            <select name="team_id" class="fsl" id="fTeam">
+                                <option value="">-- Pilih Tim --</option>
+                                @foreach ($teams as $team)
+                                    <option value="{{ $team->id }}" {{ $project->team_id == $team->id ? 'selected' : '' }}>{{ $team->name }}</option>
+                                @endforeach
+                            </select>
+                            <div class="emsg">Tim pelaksana wajib dipilih.</div>
                             <div style="font-size:11.5px;color:var(--muted);font-family:var(--mono);margin-top:6px">
-                                <i class="bi bi-info-circle"></i>&nbsp;Klik nama untuk memilih/hapus. Bisa pilih lebih dari
-                                satu.
+                                <i class="bi bi-info-circle"></i>&nbsp;Anggota dari tim yang dipilih akan otomatis menjadi pelaksana di project ini.
                             </div>
                         </div>
                     </div>
@@ -239,6 +226,7 @@
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
         @php
             $existingPics = $project->pics->map(function ($u) {
                 return [

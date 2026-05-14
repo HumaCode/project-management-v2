@@ -58,7 +58,7 @@
                         <th class="th-sort" data-col="name" style="min-width:250px">Nama Project <i class="bi bi-chevron-expand sort-ico"></i></th>
                         <th style="min-width:130px">Status</th>
                         <th style="min-width:130px">Progress</th>
-                        <th style="min-width:100px">PIC</th>
+                        <th style="min-width:140px">Tim Pelaksana</th>
                         <th class="th-sort" data-col="start_date" style="min-width:105px">Mulai <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
                         <th class="th-sort" data-col="deadline" style="min-width:140px">Deadline <i

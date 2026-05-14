@@ -35,6 +35,7 @@ class Project extends Model implements HasMedia
         'notes',
         'actual_finished_at',
         'created_by',
+        'team_id',
         'color',
         'icon',
     ];
@@ -63,6 +64,14 @@ class Project extends Model implements HasMedia
     public function creator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'created_by');
+    }
+
+    /**
+     * Get the team assigned to the project.
+     */
+    public function team(): BelongsTo
+    {
+        return $this->belongsTo(Team::class);
     }
 
     /**

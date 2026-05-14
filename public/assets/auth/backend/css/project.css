@@ -733,6 +733,18 @@
     color: var(--cyan)
 }
 
+.td-team-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.td-team-name {
+    font-weight: 600;
+    font-size: 13px;
+    color: var(--txt);
+}
+
 /* ── Empty state ── */
 .tbl-empty {
     padding: 56px 20px;

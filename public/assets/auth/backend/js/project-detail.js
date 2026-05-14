@@ -757,8 +757,141 @@ $(function() {
         $('#chatFileInput').click();
     });
 
-    /* Simple Emoji Toggle (Placeholder for now) */
-    $(document).on('click', '#btnEmoji', function() {
-        if (typeof SCA !== 'undefined') SCA.toast({ type: "info", title: "Emoji", message: "Fitur emoji picker sedang dalam pengembangan" });
+    /* Picmo Emoji Picker Implementation */
+    let picker = null;
+    const emojiBtn = document.querySelector('#btnEmoji');
+    const inputArea = document.querySelector('#noteInput');
+
+    if (emojiBtn && typeof picmoPopup !== 'undefined') {
+        picker = picmoPopup.createPopup({
+            theme: 'dark',
+            showSearch: true,
+            showVariants: true,
+            className: 'premium-emoji-picker',
+        }, {
+            referenceElement: emojiBtn,
+            triggerElement: emojiBtn,
+            position: 'top-end',
+            hideOnEmojiSelect: false // Agar picker tidak langsung tertutup saat pilih emoji
+        });
+
+        picker.addEventListener('emoji:select', (selection) => {
+            const start = inputArea.selectionStart;
+            const end = inputArea.selectionEnd;
+            const text = inputArea.value;
+            const before = text.substring(0, start);
+            const after = text.substring(end, text.length);
+            
+            inputArea.value = before + selection.emoji + after;
+            inputArea.selectionStart = inputArea.selectionEnd = start + selection.emoji.length;
+            inputArea.focus();
+            
+            // Trigger auto-resize
+            $(inputArea).trigger('input');
+        });
+    }
+
+    /* --- Upload Document Logic --- */
+    const $upFile = $('#upFileInput');
+    const $dropZone = $('#dropZone');
+    let upFileObj = null;
+
+    $dropZone.on('click', () => $upFile.click());
+
+    $upFile.on('change', function() {
+        const file = this.files[0];
+        if (file) handleFileSelection(file);
+    });
+
+    $dropZone.on('dragover', (e) => {
+        e.preventDefault();
+        $dropZone.css('border-color', 'var(--cyan)').css('background', 'rgba(0,200,255,0.06)');
+    });
+
+    $dropZone.on('dragleave', (e) => {
+        e.preventDefault();
+        $dropZone.css('border-color', 'rgba(0,200,255,0.2)').css('background', 'rgba(0,200,255,0.02)');
+    });
+
+    $dropZone.on('drop', (e) => {
+        e.preventDefault();
+        $dropZone.css('border-color', 'rgba(0,200,255,0.2)').css('background', 'rgba(0,200,255,0.02)');
+        const file = e.originalEvent.dataTransfer.files[0];
+        if (file) handleFileSelection(file);
+    });
+
+    function handleFileSelection(file) {
+        upFileObj = file;
+        $dropZone.find('div:first').next().text(file.name);
+        $dropZone.find('div:first').next().next().text(`${(file.size / 1024 / 1024).toFixed(2)} MB`);
+        
+        // Auto-fill Nama if empty
+        if (!$('#upNama').val()) {
+            const nameWithoutExt = file.name.split('.').slice(0, -1).join('.');
+            $('#upNama').val(nameWithoutExt);
+        }
+    }
+
+    $(document).on('click', '#btnConfirmUpload', function() {
+        if (!upFileObj) {
+            if (typeof SCA !== 'undefined') SCA.toast({ type: 'warn', title: 'Peringatan', message: 'Silakan pilih file terlebih dahulu.' });
+            return;
+        }
+
+        const nama = $('#upNama').val().trim();
+        const kategori = $('#upKategori').val();
+        if (!nama) {
+            if (typeof SCA !== 'undefined') SCA.toast({ type: 'warn', title: 'Peringatan', message: 'Nama dokumen wajib diisi.' });
+            return;
+        }
+
+        const btn = $(this);
+        const originalHtml = btn.html();
+        btn.prop('disabled', true).html('<span><i class="bi bi-hourglass-split"></i> Uploading...</span>');
+
+        const formData = new FormData();
+        formData.append('file', upFileObj);
+        formData.append('nama', nama);
+        formData.append('versi', $('#upVersi').val() || '1.0');
+        formData.append('kategori', kategori);
+        formData.append('keterangan', $('#upKeterangan').val());
+        formData.append('project_id', $('#projectContainer').data('id'));
+        formData.append('type', 'file');
+
+        $.ajax({
+            url: '/dokumen',
+            method: 'POST',
+            data: formData,
+            processData: false,
+            contentType: false,
+            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+            success: function(res) {
+                btn.prop('disabled', false).html(originalHtml);
+                if (res.success) {
+                    $('#uploadModal').modal('hide');
+                    if (typeof SCA !== 'undefined') SCA.toast({ type: 'success', title: 'Berhasil', message: 'Dokumen berhasil diupload.' });
+                    
+                    // Reset form
+                    upFileObj = null;
+                    $('#upFileInput').val('');
+                    $('#upNama').val('');
+                    $('#upVersi').val('');
+                    $('#upKategori').val('l');
+                    $('#upKeterangan').val('');
+                    $dropZone.find('div:first').next().text('Drag & drop file di sini');
+                    $dropZone.find('div:first').next().next().text('atau klik untuk pilih file');
+
+                    window.loadDetailData();
+                } else {
+                    if (typeof SCA !== 'undefined') SCA.toast({ type: 'danger', title: 'Gagal', message: res.message });
+                }
+            },
+            error: function(err) {
+                btn.prop('disabled', false).html(originalHtml);
+                let msg = 'Terjadi kesalahan sistem.';
+                if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                if (typeof SCA !== 'undefined') SCA.toast({ type: 'danger', title: 'Error', message: msg });
+            }
+        });
     });
 });

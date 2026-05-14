@@ -354,14 +354,15 @@
 .tab-btn.active{color:var(--cyan);background:rgba(0,200,255,.07);border-color:var(--bdh);border-bottom-color:var(--card)}
 .tab-btn .tb-cnt{font-size:10px;padding:1px 5px;border-radius:8px;background:rgba(0,200,255,.12);font-family:var(--mono)}
 .tab-pane{display:none;padding:20px}
-.tab-pane.active{display:block}
+.tab-pane.active{display:block; flex:1}
 
 /* Special Layout for Diskusi Tab */
 #tab-catatan.active {
-    height: 520px;
+    flex: 1;
     display: flex !important;
     flex-direction: column;
     padding: 0 !important; /* Reset padding to handle inner scroll */
+    min-height: 520px; /* Minimum height for better visibility */
 }
 #tab-catatan {
     padding: 0 !important;
@@ -729,4 +730,42 @@
     font-style: italic;
     margin-left: 4px;
     font-weight: 400;
+}
+
+/* Modal Styles */
+.modal-lbl {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: var(--dim);
+    font-family: var(--mono);
+    text-transform: uppercase;
+    letter-spacing: .8px;
+    display: block;
+    margin-bottom: 6px;
+}
+.modal-inp {
+    width: 100%;
+    height: 40px;
+    border-radius: var(--rs);
+    background: rgba(0, 200, 255, 0.04);
+    border: 1px solid var(--bd);
+    padding: 0 12px;
+    color: var(--txt);
+    font-family: var(--font);
+    font-size: 13px;
+    outline: none;
+    transition: all .2s;
+}
+.modal-inp:focus {
+    background: rgba(0, 200, 255, 0.08);
+    border-color: var(--cyan);
+    box-shadow: 0 0 0 4px rgba(0, 200, 255, 0.1);
+}
+select.modal-inp {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%2300c8ff' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 12px;
+    padding-right: 32px;
 }

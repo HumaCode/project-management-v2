@@ -22,6 +22,9 @@ class ProjectResource extends JsonResource
             'start_date' => $this->start_date ? $this->start_date->format('Y-m-d') : null,
             'deadline' => $this->deadline ? $this->deadline->format('Y-m-d') : null,
             'progress' => $this->progress,
+            'color' => $this->color ?? '#4f46e5',
+            'icon' => $this->icon ?? 'bi-kanban',
+            'thumbnail' => $this->getFirstMediaUrl('thumbnail'),
             'created_by' => $this->creator ? $this->creator->name : 'Unknown',
             'pics' => $this->pics->map(fn($u) => [
                 'name' => $u->name,

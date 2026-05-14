@@ -15,9 +15,9 @@
             window.urlEdit = @json($editUrl);
             window.urlShow = @json($showUrl);
             window.urlDestroy = @json($destroyUrl);
-            // window.canRead = @json(auth()->user()->can('read ' . $permissionAkses));
-            // window.canUpdate = @json(auth()->user()->can('update ' . $permissionAkses));
-            // window.canDelete = @json(auth()->user()->can('delete ' . $permissionAkses));
+            window.canRead = @json(auth()->user()->can('read ' . $permissionAkses));
+            window.canUpdate = @json(auth()->user()->can('update ' . $permissionAkses));
+            window.canDelete = @json(auth()->user()->can('delete ' . $permissionAkses));
         </script>
 
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>
@@ -25,45 +25,47 @@
     @endpush
 
     <!-- Page Header -->
-    <div class="page-header" data-aos="fade-down" data-aos-duration="500">
-        <div class="ph-left">
-            <div class="ph-icon"><i class="{{ $icon }}"></i></div>
+    <div class="pg-hd" data-aos="fade-down" data-aos-duration="500">
+        <div class="pg-hd-left">
+            <div class="pg-ico"><i class="{{ $icon }}"></i></div>
             <div>
-                <div class="ph-title">{{ $title }}</div>
-                <div class="ph-sub">{{ $subtitle }}</div>
+                <div class="pg-title">{{ $title }}</div>
+                <div class="pg-sub">{{ $subtitle }}</div>
             </div>
         </div>
-        <div class="breadcrumb-bar">
-            <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i> Home</a>
-            <span class="sep"><i class="bi bi-chevron-right"></i></span>
-            <span class="here">{{ $title }}</span>
+        <div class="pg-actions">
+            <div class="bc d-none d-md-flex">
+                <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
+                <span class="sep"><i class="bi bi-chevron-right"></i></span>
+                <span class="here">{{ $title }}</span>
+            </div>
         </div>
     </div>
 
     <!-- Mini stat cards -->
     @include('pages.project.partials.stats-view')
 
-    <!-- Table card -->
-    <div class="crd mb-24" data-aos="fade-up" data-aos-delay="100">
+    @include('pages.project.partials.filter-view')
 
-        @include('pages.project.partials.filter-view')
+    <!-- Table card -->
+    <div class="tbl-card" data-aos="fade-up" data-aos-delay="80">
 
         <div class="table-responsive">
-            <table class="table-pms" id="tblProject">
-                <thead>
+            <table class="dtbl" id="tblProject">
+                <thead class="text-center">
                     <tr>
-                        <th style="width:46px">#</th>
-                        <th class="th-sort" data-col="name">Nama Project <i class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th style="width:130px">Status</th>
-                        <th style="width:130px">Progress</th>
-                        <th style="width:100px">PIC</th>
-                        <th class="th-sort" data-col="start_date" style="width:105px">Mulai <i
+                        <th style="text-align:center;width:42px">#</th>
+                        <th class="th-sort" data-col="name" style="min-width:250px">Nama Project <i class="bi bi-chevron-expand sort-ico"></i></th>
+                        <th style="min-width:130px">Status</th>
+                        <th style="min-width:130px">Progress</th>
+                        <th style="min-width:100px">PIC</th>
+                        <th class="th-sort" data-col="start_date" style="min-width:105px">Mulai <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th class="th-sort" data-col="deadline" style="width:140px">Deadline <i
+                        <th class="th-sort" data-col="deadline" style="min-width:140px">Deadline <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th class="th-sort" data-col="created_by" style="width:120px">Pembuat <i
+                        <th class="th-sort" data-col="created_by" style="min-width:120px">Pembuat <i
                                 class="bi bi-chevron-expand sort-ico"></i></th>
-                        <th class="th-center" style="width:120px">Aksi</th>
+                        <th style="text-align:center;width:100px">Aksi</th>
                     </tr>
                 </thead>
                 <tbody id="dataBody">
@@ -80,14 +82,15 @@
         </div>
 
         <!-- Pagination -->
-        <div class="pagi">
-            <div class="pagi-info" id="pagiInfo">
+        <div class="tbl-foot">
+            <div class="tbl-info" id="pagiInfo">
                 Menampilkan <span>0</span> – <span>0</span> dari <span>0</span> project
             </div>
-            <div class="pagi-btns" id="pagiBtns">
+            <div class="pag" id="pagiBtns">
                 <!-- Buttons generated by JS -->
             </div>
         </div>
     </div>
+
 
 </x-master-layout>

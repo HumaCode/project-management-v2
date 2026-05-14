@@ -9,68 +9,90 @@
 
     @push('js')
         <script src="https://cdnjs.cloudflare.com/ajax/libs/fslightbox/3.4.1/index.min.js"></script>
+        <script src="https://unpkg.com/picmo@latest/dist/umd/index.js"></script>
+        <script src="https://unpkg.com/@picmo/popup-picker@latest/dist/umd/index.js"></script>
         <script src="{{ asset('assets/auth/backend/js/project-detail.js') }}"></script>
     @endpush
 
     <!-- Page Header -->
-    <div class="ph-wrap" data-aos="fade-down" id="projectContainer" data-id="{{ $projectId }}" data-url="{{ $detailDataUrl }}" data-current-user-id="{{ auth()->id() }}">
+    <div class="ph-wrap" style="align-items: center;" data-aos="fade-down" id="projectContainer" data-id="{{ $projectId }}" data-url="{{ $detailDataUrl }}" data-current-user-id="{{ auth()->id() }}">
       <div class="ph-left">
         <div class="ph-icon"><i id="projectIcon" class="bi {{ $icon }}"></i></div>
         <div>
           <div class="ph-title" id="projectName">{{ $title }}</div>
           <div class="ph-meta" id="projectMeta">
             <span class="tag tag-prog" id="projectStatus"><span class="tdot"></span>Memuat...</span>
-            <span class="sep d-none d-sm-inline">·</span>
-            <span class="breadcrumb-bar d-none d-sm-flex">
-              <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
-              <span class="sep"><i class="bi bi-chevron-right"></i></span>
-              <a href="{{ route('projects.index') }}">Project</a>
-              <span class="sep"><i class="bi bi-chevron-right"></i></span>
-              <span class="here">Detail</span>
-            </span>
           </div>
         </div>
       </div>
-      <div class="ph-actions">
-        <a href="{{ route('projects.index') }}" class="btn-act btn-outline"><i class="bi bi-arrow-left"></i> <span class="d-none d-sm-inline">Kembali</span></a>
-        <a href="#" id="editBtn" class="btn-act btn-outline"><i class="bi bi-pencil-fill"></i> <span class="d-none d-sm-inline">Edit</span></a>
-        <button class="btn-act btn-primary-alt" data-bs-toggle="modal" data-bs-target="#uploadModal">
-          <span><i class="bi bi-cloud-upload-fill"></i> <span class="d-none d-sm-inline">Upload Dokumen</span><span class="d-sm-none">Upload</span></span>
-        </button>
-        <button class="btn-act btn-danger-outline" data-bs-toggle="modal" data-bs-target="#deleteModal">
-          <i class="bi bi-trash3-fill"></i>
-        </button>
+      <div class="ph-actions-top">
+        <div class="breadcrumb-bar d-none d-md-flex">
+          <a href="{{ route('dashboard') }}"><i class="bi bi-house-fill"></i>&nbsp;Home</a>
+          <span class="sep"><i class="bi bi-chevron-right"></i></span>
+          <a href="{{ route('projects.index') }}">Project</a>
+          <span class="sep"><i class="bi bi-chevron-right"></i></span>
+          <span class="here">Detail</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action Buttons Row -->
+    <div class="row g-2 mb-4" data-aos="fade-up" data-aos-delay="20">
+      <div class="row g-2 w-100 m-0">
+        <div class="col-6 col-sm-auto flex-sm-grow-1">
+          <a href="{{ route('projects.index') }}" class="btn-act btn-outline w-100 justify-content-center">
+            <i class="bi bi-arrow-left"></i> <span class="ms-1">Kembali</span>
+          </a>
+        </div>
+        <div class="col-6 col-sm-auto flex-sm-grow-1">
+          <a href="#" id="editBtn" class="btn-act btn-outline w-100 justify-content-center">
+            <i class="bi bi-pencil-fill"></i> <span class="ms-1">Edit</span>
+          </a>
+        </div>
+        <div class="col-12 col-sm-auto">
+          <button class="btn-act btn-danger-outline w-100 justify-content-center" data-bs-toggle="modal" data-bs-target="#deleteModal">
+            <i class="bi bi-trash3-fill"></i> <span class="ms-1 d-sm-none">Hapus Project</span>
+          </button>
+        </div>
       </div>
     </div>
 
     <!-- Mini Stats -->
-    <div class="mini-stats" data-aos="fade-up" data-aos-delay="40">
-      <div class="msc">
-        <div class="msc-ico c"><i class="bi bi-folder2-open"></i></div>
-        <div>
-          <div class="msc-val" id="statDocs" data-count="0">0</div>
-          <div class="msc-lbl">Dokumen</div>
+    <div class="row g-2 mb-4" data-aos="fade-up" data-aos-delay="40">
+      <div class="col-6 col-md-3">
+        <div class="msc h-100">
+          <div class="msc-ico c"><i class="bi bi-folder2-open"></i></div>
+          <div>
+            <div class="msc-val" id="statDocs" data-count="0">0</div>
+            <div class="msc-lbl">Dokumen</div>
+          </div>
         </div>
       </div>
-      <div class="msc">
-        <div class="msc-ico g"><i class="bi bi-journal-check"></i></div>
-        <div>
-          <div class="msc-val" id="statNotes" data-count="0">0</div>
-          <div class="msc-lbl">Diskusi</div>
+      <div class="col-6 col-md-3">
+        <div class="msc h-100">
+          <div class="msc-ico g"><i class="bi bi-journal-check"></i></div>
+          <div>
+            <div class="msc-val" id="statNotes" data-count="0">0</div>
+            <div class="msc-lbl">Diskusi</div>
+          </div>
         </div>
       </div>
-      <div class="msc">
-        <div class="msc-ico w"><i class="bi bi-people-fill"></i></div>
-        <div>
-          <div class="msc-val" id="statMembers" data-count="0">0</div>
-          <div class="msc-lbl">Anggota</div>
+      <div class="col-6 col-md-3">
+        <div class="msc h-100">
+          <div class="msc-ico w"><i class="bi bi-people-fill"></i></div>
+          <div>
+            <div class="msc-val" id="statMembers" data-count="0">0</div>
+            <div class="msc-lbl">Anggota</div>
+          </div>
         </div>
       </div>
-      <div class="msc">
-        <div class="msc-ico r" id="statDaysIcon"><i class="bi bi-clock-history"></i></div>
-        <div>
-          <div class="msc-val" id="statDays" data-count="0">0</div>
-          <div class="msc-lbl">Hari Tersisa</div>
+      <div class="col-6 col-md-3">
+        <div class="msc h-100">
+          <div class="msc-ico r" id="statDaysIcon"><i class="bi bi-clock-history"></i></div>
+          <div>
+            <div class="msc-val" id="statDays" data-count="0">0</div>
+            <div class="msc-lbl">Hari Tersisa</div>
+          </div>
         </div>
       </div>
     </div>
@@ -116,7 +138,7 @@
             </div>
             <div class="info-item" style="grid-column:1/-1;border-bottom:1px solid var(--bd)">
               <div class="info-label">Deskripsi</div>
-              <div class="info-val" id="infoDesc" style="font-weight:400;font-size:13px;color:var(--dim);line-height:1.65">
+              <div class="info-val" id="infoDesc" style="font-weight:400;font-size:13px;color:var(--dim);line-height:1.65; max-height:160px; overflow-y:auto; padding-right:5px;">
                 Memuat deskripsi...
               </div>
             </div>
@@ -167,9 +189,6 @@
                 <i class="bi bi-search" style="position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:13px"></i>
                 <input type="text" placeholder="Cari dokumen..." style="width:100%;height:34px;border-radius:var(--rs);background:rgba(0,200,255,.05);border:1px solid var(--bd);padding:0 10px 0 32px;color:var(--txt);font-family:var(--font);font-size:12.5px;outline:none" id="docSearch"/>
               </div>
-              <button class="btn-act btn-primary-alt" style="height:34px;font-size:12.5px">
-                <span><i class="bi bi-plus-lg"></i> Tambah</span>
-              </button>
             </div>
             <div class="tbl-wrap">
               <table class="doc-tbl" id="docTbl">
@@ -266,33 +285,6 @@
       </div><!-- /col right -->
     </div><!-- /row -->
 
-    <!-- Upload Modal -->
-    <div class="modal fade modal-dark" id="uploadModal" tabindex="-1">
-      <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-color:rgba(0,200,255,.22)">
-          <div class="modal-header" style="border-bottom-color:rgba(0,200,255,.12)">
-            <h5 class="modal-title" style="display:flex;align-items:center;gap:9px"><i class="bi bi-cloud-upload-fill" style="color:var(--cyan)"></i> Upload Dokumen</h5>
-            <button type="button" class="btn-close" data-bs-dismiss="modal" style="filter:invert(1) brightness(.6)"></button>
-          </div>
-          <div class="modal-body">
-            <div id="dropZone" style="border:2px dashed rgba(0,200,255,.2);border-radius:var(--r);padding:32px;text-align:center;cursor:pointer;transition:all .25s;background:rgba(0,200,255,.02)">
-              <i class="bi bi-cloud-arrow-up-fill" style="font-size:40px;color:var(--cyan);opacity:.6;display:block;margin-bottom:10px"></i>
-              <div style="font-size:14px;font-weight:600;margin-bottom:4px">Drag &amp; drop file di sini</div>
-              <div style="font-size:12px;color:var(--muted)">atau klik untuk pilih file</div>
-              <div style="font-size:11px;color:var(--muted);margin-top:8px;font-family:var(--mono)">PDF, DOCX, XLSX, ZIP &mdash; Maks. 50MB</div>
-            </div>
-            <div style="margin-top:14px">
-              <label style="font-size:11.5px;font-weight:700;color:var(--dim);font-family:var(--mono);text-transform:uppercase;letter-spacing:.8px;display:block;margin-bottom:6px">Deskripsi Dokumen</label>
-              <input type="text" placeholder="Opsional..." style="width:100%;height:40px;border-radius:var(--rs);background:rgba(0,200,255,.04);border:1px solid var(--bd);padding:0 12px;color:var(--txt);font-family:var(--font);font-size:13px;outline:none"/>
-            </div>
-          </div>
-          <div class="modal-footer" style="border-top:1px solid var(--bd);padding:14px 20px;gap:8px">
-            <button class="btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batal</button>
-            <button class="btn-act btn-primary-alt" style="height:38px"><span><i class="bi bi-cloud-upload-fill"></i> Upload</span></button>
-          </div>
-        </div>
-      </div>
-    </div>
 
     <!-- Delete Project Confirm Modal (Existing) -->
     <div class="modal fade modal-dark" id="deleteModal" tabindex="-1">
@@ -482,6 +474,28 @@
         .btn-outline-cyan:hover {
             background: var(--cyan);
             color: #000;
+        }
+
+        /* Premium Emoji Picker Styling */
+        .premium-emoji-picker {
+            --picker-background: rgba(15, 23, 42, 0.95);
+            --picker-border-color: rgba(0, 200, 255, 0.2);
+            --picker-header-background: rgba(0, 200, 255, 0.05);
+            --picker-category-button-color-active: var(--cyan);
+            border-radius: 16px !important;
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--picker-border-color) !important;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5) !important;
+            overflow: hidden;
+        }
+
+        /* Description Scrollbar Styling */
+        #infoDesc::-webkit-scrollbar {
+            width: 4px;
+        }
+        #infoDesc::-webkit-scrollbar-thumb {
+            background: var(--bd);
+            border-radius: 10px;
         }
     </style>
 

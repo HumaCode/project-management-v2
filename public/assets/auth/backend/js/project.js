@@ -87,7 +87,9 @@ $(function () {
                 search: window.tableState.search,
                 status: window.tableState.status,
                 row_per_page: window.tableState.per_page,
-                page: window.tableState.page
+                page: window.tableState.page,
+                sort_col: window.tableState.sort_col,
+                sort_dir: window.tableState.sort_dir
             },
             success: function (res) {
                 if (res.success) {
@@ -95,6 +97,12 @@ $(function () {
                     const meta = res.data.meta;
 
                     $('#totalBadge').text(meta.total);
+
+                    // Update UI Sort
+                    $('.th-sort').removeClass('sort-asc sort-desc');
+                    if (window.tableState.sort_col) {
+                        $(`.th-sort[data-col="${window.tableState.sort_col}"]`).addClass('sort-' + window.tableState.sort_dir);
+                    }
 
                     if (data.length === 0) {
                         $tbody.empty();
@@ -105,29 +113,36 @@ $(function () {
                         $empty.addClass('d-none');
                         let html = '';
                         data.forEach((p, i) => {
-                            const rowIndex = (meta.current_page - 1) * meta.per_page + i + 1;
+                            const rowIndex = String((meta.current_page - 1) * meta.per_page + i + 1).padStart(2, '0');
                             const showUrl = window.urlShow.replace('__ID__', p.id);
                             const editUrl = window.urlEdit.replace('__ID__', p.id);
                             const destroyUrl = window.urlDestroy.replace('__ID__', p.id);
 
                             html += `
                                 <tr>
-                                    <td class="td-num">${rowIndex}</td>
+                                    <td class="td-no">${rowIndex}</td>
                                     <td>
-                                        <div class="td-info-name">${p.name}</div>
-                                        <div class="td-info-desc">${p.description || '-'}</div>
+                                        <div class="td-project">
+                                            <div class="prj-img" style="background: ${p.color}">
+                                                ${p.thumbnail ? `<img src="${p.thumbnail}" alt="Thumbnail">` : `<i class="bi ${p.icon}"></i>`}
+                                            </div>
+                                            <div class="prj-info">
+                                                <div class="prj-nm">${p.name}</div>
+                                                <div class="prj-desc">${p.description || '-'}</div>
+                                            </div>
+                                        </div>
                                     </td>
                                     <td>${statusBadge(p.status)}</td>
                                     <td>${progressHTML(p.progress, p.status)}</td>
                                     <td>${avatarHTML(p.pics)}</td>
                                     <td>${fmtDate(p.start_date)}</td>
                                     <td>${deadlineHTML(p.deadline, p.status)}</td>
-                                    <td>${p.created_by}</td>
+                                    <td class="td-mono">${p.created_by}</td>
                                     <td class="td-center">
-                                        <div style="display:inline-flex;gap:5px">
-                                            <button class="btn-act btn-show" data-url="${showUrl}" title="Detail"><i class="bi bi-eye"></i></button>
-                                            <button class="btn-act btn-edit" data-url="${editUrl}" title="Edit"><i class="bi bi-pencil"></i></button>
-                                            <button class="btn-act btn-act-danger btn-destroy" data-url="${destroyUrl}" title="Hapus"><i class="bi bi-trash3"></i></button>
+                                        <div class="act-row">
+                                            ${window.canRead ? `<button class="ibtn ib-v btn-show" data-url="${showUrl}" title="Detail"><i class="bi bi-eye"></i></button>` : ''}
+                                            ${window.canUpdate ? `<button class="ibtn ib-e btn-edit" data-url="${editUrl}" title="Edit"><i class="bi bi-pencil"></i></button>` : ''}
+                                            ${window.canDelete ? `<button class="ibtn ib-x btn-destroy" data-url="${destroyUrl}" title="Hapus"><i class="bi bi-trash3"></i></button>` : ''}
                                         </div>
                                     </td>
                                 </tr>
@@ -148,13 +163,20 @@ $(function () {
         });
     };
 
-    // Filter Listeners
-    $('#fSearch').on('input', _.debounce(function () {
-        window.tableState.search = $(this).val();
+    // Sort Listeners
+    $('.th-sort').on('click', function () {
+        const col = $(this).data('col');
+        if (window.tableState.sort_col === col) {
+            window.tableState.sort_dir = window.tableState.sort_dir === 'asc' ? 'desc' : 'asc';
+        } else {
+            window.tableState.sort_col = col;
+            window.tableState.sort_dir = 'asc';
+        }
         window.tableState.page = 1;
         window.loadData();
-    }, 500));
+    });
 
+    // Filter Listeners
     $('#fStatus').on('change', function () {
         window.tableState.status = $(this).val();
         window.tableState.page = 1;
@@ -162,10 +184,12 @@ $(function () {
     });
 
     $('#btnReset').on('click', function () {
-        $('#fSearch').val('');
+        $('#searchInput').val('');
         $('#fStatus').val('');
         window.tableState.search = '';
         window.tableState.status = '';
+        window.tableState.sort_col = '';
+        window.tableState.sort_dir = 'asc';
         window.tableState.page = 1;
         window.loadData();
     });

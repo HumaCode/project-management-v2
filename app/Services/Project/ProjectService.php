@@ -25,10 +25,10 @@ class ProjectService implements ProjectServiceInterface
         ];
     }
 
-    public function getPaginatedProjects(?string $search, ?string $status, int $rowPerPage)
+    public function getPaginatedProjects(?string $search, ?string $status, int $rowPerPage, ?string $sortCol = 'created_at', ?string $sortDir = 'desc')
     {
-        // Eager load media juga untuk menghindari N+1 saat memproses avatar di Resource
-        $query = Project::with(['creator.media', 'pics.media']);
+        // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
+        $query = Project::with(['creator.media', 'pics.media', 'media']);
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -41,7 +41,12 @@ class ProjectService implements ProjectServiceInterface
             $query->where('status', $status);
         }
 
-        return $query->latest()->paginate($rowPerPage);
+        // Sorting
+        $allowedSort = ['name', 'start_date', 'deadline', 'created_at', 'created_by'];
+        $sortCol = in_array($sortCol, $allowedSort) ? $sortCol : 'created_at';
+        $sortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+
+        return $query->orderBy($sortCol, $sortDir)->paginate($rowPerPage);
     }
 
     public function storeProject(array $data): Project

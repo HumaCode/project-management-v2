@@ -48,8 +48,13 @@
         - **Project Color**: Custom color picker for dashboard accents.
         - Robust **Bootstrap Grid** integration for 100% mobile responsiveness.
     - [x] **Store Logic**: Implementation of backend storage with AJAX (Axios), validation (StoreProjectRequest), and PIC syncing.
-    - [ ] **Update & Delete**: CRUD completion.
-    - [ ] **Detailed View**: Individual project dashboard with activity log.
+    - [x] **Update & Delete**: CRUD completion.
+    - [x] **Detailed View**: Individual project dashboard with activity log.
+    - [x] **UI/UX Standardization**: 
+        - Breadcrumb migration to the right side for consistency.
+        - Bootstrap Grid (`col-6`, `col-sm-auto`) implementation for fluid action buttons.
+        - Vertical centering (`align-items: center`) for header elements.
+        - **Decoupling**: Document upload logic moved to the primary Documentation module to avoid redundancy.
 - [x] **Documentation Builder Module**:
     - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface`.
     - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX) with category and project filters.
@@ -83,7 +88,11 @@
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).
-- [ ] **UI Polish**: Terus memantau konsistensi UI/UX pada modul baru.
+- [x] **UI Polish**: 
+    - Standardisasi tata letak header (`pg-hd`) di seluruh modul.
+    - Implementasi breadcrumb dinamis di sisi kanan.
+    - Optimalisasi responsivitas modal dan tabel pada smartphone.
+- [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 ## 📝 Notes & Maintenance

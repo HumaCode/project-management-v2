@@ -94,6 +94,11 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Integrasi CKEditor 5 untuk penulisan isi catatan yang kaya (rich-text).
   - Filter interaktif berbasis Select2 (Project) dan Debounced Search.
   - Dashboard statistik real-time untuk ringkasan catatan.
+- **UI/UX Standardization (Standard Terbaru)**:
+  - **Breadcrumb**: Dipindahkan ke sisi kanan atas agar konsisten dengan modul `Project Index` dan `User Management`.
+  - **Header Grid**: Menggunakan struktur `ph-wrap` dengan `align-items: center` untuk perataan vertikal elemen judul dan navigasi.
+  - **Responsive Actions**: Menggunakan Bootstrap Grid (`col-6`, `col-sm-auto`) pada area aksi untuk memastikan tombol tetap fluid dan rapi di mobile.
+  - **Feature Decoupling**: Fungsionalitas upload dokumen kini dipusatkan hanya di modul **Dokumentasi** untuk menghindari redundansi logika dan UI di halaman detail proyek.
 
 ## Database Schema (Current)
 - `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.

@@ -88,13 +88,17 @@ class ProjectController extends Controller
             'search' => 'nullable|string',
             'status' => 'nullable|string',
             'row_per_page' => 'required|integer',
+            'sort_col' => 'nullable|string',
+            'sort_dir' => 'nullable|string|in:asc,desc',
         ]);
 
         try {
             $projects = $this->projectService->getPaginatedProjects(
                 $params['search'] ?? null,
                 $params['status'] ?? null,
-                $params['row_per_page']
+                $params['row_per_page'],
+                $params['sort_col'] ?? 'created_at',
+                $params['sort_dir'] ?? 'desc'
             );
 
             // We'll need a ProjectResource later, for now we can just return raw if needed, 

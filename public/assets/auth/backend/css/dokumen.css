@@ -119,6 +119,24 @@
 }
 .modal .select2-container--default .select2-selection--single .select2-selection__arrow { height: 40px; }
 
+/* SELECT2 TOOLBAR */
+.tbar { flex-wrap: wrap !important; gap: 12px; }
+.tbar-search { position: relative; flex: 1; min-width: 200px; }
+.tbar .select2-container { width: auto !important; min-width: 160px; }
+
+@media (max-width: 768px) {
+    .tbar { flex-direction: column; align-items: stretch; padding: 15px; }
+    .tbar-search { max-width: none !important; width: 100%; }
+    .tbar .select2-container, .tbar .nsel { width: 100% !important; }
+    .tbar-right { margin-left: 0; width: 100%; }
+    .btn-add { width: 100%; justify-content: center; padding: 12px; }
+    .btn-reset { width: 100%; height: 45px; transform: none !important; }
+}
+.tbar .select2-container--default .select2-selection--single { background: rgba(255, 255, 255, 0.03); border: 1px solid var(--bd); border-radius: var(--rs); height: 40px; transition: 0.2s; }
+.tbar .select2-container--default .select2-selection--single .select2-selection__rendered { color: var(--txt); line-height: 40px; padding-left: 14px; padding-right: 30px; font-size: 13px; }
+.tbar .select2-container--default .select2-selection--single .select2-selection__arrow { height: 38px; }
+.tbar .select2-container--default .select2-selection--single:hover { border-color: rgba(0, 200, 255, 0.3); background: rgba(0, 200, 255, 0.05); }
+
 /* ─────────────────────────────────────
    TABLE & BADGES (KEEPING EXISTING)
 ───────────────────────────────────── */

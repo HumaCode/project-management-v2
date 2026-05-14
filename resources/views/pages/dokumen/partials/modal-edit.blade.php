@@ -30,7 +30,7 @@
                             <div class="col-12">
                                 <div class="fm-row mb-0">
                                     <label class="fm-lbl">TIPE DOKUMEN<span class="req">*</span></label>
-                                    <select id="sel2TypeEdit" name="type" style="width:100%">
+                                    <select class="select2" id="sel2TypeEdit" name="type" style="width:100%">
                                         <option value="file">File Tunggal (Upload PDF, DOCX, dll)</option>
                                         <option value="article">Koleksi / Manual Book (Documentation Builder)</option>
                                         <option value="code">Dokumentasi Koding (Snippet & Penjelasan)</option>
@@ -52,21 +52,18 @@
                             <div class="col-12 col-md-6">
                                 <div class="fm-row mb-0">
                                     <label class="fm-lbl">KATEGORI<span class="req">*</span></label>
-                                    <select id="sel2KatEdit" name="kategori" style="width:100%" required>
+                                    <select class="select2" id="sel2KatEdit" name="kategori" style="width:100%" required>
                                         <option value="">-- Pilih Kategori --</option>
-                                        <option value="s">Spesifikasi</option>
-                                        <option value="r">RAB / Anggaran</option>
-                                        <option value="l">Laporan</option>
-                                        <option value="c">Source Code</option>
-                                        <option value="b">Berita Acara</option>
-                                        <option value="d">Desain</option>
+                                        @foreach($categories as $cat)
+                                            <option value="{{ $cat->slug }}" data-icon="{{ $cat->icon }}" data-color="{{ $cat->color }}">{{ $cat->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                             </div>
                             <div class="col-12 col-md-6">
                                 <div class="fm-row mb-0">
                                     <label class="fm-lbl">PROJECT TERKAIT<span class="req">*</span></label>
-                                    <select id="sel2ProjEdit" name="project_id" style="width:100%" required>
+                                    <select class="select2" id="sel2ProjEdit" name="project_id" style="width:100%" required>
                                         <option value="">-- Pilih Project --</option>
                                         @foreach($projects as $pj)
                                             <option value="{{ $pj->id }}">{{ $pj->name }}</option>
@@ -77,7 +74,7 @@
                             <div class="col-12 col-md-6">
                                 <div class="fm-row mb-0">
                                     <label class="fm-lbl">DIUNGGAH OLEH<span class="req">*</span></label>
-                                    <select id="sel2UserEdit" name="user_id" style="width:100%" required>
+                                    <select class="select2" id="sel2UserEdit" name="user_id" style="width:100%" required>
                                         <option value="">-- Pilih Pengguna --</option>
                                         @foreach($users as $u)
                                             <option value="{{ $u->id }}">{{ $u->name }}</option>

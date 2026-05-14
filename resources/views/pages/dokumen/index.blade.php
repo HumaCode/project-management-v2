@@ -99,38 +99,35 @@
             <i class="bi bi-search"></i>
             <input type="text" id="searchInput" placeholder="Cari nama dokumen..." />
         </div>
-        <select class="nsel" id="fKategori" style="min-width:140px">
+        <select class="select2" id="fKategori" style="min-width:160px">
             <option value="">Semua Kategori</option>
-            <option value="s">Spesifikasi</option>
-            <option value="r">RAB / Anggaran</option>
-            <option value="l">Laporan</option>
-            <option value="c">Source Code</option>
-            <option value="b">Berita Acara</option>
-            <option value="d">Desain</option>
+            @foreach($categories as $cat)
+                <option value="{{ $cat->slug }}" data-icon="{{ $cat->icon }}" data-color="{{ $cat->color }}">{{ $cat->name }}</option>
+            @endforeach
         </select>
-        <select class="nsel" id="fProject" style="min-width:160px">
+        <select class="select2" id="fProject" style="min-width:180px">
             <option value="">Semua Project</option>
             @foreach($projects as $pj)
                 <option value="{{ $pj->id }}">{{ $pj->name }}</option>
             @endforeach
         </select>
-        <select class="nsel" id="fType" style="min-width:140px">
+        <select class="select2" id="fType" style="min-width:160px">
             <option value="">Semua Tipe</option>
             <option value="file">File Tunggal</option>
             <option value="article">Koleksi / Manual Book</option>
             <option value="code">Dokumentasi Koding</option>
         </select>
-        <button class="btn-reset" id="btnReset" title="Reset Filter">
-            <i class="bi bi-arrow-counterclockwise"></i>
-        </button>
-        <select class="nsel" id="tampilData" style="min-width:110px">
+        <select class="select2" id="tampilData" style="min-width:120px">
             <option value="10">10 Baris</option>
             <option value="25">25 Baris</option>
             <option value="50">50 Baris</option>
         </select>
+        <button class="btn-reset" id="btnReset" title="Reset Filter">
+            <i class="bi bi-arrow-counterclockwise"></i>
+        </button>
         <div class="tbar-right">
             <button class="btn-add" data-bs-target="#addModal">
-                <span><i class="bi bi-plus-lg"></i> <span class="d-none d-sm-inline">Tambah</span></span>
+                <span><i class="bi bi-plus-lg"></i> <span>Tambah Data</span></span>
             </button>
         </div>
     </div>

@@ -17,10 +17,14 @@ use Illuminate\View\View;
 class DokumenController extends Controller
 {
     private DokumenServiceInterface $dokumenService;
+    private \App\Interface\KategoriDokumen\KategoriDokumenServiceInterface $kategoriService;
 
-    public function __construct(DokumenServiceInterface $dokumenService)
-    {
+    public function __construct(
+        DokumenServiceInterface $dokumenService,
+        \App\Interface\KategoriDokumen\KategoriDokumenServiceInterface $kategoriService
+    ) {
         $this->dokumenService = $dokumenService;
+        $this->kategoriService = $kategoriService;
     }
 
     /**
@@ -36,6 +40,7 @@ class DokumenController extends Controller
             'dataTableId' => 'table-dokumen',
             'projects'    => Project::all(),
             'users'       => User::select('id', 'name')->get(),
+            'categories'  => $this->kategoriService->getAllKategoris(),
         ];
 
         $data = array_merge($data, $this->dokumenService->getDokumenStatistics());

@@ -331,7 +331,12 @@ function renderTable(data) {
                 <td class="td-no">${rowNum.toString().padStart(2, '0')}</td>
                 <td>
                     <div class="td-file">
-                        <div class="f-ico ${iconClass}"><i class="${icon}"></i></div>
+                        ${(item.file_info.url && ext.match(/(jpg|jpeg|png|webp|gif)$/i)) 
+                            ? `<div class="f-ico img" style="background:none;border:1px solid var(--bd);overflow:hidden;padding:0">
+                                  <img src="${item.file_info.url}" style="width:100%;height:100%;object-fit:cover;">
+                               </div>`
+                            : `<div class="f-ico ${iconClass}"><i class="${icon}"></i></div>`
+                        }
                         <div>
                             <div class="f-nm">${item.nama}</div>
                             <div class="f-meta">${ext} &bull; ${item.file_info.size}</div>
@@ -433,24 +438,75 @@ function initDropZoneEdit() {
 }
 
 function initSelect2() {
-    var opts = { dropdownParent: $('#addModal'), placeholder: '-- Pilih --', allowClear: true, theme: 'default' };
-    $('#sel2Type').select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
-        if ($(this).val() === 'file') { $('#dropZone').slideDown(300); } else { $('#dropZone').slideUp(300); }
+    $('.select2').each(function() {
+        const $this = $(this);
+        const isModal = $this.closest('.modal').length > 0;
+        const isKat = $this.attr('id') === 'sel2Kat' || $this.attr('id') === 'sel2KatEdit' || $this.attr('id') === 'fKategori';
+        
+        const opts = { 
+            placeholder: $this.attr('placeholder') || '-- Pilih --', 
+            allowClear: true, 
+            theme: 'default',
+            width: isModal ? '100%' : 'resolve'
+        };
+
+        if (isModal) {
+            opts.dropdownParent = $this.closest('.modal');
+        }
+
+        // Template for Category with Icon
+        if (isKat) {
+            opts.templateResult = formatKat;
+            opts.templateSelection = formatKat;
+            opts.escapeMarkup = function(m) { return m; };
+        }
+
+        // Special handling for Tipe Dokumen in Add Modal
+        if ($this.attr('id') === 'sel2Type' || $this.attr('id') === 'tampilData') {
+            $this.select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
+                if ($this.attr('id') === 'sel2Type') {
+                    if ($(this).val() === 'file') { $('#dropZone').slideDown(300); } else { $('#dropZone').slideUp(300); }
+                }
+            });
+        } else {
+            $this.select2(opts);
+        }
     });
-    $('#sel2Kat, #sel2Proj, #sel2User').select2(opts);
+}
+
+function formatKat(state) {
+    if (!state.id) return state.text;
+    const $option = $(state.element);
+    const icon = $option.data('icon') || 'bi-tag';
+    const color = $option.data('color') || 'var(--cyan)';
+    return `<span><i class="bi ${icon}" style="color:${color};margin-right:8px;"></i>${state.text}</span>`;
 }
 
 function initSelect2Edit() {
-    var opts = { dropdownParent: $('#editModal'), placeholder: '-- Pilih --', allowClear: true, theme: 'default' };
-    $('#sel2TypeEdit').select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
-        if ($(this).val() === 'file') { $('#dropZoneEdit').slideDown(300); } else { $('#dropZoneEdit').slideUp(300); }
+    $('#editModal .select2').each(function() {
+        const $this = $(this);
+        const opts = { 
+            dropdownParent: $('#editModal'),
+            placeholder: $this.attr('placeholder') || '-- Pilih --', 
+            allowClear: true, 
+            theme: 'default',
+            width: '100%'
+        };
+
+        if ($this.attr('id') === 'sel2TypeEdit') {
+            $this.select2($.extend({}, opts, { minimumResultsForSearch: Infinity })).on('change', function() {
+                if ($(this).val() === 'file') { $('#dropZoneEdit').slideDown(300); } else { $('#dropZoneEdit').slideUp(300); }
+            });
+        } else {
+            $this.select2(opts);
+        }
     });
-    $('#sel2KatEdit, #sel2ProjEdit, #sel2UserEdit').select2(opts);
 }
 
 function getFileIconClass(ext) {
     const map = { 
         pdf: 'pdf', xls: 'xls', xlsx: 'xls', doc: 'doc', docx: 'doc', zip: 'zip',
+        png: 'img', jpg: 'img', jpeg: 'img', webp: 'img', gif: 'img',
         article: 'pdf', code: 'xls'
     };
     return map[ext.toLowerCase()] || 'doc';
@@ -464,6 +520,11 @@ function getFileIcon(ext) {
         doc: 'bi bi-file-earmark-word-fill', 
         docx: 'bi bi-file-earmark-word-fill', 
         zip: 'bi bi-file-zip-fill',
+        png: 'bi bi-file-earmark-image-fill',
+        jpg: 'bi bi-file-earmark-image-fill',
+        jpeg: 'bi bi-file-earmark-image-fill',
+        webp: 'bi bi-file-earmark-image-fill',
+        gif: 'bi bi-file-earmark-image-fill',
         article: 'bi bi-file-earmark-richtext-fill',
         code: 'bi bi-file-earmark-code-fill'
     };

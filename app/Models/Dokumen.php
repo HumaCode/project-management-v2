@@ -73,19 +73,11 @@ class Dokumen extends Model implements HasMedia
     }
 
     /**
-     * Map category code to label.
+     * Map category code to label from database.
      */
     public function getKategoriLabelAttribute(): string
     {
-        $map = [
-            's' => 'Spesifikasi',
-            'r' => 'RAB / Anggaran',
-            'l' => 'Laporan',
-            'c' => 'Source Code',
-            'b' => 'Berita Acara',
-            'd' => 'Desain',
-        ];
-
-        return $map[$this->kategori] ?? 'Tidak Diketahui';
+        $kategori = \App\Models\KategoriDokumen::where('slug', $this->kategori)->first();
+        return $kategori ? $kategori->name : 'Tidak Diketahui';
     }
 }

@@ -25,7 +25,7 @@ class DokumenStoreRequest extends FormRequest
             'type'           => 'required|in:file,article,code',
             'nama'           => 'required|string|max:255',
             'versi'          => 'nullable|string|max:50',
-            'kategori'       => 'required|string|max:10',
+            'kategori'       => 'required|string|max:50',
             'project_id'     => 'required|exists:projects,id',
             'user_id'        => 'required|exists:users,id',
             'tanggal_upload' => 'nullable|date',

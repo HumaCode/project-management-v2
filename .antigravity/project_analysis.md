@@ -83,11 +83,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - **AJAX Store Logic**: Pengiriman data menggunakan Axios dengan validasi StoreProjectRequest.
   - Integrasi desain premium (Glassmorphism).
 - **Documentation Builder**:
-  - Manajemen dokumen (Single File, Manual Book, Code).
+  - Manajemen dokumen (Single File, Manual Book, Code) dengan **Kategori Dinamis** via `kategori_dokumens`.
   - Integrasi penuh dengan Spatie Media Library.
   - Editor penulisan kode profesional via Monaco Editor.
   - CRUD & Detail modal interaktif dengan pratinjau cerdas.
-  - Filter data yang kuat (Kategori, Project, Tipe).
+  - **Premium Filtering**: Toolbar filter yang responsif (stacked on mobile) dengan Select2 kustom (Icon & Warna).
+  - **Visual Thumbnails**: Pratinjau gambar otomatis di tabel dokumen untuk file grafis (JPG, PNG, dll).
 - **Catatan (Notes) Module**:
   - Manajemen catatan personal atau terkait proyek.
   - CRUD penuh menggunakan AJAX dengan notifikasi toast.

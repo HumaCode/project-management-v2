@@ -56,14 +56,18 @@
         - **Feature Decoupling**: Fungsionalitas upload dokumen kini dipusatkan hanya di modul **Dokumentasi** untuk menghindari redundansi logika dan UI di halaman detail proyek.
         - **Interactive Feedback**: Penggunaan `SCA.loading` secara sinkron pada proses penghapusan data untuk menjamin integritas state UI dan keamanan aksi user.
 - [x] **Documentation Builder Module**:
-    - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface`.
+    - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface` and dynamic categories via `KategoriDokumen`.
     - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX) with category and project filters.
     - [x] **Media Library**: Integrated with Spatie Media Library for file storage and human-readable metadata.
     - [x] **Document Types**: Support for Single File, Article/Manual Book, and Code Documentation.
     - [x] **Monaco Editor**: Integrated for professional code documentation authoring.
     - [x] **Dynamic Metadata**: Added JSON metadata support to `dokumen_items` for persistent language settings in code blocks.
     - [x] **Sticky Save & Redirect**: Professional floating save button with automated redirection to index.
-    - [x] **Premium UI/UX**: Re-styled controls (custom select, trash button) with micro-animations and consistent design.
+    - [x] **Premium UI/UX**: 
+        - **Standardized Select2**: Integrated for all filters and form selects with custom templates (Icons & Colors).
+        - **Mobile Fluid Toolbar**: Responsive/stacked layout for smartphones with fluid action buttons.
+        - **Visual Previews**: Automatic image thumbnails (PNG, JPG, WEBP) directly in the data table for visual documents.
+        - Re-styled controls (trash button) with micro-animations and consistent design.
     - [x] **Cascade Delete**: Implementation of model-level cascading delete for document items and associated media files.
     - [x] **Environment Hardening**: Fixed symlink issues and Octane caching protocols for Docker/FrankenPHP.
     - [x] **CRUD Completion**: Implementation of Create, Read (Detail Modal), Update, and Delete functionalities.

@@ -467,6 +467,13 @@ $(function() {
         
         btn.prop('disabled', true).html('<span><i class="bi bi-hourglass-split"></i> Menghapus...</span>');
 
+        if (typeof SCA !== 'undefined') {
+            SCA.loading({
+                title: "Menghapus...",
+                message: "Mohon tunggu sebentar"
+            });
+        }
+
         $.ajax({
             url: `/dokumen/${docDeleteId}`,
             method: 'DELETE',
@@ -491,6 +498,9 @@ $(function() {
                 if (typeof SCA !== 'undefined') {
                     SCA.toast({ type: "danger", title: "Error!", message: "Terjadi kesalahan sistem saat menghapus data." });
                 }
+            },
+            complete: function() {
+                if (typeof SCA !== 'undefined') SCA.close();
             }
         });
     });
@@ -718,6 +728,11 @@ $(function() {
                 "Komentar yang dihapus tidak dapat dikembalikan."
             ).then(function (isConfirmed) {
                 if (isConfirmed) {
+                    SCA.loading({
+                        title: "Menghapus...",
+                        message: "Mohon tunggu sebentar"
+                    });
+
                     const btn = $(`.btn-del-note[data-id="${id}"]`);
                     btn.prop('disabled', true).html('<i class="bi bi-hourglass-split"></i>');
 
@@ -741,6 +756,9 @@ $(function() {
                             let msg = "Terjadi kesalahan saat menghapus komentar.";
                             if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
                             SCA.toast({ type: "danger", title: "Error!", message: msg });
+                        },
+                        complete: function() {
+                            SCA.close();
                         }
                     });
                 }

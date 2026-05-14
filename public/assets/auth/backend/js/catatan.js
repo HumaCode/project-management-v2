@@ -386,6 +386,13 @@ $(function () {
 
         $btn.prop('disabled', true).html('<span><i class="spinner-border spinner-border-sm"></i> Menghapus...</span>');
 
+        if (typeof SCA !== 'undefined') {
+            SCA.loading({
+                title: "Menghapus...",
+                message: "Mohon tunggu sebentar"
+            });
+        }
+
         $.ajax({
             url: `/catatan/${id}`,
             method: 'DELETE',
@@ -402,6 +409,7 @@ $(function () {
             },
             complete: function() {
                 $btn.prop('disabled', false).html(originalHtml);
+                if (typeof SCA !== 'undefined') SCA.close();
             }
         });
     });

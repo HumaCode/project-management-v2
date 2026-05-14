@@ -52,9 +52,9 @@
     - [x] **Detailed View**: Individual project dashboard with activity log.
     - [x] **UI/UX Standardization**: 
         - Breadcrumb migration to the right side for consistency.
-        - Bootstrap Grid (`col-6`, `col-sm-auto`) implementation for fluid action buttons.
-        - Vertical centering (`align-items: center`) for header elements.
-        - **Decoupling**: Document upload logic moved to the primary Documentation module to avoid redundancy.
+        - **Responsive Actions**: Menggunakan Bootstrap Grid (`col-6`, `col-sm-auto`) pada area aksi untuk memastikan tombol tetap fluid dan rapi di mobile.
+        - **Feature Decoupling**: Fungsionalitas upload dokumen kini dipusatkan hanya di modul **Dokumentasi** untuk menghindari redundansi logika dan UI di halaman detail proyek.
+        - **Interactive Feedback**: Penggunaan `SCA.loading` secara sinkron pada proses penghapusan data untuk menjamin integritas state UI dan keamanan aksi user.
 - [x] **Documentation Builder Module**:
     - [x] **Architecture**: Service-Repository pattern with `DokumenServiceInterface`.
     - [x] **Data Table**: Server-side pagination, sorting, and dynamic search (AJAX) with category and project filters.
@@ -104,7 +104,16 @@
         - Server-side pagination, sorting, and debounced search.
         - Complete Store, Update, and Delete logic with SCA Toast notifications.
         - Robust validation for associative member-role data structures.
-- [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
+- [x] **Kategori Dokumen Module**:
+    - [x] **Database & Architecture**: Migration for `kategori_dokumens` with ULID support.
+    - [x] **Architecture**: Service-Repository pattern with dynamic stats logic.
+    - [x] **Premium UI/UX**: 
+        - Dark glassmorphism dashboard with 2 real-time dynamic stat cards.
+        - **Visual Icon Selector**: Interactive grid for selecting Bootstrap Icons instead of manual text input.
+        - **Dynamic Stats**: Real-time updates for "Total Categories" and "Used Categories" via AJAX.
+    - [x] **Functional CRUD (AJAX)**:
+        - Server-side pagination, sorting, and debounced search.
+        - Complete Store, Update, and Delete logic with SCA Toast notifications.
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).
@@ -112,7 +121,7 @@
     - Standardisasi tata letak header (`pg-hd`) di seluruh modul.
     - Implementasi breadcrumb dinamis di sisi kanan.
     - Optimalisasi responsivitas modal dan tabel pada smartphone.
-- [ ] **Kategori Management**: Modul untuk mengelola kategori (seperti kategori proyek/kegiatan).
+    - **UX Safety**: Implementasi `SCA.loading` pada seluruh aksi hapus data (Proyek, Tim, Dokumen, Catatan, Kategori) untuk mencegah double-click dan memberikan feedback instan.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 ## 📝 Notes & Maintenance

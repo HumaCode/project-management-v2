@@ -306,6 +306,11 @@ function handleDelete(dataTableId, onSuccess) {
                 // Jika user batal
                 if (!confirmed) return;
 
+                showLoading(true, {
+                    title: "Menghapus...",
+                    message: "Mohon tunggu sebentar",
+                });
+
                 $.ajax({
                     url: url,
                     method: "DELETE",

@@ -221,6 +221,11 @@ $(function () {
         }).then((confirmed) => {
             if (!confirmed) return;
 
+            SCA.loading({
+                title: "Menghapus...",
+                message: "Mohon tunggu sebentar"
+            });
+
             axios.delete(url)
                 .then(res => {
                     SCA.toast({
@@ -238,6 +243,9 @@ $(function () {
                         message: err.response?.data?.message || err.message || "Gagal menghapus project.",
                         position: "top-right",
                     });
+                })
+                .finally(() => {
+                    SCA.close();
                 });
         });
     });

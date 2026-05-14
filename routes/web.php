@@ -100,6 +100,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('teams/getUsers', [\App\Http\Controllers\Team\TeamController::class, 'getUsers'])->name('teams.getUsers');
             Route::resource('teams', \App\Http\Controllers\Team\TeamController::class);
 
+            // kategori dokumen
+            Route::get('kategori-dokumen/getData', [\App\Http\Controllers\KategoriDokumen\KategoriDokumenController::class, 'getData'])->name('kategori-dokumen.getData');
+            Route::resource('kategori-dokumen', \App\Http\Controllers\KategoriDokumen\KategoriDokumenController::class);
+
         }
     );
 });

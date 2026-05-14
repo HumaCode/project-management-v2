@@ -308,6 +308,11 @@
     window.deleteTeam = function (id, name) {
         SCA.deleteConfirm(name).then(confirmed => {
             if (confirmed) {
+                SCA.loading({
+                    title: "Menghapus...",
+                    message: "Mohon tunggu sebentar"
+                });
+
                 $.ajax({
                     url: `${window.urlBase}/${id}`,
                     method: 'DELETE',
@@ -318,6 +323,9 @@
                         } else {
                             SCA.toast({ type: 'error', title: 'Gagal', message: res.message });
                         }
+                    },
+                    complete() {
+                        SCA.close();
                     }
                 });
             }

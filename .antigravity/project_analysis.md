@@ -100,11 +100,17 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - Dashboard statistik tim dan modal detail premium.
   - Eager loading untuk optimasi performa avatar dan role.
   - Integrasi penuh dengan sistem loading global (SCA.loading).
-- **UI/UX Standardization (Standard Terbaru)**:
-  - **Breadcrumb**: Dipindahkan ke sisi kanan atas agar konsisten dengan modul `Project Index` dan `User Management`.
-  - **Header Grid**: Menggunakan struktur `ph-wrap` dengan `align-items: center` untuk perataan vertikal elemen judul dan navigasi.
-  - **Responsive Actions**: Menggunakan Bootstrap Grid (`col-6`, `col-sm-auto`) pada area aksi untuk memastikan tombol tetap fluid dan rapi di mobile.
-  - **Feature Decoupling**: Fungsionalitas upload dokumen kini dipusatkan hanya di modul **Dokumentasi** untuk menghindari redundansi logika dan UI di halaman detail proyek.
+- [x] **Kategori Dokumen Module**:
+    - Manajemen kategori dokumen proyek (Spesifikasi, Laporan, dll).
+    - **Visual Icon Selector**: Antarmuka grafis untuk memilih ikon Bootstrap.
+    - **Dynamic AJAX Stats**: Statistik kategori yang terupdate otomatis.
+    - Integrasi penuh dengan pola Service-Repository.
+- [x] **UI/UX Standardization (Standard Terbaru)**:
+    - **Breadcrumb**: Dipindahkan ke sisi kanan atas agar konsisten dengan modul `Project Index` dan `User Management`.
+    - **Header Grid**: Menggunakan struktur `ph-wrap` dengan `align-items: center` untuk perataan vertikal elemen judul dan navigasi.
+    - **Responsive Actions**: Menggunakan Bootstrap Grid (`col-6`, `col-sm-auto`) pada area aksi untuk memastikan tombol tetap fluid dan rapi di mobile.
+    - **Feature Decoupling**: Fungsionalitas upload dokumen kini dipusatkan hanya di modul **Dokumentasi** untuk menghindari redundansi logika dan UI di halaman detail proyek.
+    - **Interactive Feedback**: Penggunaan `SCA.loading` secara sinkron pada proses penghapusan data (Proyek, Tim, Dokumen, Catatan, Kategori) untuk menjamin integritas state UI dan keamanan aksi user (mencegah double-click).
 
 ## Database Schema (Current)
 - `users`: `id` (ULID), `username` (nullable), `google_id`, `gender`, `phone`, `avatar`, `is_active`, `is_socialite`.
@@ -118,4 +124,4 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 - `diskusis`: `id` (ULID), `project_id`, `user_id`, `parent_id` (Reply reference), `content`.
 - `teams`: `id` (ULID), `name`, `description`, `created_by`.
 - `team_user`: `team_id`, `user_id`, `role` (Pivot untuk peran di tim).
-
+- `kategori_dokumens`: `id` (ULID), `name`, `slug`, `description`, `icon`, `color`, `created_by`.

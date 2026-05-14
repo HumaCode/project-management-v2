@@ -131,6 +131,13 @@ $(function() {
         // Add loading state if you have one, or just disable
         btn.prop('disabled', true).html('<span><i class="bi bi-hourglass-split"></i> Menghapus...</span>');
 
+        if (typeof SCA !== 'undefined') {
+            SCA.loading({
+                title: "Menghapus...",
+                message: "Mohon tunggu sebentar"
+            });
+        }
+
         $.ajax({
             url: `${window.urlBuilderBase}/${deleteId}`,
             method: 'DELETE',
@@ -156,6 +163,9 @@ $(function() {
                     title: "Error!",
                     message: "Terjadi kesalahan sistem saat menghapus data."
                 });
+            },
+            complete: function() {
+                SCA.close();
             }
         });
     });

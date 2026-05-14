@@ -16,7 +16,8 @@ class MenuSeeder extends Seeder
      */
     public function run(): void
     {
-        Cache::forget('menus');
+        Cache::forget('menus_data');
+        Cache::forget('menus_url_list');
 
         // =============================
         // MASTER
@@ -67,7 +68,7 @@ class MenuSeeder extends Seeder
             ],
             [
                 'name' => 'Kategori Dokumen',
-                'url' => 'kat-dokumen',
+                'url' => 'kategori-dokumen',
                 'category' => 'MANAGEMENT',
                 'icon' => 'bi bi-tags-fill',
                 'orders' => 6,

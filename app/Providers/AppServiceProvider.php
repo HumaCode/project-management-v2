@@ -64,6 +64,10 @@ class AppServiceProvider extends ServiceProvider
         // team
         $this->app->bind(\App\Interface\Team\TeamRepositoryInterface::class, \App\Repositories\Team\TeamRepository::class);
         $this->app->bind(TeamServiceInterface::class, TeamService::class);
+
+        // kategori dokumen
+        $this->app->bind(\App\Interface\KategoriDokumen\KategoriDokumenRepositoryInterface::class, \App\Repositories\KategoriDokumen\KategoriDokumenRepository::class);
+        $this->app->bind(\App\Interface\KategoriDokumen\KategoriDokumenServiceInterface::class, \App\Services\KategoriDokumen\KategoriDokumenService::class);
     }
 
     /**

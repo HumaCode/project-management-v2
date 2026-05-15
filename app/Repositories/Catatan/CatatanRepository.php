@@ -50,23 +50,27 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
     public function getStatistics()
     {
         $user = auth()->user();
-        $query = $this->model->newQuery();
+        $cacheKey = "catatan_stats_user_{$user->id}";
 
-        if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
-            $query->where(function($q) use ($user) {
-                $q->whereHas('project.team.members', function($mq) use ($user) {
-                    $mq->where('users.id', $user->id);
-                })->orWhereHas('project', function($pq) use ($user) {
-                    $pq->where('created_by', $user->id);
-                })->orWhere('user_id', $user->id);
-            });
-        }
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($user) {
+            $query = $this->model->newQuery();
 
-        return [
-            'total_catatan' => (clone $query)->count(),
-            'total_high_priority' => (clone $query)->where('priority', 'tinggi')->count(),
-            'total_categories' => (clone $query)->distinct('category')->count('category'),
-            'total_projects_related' => (clone $query)->whereNotNull('project_id')->distinct('project_id')->count('project_id'),
-        ];
+            if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
+                $query->where(function($q) use ($user) {
+                    $q->whereHas('project.team.members', function($mq) use ($user) {
+                        $mq->where('users.id', $user->id);
+                    })->orWhereHas('project', function($pq) use ($user) {
+                        $pq->where('created_by', $user->id);
+                    })->orWhere('user_id', $user->id);
+                });
+            }
+
+            return [
+                'total_catatan' => (clone $query)->count(),
+                'total_high_priority' => (clone $query)->where('priority', 'tinggi')->count(),
+                'total_categories' => (clone $query)->distinct('category')->count('category'),
+                'total_projects_related' => (clone $query)->whereNotNull('project_id')->distinct('project_id')->count('project_id'),
+            ];
+        });
     }
 }

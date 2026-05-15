@@ -19,6 +19,7 @@ class TeamController extends Controller
     public function __construct(TeamServiceInterface $teamService)
     {
         $this->teamService = $teamService;
+        $this->authorizeResource(\App\Models\Team::class, 'team');
     }
 
     public function index()
@@ -32,6 +33,7 @@ class TeamController extends Controller
 
     public function getData(Request $request)
     {
+        $this->authorize('viewAny', \App\Models\Team::class);
         try {
             $search = $request->get('search');
             $rowPerPage = $request->get('rowPerPage', 10);
@@ -86,6 +88,7 @@ class TeamController extends Controller
 
     public function getUsers()
     {
+        $this->authorize('viewAny', \App\Models\Team::class);
         try {
             $users = User::role('anggota')->get();
             return ResponseHelper::success('Berhasil mengambil data anggota.', UserResource::collection($users));

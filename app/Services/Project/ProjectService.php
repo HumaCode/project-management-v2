@@ -10,68 +10,76 @@ class ProjectService implements ProjectServiceInterface
 {
     public function getIndexData(): array
     {
-        $query = Project::query();
-
-        // Filter akses jika bukan admin/dev
         $user = auth()->user();
-        if (!$user->hasRole(['dev', 'admin'])) {
-            $query->where(function($q) use ($user) {
-                $q->where('created_by', $user->id)
-                  ->orWhereHas('team.members', function($sq) use ($user) {
-                      $sq->where('users.id', $user->id);
-                  });
-            });
-        }
+        $cacheKey = "project_stats_user_{$user->id}";
 
-        $counts = $query->selectRaw("
-            COUNT(*) as total,
-            SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
-            SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done_count,
-            SUM(CASE WHEN status = 'to_do' THEN 1 ELSE 0 END) as to_do_count
-        ")->first();
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($user) {
+            $query = Project::query();
 
-        return [
-            'total_projects' => (int) ($counts->total ?? 0),
-            'in_progress' => (int) ($counts->in_progress_count ?? 0),
-            'done' => (int) ($counts->done_count ?? 0),
-            'to_do' => (int) ($counts->to_do_count ?? 0),
-        ];
+            // Filter akses jika bukan admin/dev
+            if (!$user->hasRole(['dev', 'admin'])) {
+                $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereHas('team.members', function($sq) use ($user) {
+                          $sq->where('users.id', $user->id);
+                      });
+                });
+            }
+
+            $counts = $query->selectRaw("
+                COUNT(*) as total,
+                SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
+                SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done_count,
+                SUM(CASE WHEN status = 'to_do' THEN 1 ELSE 0 END) as to_do_count
+            ")->first();
+
+            return [
+                'total_projects' => (int) ($counts->total ?? 0),
+                'in_progress' => (int) ($counts->in_progress_count ?? 0),
+                'done' => (int) ($counts->done_count ?? 0),
+                'to_do' => (int) ($counts->to_do_count ?? 0),
+            ];
+        });
     }
 
     public function getPaginatedProjects(?string $search, ?string $status, int $rowPerPage, ?string $sortCol = 'created_at', ?string $sortDir = 'desc')
     {
-        // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
-        $query = Project::with(['creator.media', 'team.members.media', 'media']);
-
-        // Filter: Hanya tampilkan project di mana user adalah anggota tim atau pembuatnya
-        // Jika user bukan Super Admin (dev/admin), terapkan filter
         $user = auth()->user();
-        if (!$user->hasRole(['dev', 'admin'])) {
-            $query->where(function($q) use ($user) {
-                $q->where('created_by', $user->id)
-                  ->orWhereHas('team.members', function($sq) use ($user) {
-                      $sq->where('users.id', $user->id);
-                  });
-            });
-        }
+        $page = request()->get('page', 1);
+        $cacheKey = "projects_list_user_{$user->id}_p{$page}_r{$rowPerPage}_s" . md5($search . $status . $sortCol . $sortDir);
 
-        if ($search) {
-            $query->where(function($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
-            });
-        }
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $status, $rowPerPage, $sortCol, $sortDir, $user) {
+            // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
+            $query = Project::with(['creator.media', 'team.members.media', 'media']);
 
-        if ($status) {
-            $query->where('status', $status);
-        }
+            // Filter: Hanya tampilkan project di mana user adalah anggota tim atau pembuatnya
+            if (!$user->hasRole(['dev', 'admin'])) {
+                $query->where(function($q) use ($user) {
+                    $q->where('created_by', $user->id)
+                      ->orWhereHas('team.members', function($sq) use ($user) {
+                          $sq->where('users.id', $user->id);
+                      });
+                });
+            }
 
-        // Sorting
-        $allowedSort = ['name', 'start_date', 'deadline', 'created_at', 'created_by'];
-        $sortCol = in_array($sortCol, $allowedSort) ? $sortCol : 'created_at';
-        $sortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+            if ($search) {
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('description', 'like', "%{$search}%");
+                });
+            }
 
-        return $query->orderBy($sortCol, $sortDir)->paginate($rowPerPage);
+            if ($status) {
+                $query->where('status', $status);
+            }
+
+            // Sorting
+            $allowedSort = ['name', 'start_date', 'deadline', 'created_at', 'created_by'];
+            $sortCol = in_array($sortCol, $allowedSort) ? $sortCol : 'created_at';
+            $sortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+
+            return $query->orderBy($sortCol, $sortDir)->paginate($rowPerPage);
+        });
     }
 
     public function storeProject(array $data): Project
@@ -90,6 +98,8 @@ class ProjectService implements ProjectServiceInterface
                 $project->addMedia($data['thumbnail'])
                     ->toMediaCollection('thumbnail');
             }
+            
+            $this->clearProjectCache();
 
             return $project;
         });
@@ -121,6 +131,8 @@ class ProjectService implements ProjectServiceInterface
                 $project->addMedia($data['thumbnail'])
                     ->toMediaCollection('thumbnail');
             }
+            
+            $this->clearProjectCache();
 
             return $project;
         });
@@ -137,13 +149,27 @@ class ProjectService implements ProjectServiceInterface
             // Hapus project (karena trait InteractsWithMedia, file fisik di public/storage 
             // umumnya otomatis terhapus saat model di-delete, namun jika diperlukan bisa dipanggil clearMediaCollection)
             $project->clearMediaCollection('thumbnail');
+            
+            $this->clearProjectCache();
 
             return $project->delete();
         });
     }
 
+    private function clearProjectCache(?string $projectId = null): void
+    {
+        // Clear global/stats cache for current user
+        \Illuminate\Support\Facades\Cache::forget('project_stats_user_' . auth()->id());
+        
+        // If a specific project is involved, clear the detail cache for current user
+        if ($projectId) {
+            \Illuminate\Support\Facades\Cache::forget("project_detail_{$projectId}_user_" . auth()->id());
+        }
+    }
+
     public function getProjectDetailData(string $ulid): array
     {
+        $userId = auth()->id();
         $project = Project::with(['team.members.media', 'creator.media'])->findOrFail($ulid);
         
         // Stats calculation
@@ -201,10 +227,10 @@ class ProjectService implements ProjectServiceInterface
             'catatans' => $project->diskusis()->with(['user', 'media', 'parent.user', 'parent.media'])->latest()->limit(20)->get()->map(fn($c) => [
                 'id' => $c->id,
                 'content' => $c->content,
-                'is_me' => $c->user_id === auth()->id(),
+                'is_me' => $c->user_id === $userId,
                 'is_edited' => $c->updated_at->gt($c->created_at),
-                'can_edit' => $c->user_id === auth()->id() && $c->created_at->diffInMinutes(now()) < 5,
-                'can_delete' => $c->user_id === auth()->id(),
+                'can_edit' => $c->user_id === $userId && $c->created_at->diffInMinutes(now()) < 5,
+                'can_delete' => $c->user_id === $userId,
                 'created_at_human' => $c->created_at_human,
                 'attachments' => $c->getMedia('diskusi_attachments')->map(fn($m) => [
                     'id' => $m->id,
@@ -333,8 +359,12 @@ class ProjectService implements ProjectServiceInterface
                     ->toMediaCollection('diskusi_attachments');
             }
         }
+        
+        $this->clearProjectCache($projectId);
 
-        return $diskusi;
+        broadcast(new \App\Events\Project\DiskusiSent($diskusi->load(['user', 'parent.user', 'media', 'parent.media'])))->toOthers();
+
+        return $diskusi->load(['user', 'parent.user', 'media', 'parent.media']);
     }
 
     public function updateDiskusi(string $id, array $data): \App\Models\Diskusi
@@ -344,6 +374,8 @@ class ProjectService implements ProjectServiceInterface
         $diskusi->update([
             'content' => $data['content'] ?? '',
         ]);
+        
+        $this->clearProjectCache($diskusi->project_id);
 
         return $diskusi;
     }
@@ -351,6 +383,8 @@ class ProjectService implements ProjectServiceInterface
     public function deleteDiskusi(string $id): void
     {
         $diskusi = \App\Models\Diskusi::findOrFail($id);
+        $projectId = $diskusi->project_id;
         $diskusi->delete();
+        $this->clearProjectCache($projectId);
     }
 }

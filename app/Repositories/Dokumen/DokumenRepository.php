@@ -50,41 +50,45 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
     public function getStatistics()
     {
         $user = auth()->user();
-        $dokumenQuery = $this->model->newQuery();
-        $mediaQuery = \Spatie\MediaLibrary\MediaCollections\Models\Media::where('collection_name', 'files')
-            ->whereHasMorph('model', [Dokumen::class]);
+        $cacheKey = "dokumen_stats_user_{$user->id}";
 
-        if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
-            // Filter query dokumen utama
-            $dokumenQuery->where(function($q) use ($user) {
-                $q->whereHas('project.team.members', function($mq) use ($user) {
-                    $mq->where('users.id', $user->id);
-                })->orWhereHas('project', function($pq) use ($user) {
-                    $pq->where('created_by', $user->id);
-                })->orWhere('user_id', $user->id);
-            });
+        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($user) {
+            $dokumenQuery = $this->model->newQuery();
+            $mediaQuery = \Spatie\MediaLibrary\MediaCollections\Models\Media::where('collection_name', 'files')
+                ->whereHasMorph('model', [Dokumen::class]);
 
-            // Filter query media library
-            $mediaQuery->whereHasMorph('model', [Dokumen::class], function($q) use ($user) {
-                $q->where(function($sq) use ($user) {
-                    $sq->whereHas('project.team.members', function($mq) use ($user) {
+            if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
+                // Filter query dokumen utama
+                $dokumenQuery->where(function($q) use ($user) {
+                    $q->whereHas('project.team.members', function($mq) use ($user) {
                         $mq->where('users.id', $user->id);
                     })->orWhereHas('project', function($pq) use ($user) {
                         $pq->where('created_by', $user->id);
                     })->orWhere('user_id', $user->id);
                 });
-            });
-        }
 
-        $totalBytes = $mediaQuery->sum('size');
-        $totalMb = round($totalBytes / 1024 / 1024, 2);
+                // Filter query media library
+                $mediaQuery->whereHasMorph('model', [Dokumen::class], function($q) use ($user) {
+                    $q->where(function($sq) use ($user) {
+                        $sq->whereHas('project.team.members', function($mq) use ($user) {
+                            $mq->where('users.id', $user->id);
+                        })->orWhereHas('project', function($pq) use ($user) {
+                            $pq->where('created_by', $user->id);
+                        })->orWhere('user_id', $user->id);
+                    });
+                });
+            }
 
-        return [
-            'total_dokumen' => $dokumenQuery->count(),
-            'total_kategori' => $dokumenQuery->distinct('kategori')->count('kategori'),
-            'total_size' => $totalMb . ' MB',
-            'new_this_month' => $dokumenQuery->whereMonth('created_at', now()->month)->count(),
-        ];
+            $totalBytes = $mediaQuery->sum('size');
+            $totalMb = round($totalBytes / 1024 / 1024, 2);
+
+            return [
+                'total_dokumen' => $dokumenQuery->count(),
+                'total_kategori' => $dokumenQuery->distinct('kategori')->count('kategori'),
+                'total_size' => $totalMb . ' MB',
+                'new_this_month' => $dokumenQuery->whereMonth('created_at', now()->month)->count(),
+            ];
+        });
     }
 
     public function saveItems(string $id, array $items)

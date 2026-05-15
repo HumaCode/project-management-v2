@@ -141,6 +141,17 @@
         - **Human-Readable File Size**: Automated file size detection using Spatie Media Library with a custom model attribute (`file_size_label`).
         - **Interface Cleanup**: Removed redundant "Tambah Catatan" button from Catatan index header for a cleaner layout.
     - [x] **AJAX Optimization**: Added dedicated AJAX endpoints for paginated project-specific documents and notes.
+- [x] **Project Management (Phase 6: Real-Time & Caching)**:
+    - [x] **Laravel Reverb Integration**: Setup WebSocket server for premium real-time communication.
+    - [x] **Real-Time Discussion (Diskusi)**: Implementation of instant message delivery without page refresh using `ShouldBroadcastNow`.
+    - [x] **Performance Optimization**: 
+        - Integrated `Cache::remember` for heavy stats and project details.
+        - Strategic Cache Invalidation for real-time consistency.
+        - Incremental DOM updates for message sending/deleting to eliminate UI flickering.
+    - [x] **Premium UI/UX**:
+        - Integrated **Picmo Emoji Picker** for expressive communication.
+        - **Smooth Animations**: Used `AOS.refresh()` and smooth scroll for a seamless chat experience.
+        - **Refined Data Rendering**: Abstracted note rendering into reusable JS functions for better maintainability.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

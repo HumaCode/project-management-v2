@@ -21,6 +21,7 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
   - `laravel/socialite`: Integrasi Login Media Sosial (Google).
   - `laravel/breeze`: Starter kit untuk autentikasi.
   - `fruitcake/laravel-debugbar`: Tool debugging (dev only).
+  - `laravel/reverb`: High-performance WebSocket server for real-time features.
 
 ## Architecture Highlights
 1.  **Identity Management**:
@@ -54,6 +55,14 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
 9.  **Automatic Content Handling**:
     - Implementasi **Auto-Slug** pada model Project untuk URL yang SEO-friendly.
     - Penggunaan **Base64 Upload Adapter** pada CKEditor untuk menangani gambar tanpa konfigurasi storage yang rumit di awal.
+10. **Real-Time Engine**: 
+    - Implementasi **Laravel Reverb** (WebSocket) untuk pengiriman pesan instan.
+    - Penggunaan **ShouldBroadcastNow** untuk memastikan responsivitas tanpa beban antrean (queue) yang lambat.
+11. **Performance Caching Layer**:
+    - Caching pada level Service menggunakan `Cache::remember` untuk data statis/statistik yang berat.
+    - Mekanisme *Cache Invalidation* otomatis saat ada perubahan data diskusi untuk menjamin sinkronisasi real-time.
+12. **Incremental UI Updates**:
+    - Logika JavaScript yang diabstraksi (`getNoteHtml`) untuk memanipulasi elemen chat secara dinamis tanpa me-reload seluruh kontainer, memberikan pengalaman layaknya SPA (Single Page Application).
 
 ## Current Modules & Features
 - **Dashboard**: Panel ringkasan utama.

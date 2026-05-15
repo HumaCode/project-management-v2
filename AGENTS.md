@@ -72,6 +72,7 @@
 | `laravel/octane` | ^2.17 |  |
 | `laravel/pail` | ^1.2.2 | ✓ |
 | `laravel/pint` | ^1.24 | ✓ |
+| `laravel/reverb` | ^1.0 |  |
 | `laravel/sail` | ^1.41 | ✓ |
 | `laravel/socialite` | ^5.27 |  |
 | `laravel/tinker` | ^2.10.1 |  |
@@ -92,7 +93,9 @@
 | `autoprefixer` | ^10.4.2 | ✓ |
 | `axios` | ^1.11.0 | ✓ |
 | `concurrently` | ^9.0.1 | ✓ |
+| `laravel-echo` | ^2.3.4 | ✓ |
 | `laravel-vite-plugin` | ^2.0.0 | ✓ |
 | `postcss` | ^8.4.31 | ✓ |
+| `pusher-js` | ^8.5.0 | ✓ |
 | `tailwindcss` | ^3.1.0 | ✓ |
 | `vite` | ^7.0.7 | ✓ |

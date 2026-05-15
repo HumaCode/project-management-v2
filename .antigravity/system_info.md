@@ -18,3 +18,6 @@
 - **Routes**: `routes/web.php` & `routes/auth.php`
 - **Helpers**: `app/Helpers/`
 - **Constants**: `app/Constants/`
+- **Broadcasting**: `laravel/reverb` (WebSocket Server on Port 8080)
+- **Real-Time Config**: `resources/js/echo.js` & `routes/channels.php`
+- **Frontend Assets**: `public/assets/auth/backend/js/project-detail.js` (Modular JS)

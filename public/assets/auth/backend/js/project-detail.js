@@ -214,6 +214,7 @@ $(function() {
                     $('#statDays').attr('data-count', stats.days_remaining);
                     
                     $('#tabDocCount').text(stats.docs_count);
+                    $('#tabNoteCount').text(stats.docs_count);
                     $('#tabNoteCount').text(stats.notes_count);
 
                     $('#statDaysIcon').attr('class', `msc-ico ${stats.days_remaining_class === 'err' ? 'r' : (stats.days_remaining_class === 'warn' ? 'y' : 'g')}`);
@@ -288,74 +289,11 @@ $(function() {
                     const reversedCatatans = [...data.catatans].reverse();
                     
                     if (reversedCatatans.length > 0) {
-                        noteHtml += '<div style="margin-top: auto;"></div>'; // Spacer to push messages to bottom
+                        noteHtml += '<div id="noteSpacer" style="margin-top: auto;"></div>'; // Spacer to push messages to bottom
                     }
 
                     reversedCatatans.forEach(note => {
-                        const isMe = note.is_me;
-                        const avContent = note.user && note.user.display_avatar 
-                            ? `<img src="${note.user.display_avatar}" alt="${note.user.name}">` 
-                            : (note.user ? note.user.initials : '??');
-
-                        let attachHtml = '';
-                        if (note.attachments && note.attachments.length > 0) {
-                            attachHtml = '<div class="note-attachments">';
-                            note.attachments.forEach(file => {
-                                if (file.type === 'image') {
-                                    attachHtml += `
-                                        <a href="${file.url}" data-fslightbox="gallery" class="attach-img">
-                                            <img src="${file.url}" alt="${file.name}">
-                                        </a>
-                                    `;
-                                } else {
-                                    attachHtml += `
-                                        <a href="${file.url}" download="${file.name}" class="attach-file">
-                                            <i class="bi bi-file-earmark-arrow-down"></i>
-                                            <span>${file.name}</span>
-                                        </a>
-                                    `;
-                                }
-                            });
-                            attachHtml += '</div>';
-                        }
-
-                        let quoteHtml = '';
-                        if (note.parent) {
-                            quoteHtml = `
-                                <div class="note-quote" data-target="#note-${note.parent.id}">
-                                    <div class="quote-author">${note.parent.user_name}</div>
-                                    <div class="quote-text">${note.parent.content || 'Lampiran file'}</div>
-                                </div>
-                            `;
-                        }
-
-                        noteHtml += `
-                            <div class="note-card ${isMe ? 'is-me' : ''}" id="note-${note.id}">
-                                <div class="note-head">
-                                    ${!isMe ? `<div class="note-av">${avContent}</div>` : ''}
-                                    <div class="note-author-meta">
-                                        <div class="note-author">${note.user ? note.user.name : 'Unknown'}</div>
-                                        <div class="note-time">
-                                            ${note.created_at_human || 'Baru saja'}
-                                            ${note.is_edited ? '<span class="edited-label">(diedit)</span>' : ''}
-                                        </div>
-                                    </div>
-                                    ${isMe ? `<div class="note-av">${avContent}</div>` : ''}
-                                </div>
-                                <div class="note-body">
-                                    ${quoteHtml}
-                                    ${attachHtml}
-                                    ${note.content ? `<div class="note-text">${note.content}</div>` : ''}
-                                </div>
-                                <div class="note-actions">
-                                    <button class="note-btn btn-reply-note" data-id="${note.id}"><i class="bi bi-reply-fill"></i> Balas</button>
-                                    ${isMe ? `
-                                        ${note.can_edit ? `<button class="note-btn btn-edit-note" data-id="${note.id}"><i class="bi bi-pencil"></i> Edit</button>` : ''}
-                                        ${note.can_delete ? `<button class="note-btn btn-del-note" data-id="${note.id}"><i class="bi bi-trash3"></i> Hapus</button>` : ''}
-                                    ` : ''}
-                                </div>
-                            </div>
-                        `;
+                        noteHtml += getNoteHtml(note, currentUserId);
                     });
                     if (noteHtml === '') {
                         noteHtml = `
@@ -609,8 +547,129 @@ $(function() {
         return name.split(' ').map(n => n[0]).join('').toUpperCase().substring(0, 2);
     }
 
+    /* Helper to update stats counter without reload */
+    function updateStatCounter(type, delta) {
+        if (type === 'notes') {
+            const $tabCount = $('#tabNoteCount');
+            const $statCount = $('#statNotes');
+            const current = parseInt($tabCount.text());
+            const newVal = current + delta;
+            $tabCount.text(newVal);
+            $statCount.text(newVal);
+            // Also update data-count for future re-renders if any
+            $statCount.attr('data-count', newVal);
+        }
+    }
+
     /* Initial Load */
     window.loadDetailData();
+
+    function getNoteHtml(note, currentUserId) {
+        const isMe = note.user_id == currentUserId || note.is_me;
+        const avContent = note.user && note.user.display_avatar 
+            ? `<img src="${note.user.display_avatar}" alt="${note.user.name}">` 
+            : (note.user ? note.user.initials : '??');
+
+        let attachHtml = '';
+        if (note.attachments && note.attachments.length > 0) {
+            attachHtml = '<div class="note-attachments">';
+            note.attachments.forEach(file => {
+                if (file.type === 'image') {
+                    attachHtml += `
+                        <a href="${file.url}" data-fslightbox="gallery" class="attach-img">
+                            <img src="${file.url}" alt="${file.name}">
+                        </a>
+                    `;
+                } else {
+                    attachHtml += `
+                        <a href="${file.url}" download="${file.name}" class="attach-file">
+                            <i class="bi bi-file-earmark-arrow-down"></i>
+                            <span>${file.name}</span>
+                        </a>
+                    `;
+                }
+            });
+            attachHtml += '</div>';
+        }
+
+        let quoteHtml = '';
+        if (note.parent) {
+            quoteHtml = `
+                <div class="note-quote" data-target="#note-${note.parent.id}">
+                    <div class="quote-author">${note.parent.user_name}</div>
+                    <div class="quote-text">${note.parent.content || 'Lampiran file'}</div>
+                </div>
+            `;
+        }
+
+        return `
+            <div class="note-card ${isMe ? 'is-me' : ''}" id="note-${note.id}" data-aos="fade-up">
+                <div class="note-head">
+                    ${!isMe ? `<div class="note-av">${avContent}</div>` : ''}
+                    <div class="note-author-meta">
+                        <div class="note-author">${note.user ? note.user.name : 'Unknown'}</div>
+                        <div class="note-time">
+                            ${note.created_at_human || 'Baru saja'}
+                            ${note.is_edited ? '<span class="edited-label">(diedit)</span>' : ''}
+                        </div>
+                    </div>
+                    ${isMe ? `<div class="note-av">${avContent}</div>` : ''}
+                </div>
+                <div class="note-body">
+                    ${quoteHtml}
+                    ${attachHtml}
+                    ${note.content ? `<div class="note-text">${note.content}</div>` : ''}
+                </div>
+                <div class="note-actions">
+                    <button class="note-btn btn-reply-note" data-id="${note.id}"><i class="bi bi-reply-fill"></i> Balas</button>
+                    ${isMe ? `
+                        ${note.can_edit ? `<button class="note-btn btn-edit-note" data-id="${note.id}"><i class="bi bi-pencil"></i> Edit</button>` : ''}
+                        ${note.can_delete ? `<button class="note-btn btn-del-note" data-id="${note.id}"><i class="bi bi-trash3"></i> Hapus</button>` : ''}
+                    ` : ''}
+                </div>
+            </div>
+        `;
+    }
+
+    // Real-time listener with Reverb
+    if (window.Echo) {
+        console.log('Echo initialized, subscribing to project.' + projectId);
+        window.Echo.private(`project.${projectId}`)
+            .listen('Project.DiskusiSent', (e) => {
+                console.log('Real-time message received:', e);
+                
+                const currentUserId = $('#projectContainer').data('current-user-id');
+                
+                // If message already exists (from our own AJAX success), skip
+                if ($(`#note-${e.id}`).length > 0) {
+                    console.log('Message already exists, skipping append.');
+                    return;
+                }
+
+                const noteHtml = getNoteHtml(e, currentUserId);
+                
+                // Remove empty state if present
+                if ($('#noteWrap .bi-chat-left-dots').length > 0) {
+                    $('#noteWrap').html('<div id="noteSpacer" style="margin-top: auto;"></div>');
+                }
+
+                $('#noteWrap').append(noteHtml);
+                
+                // Refresh AOS for new element
+                if (typeof AOS !== 'undefined') AOS.refresh();
+                
+                // Refresh Lightbox
+                if (typeof refreshFsLightbox === 'function') refreshFsLightbox();
+                
+                // Auto scroll to bottom
+                const nw = document.getElementById('noteWrap');
+                if (nw) nw.scrollTo({ top: nw.scrollHeight, behavior: 'smooth' });
+
+                // Update tab count
+                const currentCount = parseInt($('#tabNoteCount').text());
+                $('#tabNoteCount, #statNotes').text(currentCount + 1);
+            });
+    }
 
     /* Search Doc Local Filter */
     $(document).on('input', '#docSearch', function() {
@@ -847,11 +906,39 @@ $(function() {
                     if (typeof SCA !== 'undefined') {
                         SCA.toast({ type: "success", title: "Berhasil!", message: editId ? "Komentar diperbarui." : "Komentar terkirim." });
                     }
-                    window.loadDetailData();
+
+                    if (editId) {
+                        // Update existing note content
+                        const noteEl = $(`#note-${editId}`);
+                        noteEl.find('.note-text').text(res.data.content);
+                        noteEl.find('.note-time').append(' <span class="edited-label">(diedit)</span>');
+                    } else {
+                        // Append new note
+                        const currentUserId = $('#projectContainer').data('current-user-id');
+                        const noteHtml = getNoteHtml(res.data, currentUserId);
+                        
+                        // Remove empty state if present
+                        if ($('#noteWrap .bi-chat-left-dots').length > 0) {
+                            $('#noteWrap').html('<div id="noteSpacer" style="margin-top: auto;"></div>');
+                        }
+
+                        $('#noteWrap').append(noteHtml);
+                        
+                        // Refresh AOS
+                        if (typeof AOS !== 'undefined') AOS.refresh();
+
+                        // Update counter
+                        updateStatCounter('notes', 1);
+                    }
+
+                    editId = null;
                     $('#noteInput').css('height', 'auto');
+                    
+                    if (typeof refreshFsLightbox === 'function') refreshFsLightbox();
+
                     setTimeout(() => {
                         const nw = document.getElementById('noteWrap');
-                        if (nw) nw.scrollTop = nw.scrollHeight;
+                        if (nw) nw.scrollTo({ top: nw.scrollHeight, behavior: 'smooth' });
                     }, 200);
                 } else {
                     if (typeof SCA !== 'undefined') {
@@ -925,7 +1012,25 @@ $(function() {
                         success: function(res) {
                             if (res.success) {
                                 SCA.toast({ type: "success", title: "Berhasil!", message: "Komentar dihapus." });
-                                window.loadDetailData();
+                                
+                                // Remove from DOM with animation
+                                const noteEl = $(`#note-${id}`);
+                                noteEl.fadeOut(300, function() {
+                                    $(this).remove();
+                                    
+                                    // Update counter
+                                    updateStatCounter('notes', -1);
+
+                                    // If empty, show empty state
+                                    if ($('.note-card').length === 0) {
+                                        $('#noteWrap').html(`
+                                            <div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--muted);gap:15px;opacity:0.6">
+                                                <i class="bi bi-chat-left-dots" style="font-size:48px"></i>
+                                                <p>Belum ada diskusi.</p>
+                                            </div>
+                                        `);
+                                    }
+                                });
                             } else {
                                 btn.prop('disabled', false).html('<i class="bi bi-trash3"></i> Hapus');
                                 SCA.toast({ type: "danger", title: "Gagal!", message: res.message });
@@ -971,10 +1076,16 @@ $(function() {
             referenceElement: emojiBtn,
             triggerElement: emojiBtn,
             position: 'top-end',
-            hideOnEmojiSelect: false // Agar picker tidak langsung tertutup saat pilih emoji
+            hideOnEmojiSelect: false
+        });
+
+        emojiBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            picker.toggle();
         });
 
         picker.addEventListener('emoji:select', (selection) => {
+            if (!inputArea) return;
             const start = inputArea.selectionStart;
             const end = inputArea.selectionEnd;
             const text = inputArea.value;
@@ -985,7 +1096,6 @@ $(function() {
             inputArea.selectionStart = inputArea.selectionEnd = start + selection.emoji.length;
             inputArea.focus();
             
-            // Trigger auto-resize
             $(inputArea).trigger('input');
         });
     }

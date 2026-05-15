@@ -78,12 +78,43 @@
                 margin-bottom: 8px;
                 display: block;
             }
+
+            /* Cover Builder Theming */
+            .bg-dark-deep { background: #050c16 !important; }
+            .cover-tools { background: #071528 !important; }
+            .tool-btn { 
+                background: rgba(255,255,255,0.03); 
+                border: 1px solid rgba(255,255,255,0.1); 
+                color: rgba(255,255,255,0.7);
+                padding: 12px 15px;
+                border-radius: 10px;
+                transition: all 0.3s ease;
+                font-size: 13px;
+            }
+            .tool-btn:hover {
+                background: rgba(0, 200, 255, 0.1);
+                border-color: var(--cyan);
+                color: var(--cyan);
+                transform: translateX(5px);
+            }
+            .canvas-wrapper {
+                background: #fff;
+                box-shadow: 0 0 50px rgba(0,0,0,0.5) !important;
+                border: 10px solid #1a1a1a;
+                border-radius: 4px;
+            }
+            .modal-header, .modal-footer {
+                background: #071528;
+                border-color: rgba(255,255,255,0.05) !important;
+            }
         </style>
     @endpush
 
     @push('js')
         <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/fabric.js/5.3.1/fabric.min.js"></script>
         <script src="{{ asset('assets/auth/backend/js/report.js') }}?v={{ time() }}"></script>
+        <script src="{{ asset('assets/auth/backend/js/cover-builder-v2.js') }}?v={{ time() }}"></script>
     @endpush
 
     <!-- Page Header -->
@@ -158,6 +189,9 @@
                 <div class="rp-header">
                     <div class="rp-title"><i class="bi bi-layers-fill"></i>Susunan Laporan</div>
                     <div class="d-flex gap-2">
+                        <button class="btn btn-sm btn-outline-info" onclick="CoverBuilder.open()">
+                            <i class="bi bi-palette"></i> Custom Cover
+                        </button>
                         <button class="btn btn-sm btn-outline-danger"
                             onclick="$('.canvas-item').remove(); ReportBuilder.updateEmptyState();">
                             <i class="bi bi-trash"></i> Reset
@@ -188,6 +222,201 @@
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cover Builder -->
+    <div class="modal fade" id="modalCover" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-fullscreen">
+            <div class="modal-content bg-dark-deep text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title"><i class="bi bi-palette-fill me-2"></i>Cover Builder (WYSIWYG)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-0 d-flex overflow-hidden">
+                    <!-- Tools Sidebar -->
+                    <div class="col-md-4 border-end tools-column" style="max-height: 80vh; overflow-y: auto; padding-right: 10px;">
+                        <div class="mb-4">
+                            <label class="flt-label mb-3">Tambah Elemen</label>
+                            <div class="d-grid gap-2">
+                                <button class="btn tool-btn text-start" onclick="CoverBuilder.addText('JUDUL BARU', true)">
+                                    <span class="me-2 opacity-50">H1</span> Tambah Judul
+                                </button>
+                                <button class="btn tool-btn text-start" onclick="CoverBuilder.addText('Teks deskripsi baru...')">
+                                    <span class="me-2 opacity-50">Aa</span> Tambah Teks
+                                </button>
+                                <button class="btn tool-btn text-start" onclick="document.getElementById('coverLogoInput').click()">
+                                    <i class="bi bi-image me-2 text-cyan"></i> Unggah Gambar/Logo
+                                </button>
+                                <input type="file" id="coverLogoInput" hidden accept="image/*" onchange="CoverBuilder.handleImageUpload(this)">
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="flt-label mb-3">Pilih Template Cover (16 Gaya)</label>
+                            <div class="row g-2">
+                                <!-- Existing 6 -->
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('modern')">
+                                        <div style="height: 30px; background: #071528; border-bottom: 2px solid var(--cyan); border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Modern</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('minimalist')">
+                                        <div style="height: 30px; background: #fff; border: 1px solid #ddd; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Minimal</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('elegant')">
+                                        <div style="height: 30px; background: #1a1a1a; border-top: 4px solid #333; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Elegant</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('corporate')">
+                                        <div style="height: 30px; border-left: 4px solid #0088cc; background: #f8f9fa; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Corp</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('creative')">
+                                        <div style="height: 30px; background: linear-gradient(135deg, #ff5f00, #ff0055); border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Creative</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('luxury')">
+                                        <div style="height: 30px; background: #000; border: 1px solid #d4af37; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Luxury</span>
+                                    </button>
+                                </div>
+                                <!-- New 10 -->
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('futuristic')">
+                                        <div style="height: 30px; background: #000; border: 1px solid #0f0; box-shadow: 0 0 5px #0f0; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Future</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('retro')">
+                                        <div style="height: 30px; background: #f4a261; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Retro</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('geometric')">
+                                        <div style="height: 30px; background: #e9ecef; border-radius: 4px; position: relative; overflow: hidden; margin-bottom: 3px;">
+                                            <div style="position: absolute; width: 20px; height: 20px; background: #333; transform: rotate(45deg); top: -10px; right: -10px;"></div>
+                                        </div>
+                                        <span style="font-size: 8px;">Geo</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('blueprint')">
+                                        <div style="height: 30px; background: #004a99; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Blueprt</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('soft')">
+                                        <div style="height: 30px; background: #f8edeb; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Soft</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('midnight')">
+                                        <div style="height: 30px; background: #121212; border-right: 8px solid #3d3d3d; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Midnigt</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('impact')">
+                                        <div style="height: 30px; background: #ffea00; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Impact</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('scientific')">
+                                        <div style="height: 30px; background: #fff; border: 1px solid #000; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Scien</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('abstract')">
+                                        <div style="height: 30px; background: #6d597a; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Abstrac</span>
+                                    </button>
+                                </div>
+                                <div class="col-4">
+                                    <button class="btn tool-btn w-100 p-1 text-center" onclick="CoverBuilder.applyTemplate('ocean')">
+                                        <div style="height: 30px; background: #0077b6; border-radius: 4px; margin-bottom: 3px;"></div>
+                                        <span style="font-size: 8px;">Ocean</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="flt-label mb-2">Warna Background</label>
+                            <input type="color" class="form-control form-control-color w-100 bg-transparent border-secondary" 
+                                id="coverBgColor" value="#ffffff" style="height: 45px; border-radius: 10px;"
+                                onchange="CoverBuilder.setBgColor(this.value)">
+                        </div>
+
+                        <div class="mb-4" id="objectControls" style="display: none;">
+                            <label class="flt-label mb-2">Edit Objek Terpilih</label>
+                            <div class="d-grid gap-2">
+                                <div id="textSpecificControls" style="display: none;">
+                                    <button class="btn btn-cyan btn-sm w-100 mb-2 text-dark fw-bold" onclick="CoverBuilder.editText()">
+                                        <i class="bi bi-pencil-square me-2"></i> Edit Teks Sekarang
+                                    </button>
+                                    <div class="d-flex gap-1 mb-3">
+                                        <button class="btn btn-dark btn-sm flex-grow-1 border-secondary" onclick="CoverBuilder.toggleStyle('bold')" title="Bold">
+                                            <i class="bi bi-type-bold"></i>
+                                        </button>
+                                        <button class="btn btn-dark btn-sm flex-grow-1 border-secondary" onclick="CoverBuilder.toggleStyle('italic')" title="Italic">
+                                            <i class="bi bi-type-italic"></i>
+                                        </button>
+                                        <button class="btn btn-dark btn-sm flex-grow-1 border-secondary" onclick="CoverBuilder.toggleStyle('underline')" title="Underline">
+                                            <i class="bi bi-type-underline"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="d-flex align-items-center gap-2 mb-2">
+                                    <span style="font-size: 11px; color: #888;">Warna:</span>
+                                    <input type="color" class="form-control form-control-color flex-grow-1 bg-transparent border-secondary" 
+                                        id="objColor" value="#000000" style="height: 35px; border-radius: 8px;"
+                                        onchange="CoverBuilder.setObjectColor(this.value)">
+                                </div>
+                                <button class="btn btn-outline-danger btn-sm" style="border-radius: 8px;" onclick="CoverBuilder.deleteSelected()">
+                                    <i class="bi bi-trash me-2"></i> Hapus Objek
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="mt-auto">
+                            <div class="alert alert-info py-2" style="font-size: 11px; background: rgba(0, 200, 255, 0.1); border: 1px solid var(--cyan);">
+                                <i class="bi bi-info-circle me-1"></i> Klik objek di kanvas untuk mengedit, geser, atau mengubah ukuran.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Canvas Area -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center bg-black-20 p-4" style="overflow: auto;">
+                        <div class="canvas-wrapper shadow-lg bg-white" style="width: 595px; height: 842px;"> <!-- A4 Ratio -->
+                            <canvas id="coverCanvas"></canvas>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="CoverBuilder.save()">
+                        <i class="bi bi-check-circle me-1"></i> Gunakan Cover Ini
+                    </button>
                 </div>
             </div>
         </div>

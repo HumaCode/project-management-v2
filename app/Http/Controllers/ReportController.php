@@ -8,6 +8,9 @@ use App\Interface\Dokumen\DokumenServiceInterface;
 use App\Http\Resources\Dokumen\DokumenResource;
 use Illuminate\Http\Request;
 
+use Barryvdh\DomPDF\Facade\Pdf;
+use App\Models\Dokumen;
+
 class ReportController extends Controller
 {
     protected $projectService;
@@ -57,9 +60,93 @@ class ReportController extends Controller
         return DokumenResource::collection($assets);
     }
 
+    public function preview(Request $request)
+    {
+        $items = $request->input('items', []);
+        
+        if (empty($items)) {
+            return response()->json(['message' => 'Pilih setidaknya satu dokumen.'], 422);
+        }
+
+        $documents = [];
+        foreach ($items as $item) {
+            $doc = Dokumen::with(['project', 'items'])->find($item['id']);
+            if ($doc) {
+                // Attach description from request if provided
+                $doc->custom_description = $item['desc'] ?? $doc->keterangan;
+                
+                // Get media path for DomPDF
+                $media = $doc->getFirstMedia('files');
+                if ($media) {
+                    $doc->file_path = $media->getPath();
+                    $doc->is_image = str_starts_with($media->mime_type, 'image/');
+                }
+                
+                // Also process items media if it's an article/code
+                foreach($doc->items as $docItem) {
+                    if ($docItem->type === 'image') {
+                        $itemMedia = $docItem->getFirstMedia('item_files');
+                        $docItem->file_path = $itemMedia ? $itemMedia->getPath() : null;
+                    }
+                }
+                
+                $documents[] = $doc;
+            }
+        }
+
+        if (empty($documents)) {
+            return response()->json(['message' => 'Dokumen tidak ditemukan.'], 404);
+        }
+
+        $pdf = Pdf::loadView('pages.report.pdf', [
+            'documents' => $documents,
+            'title' => 'Pratinjau Laporan Proyek',
+            'project' => $documents[0]->project ?? null,
+            'date' => now()->translatedFormat('d F Y'),
+            'cover_image' => $request->input('cover_image')
+        ]);
+
+        return $pdf->stream('laporan-preview.pdf');
+    }
+
     public function generate(Request $request)
     {
-        // Placeholder for PDF generation
-        return response()->json(['message' => 'Laporan sedang diproses...']);
+        $items = $request->input('items', []);
+        
+        if (empty($items)) {
+            return response()->json(['message' => 'Pilih setidaknya satu dokumen.'], 422);
+        }
+
+        $documents = [];
+        foreach ($items as $item) {
+            $doc = Dokumen::with(['project', 'items'])->find($item['id']);
+            if ($doc) {
+                $doc->custom_description = $item['desc'] ?? $doc->keterangan;
+                $media = $doc->getFirstMedia('files');
+                if ($media) {
+                    $doc->file_path = $media->getPath();
+                    $doc->is_image = str_starts_with($media->mime_type, 'image/');
+                }
+                
+                foreach($doc->items as $docItem) {
+                    if ($docItem->type === 'image') {
+                        $itemMedia = $docItem->getFirstMedia('item_files');
+                        $docItem->file_path = $itemMedia ? $itemMedia->getPath() : null;
+                    }
+                }
+
+                $documents[] = $doc;
+            }
+        }
+
+        $pdf = Pdf::loadView('pages.report.pdf', [
+            'documents' => $documents,
+            'title' => 'Laporan Proyek',
+            'project' => $documents[0]->project ?? null,
+            'date' => now()->translatedFormat('d F Y'),
+            'cover_image' => $request->input('cover_image')
+        ]);
+
+        return $pdf->download('laporan-' . now()->timestamp . '.pdf');
     }
 }

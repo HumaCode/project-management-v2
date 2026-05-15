@@ -110,6 +110,7 @@ Route::middleware(['auth'])->group(function () {
             Route::redirect('reports', 'laporan');
             Route::get('laporan', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
             Route::get('laporan/assets', [\App\Http\Controllers\ReportController::class, 'getAssets'])->name('reports.assets');
+            Route::post('laporan/preview', [\App\Http\Controllers\ReportController::class, 'preview'])->name('reports.preview');
             Route::post('laporan/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('reports.generate');
 
         }

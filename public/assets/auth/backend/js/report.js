@@ -190,7 +190,8 @@ const ReportBuilder = {
         const items = [];
         $('.canvas-item').each(function() {
             items.push({
-                id: $(this).data('id')
+                id: $(this).data('id'),
+                desc: $(this).find('.canvas-desc').val()
             });
         });
 
@@ -203,20 +204,7 @@ const ReportBuilder = {
             return;
         }
 
-        showLoading(true, {
-            title: "Menyiapkan Pratinjau...",
-            message: "Sedang menyusun tampilan laporan"
-        });
-
-        setTimeout(() => {
-            showLoading(false);
-            SCA.toast({
-                type: 'info',
-                title: 'Pratinjau!',
-                message: 'Menampilkan pratinjau urutan dokumen.'
-            });
-            // Future logic for actual preview modal
-        }, 800);
+        this.submitForm('/laporan/preview', items, '_blank');
     },
 
     generate() {
@@ -237,20 +225,48 @@ const ReportBuilder = {
             return;
         }
 
-        showLoading(true, {
-            title: "Generating PDF...",
-            message: "Mohon tunggu sebentar"
+        this.submitForm('/laporan/generate', items);
+    },
+
+    submitForm(url, items, target = '_self') {
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = url;
+        form.target = target;
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        // Add Cover Image if exists
+        if (typeof CoverBuilder !== 'undefined' && CoverBuilder.coverImage) {
+            const coverInput = document.createElement('input');
+            coverInput.type = 'hidden';
+            coverInput.name = 'cover_image';
+            coverInput.value = CoverBuilder.coverImage;
+            form.appendChild(coverInput);
+        }
+
+        items.forEach((item, index) => {
+            const idInput = document.createElement('input');
+            idInput.type = 'hidden';
+            idInput.name = `items[${index}][id]`;
+            idInput.value = item.id;
+            form.appendChild(idInput);
+
+            const descInput = document.createElement('input');
+            descInput.type = 'hidden';
+            descInput.name = `items[${index}][desc]`;
+            descInput.value = item.desc;
+            form.appendChild(descInput);
         });
 
-        // AJAX to generate PDF
-        setTimeout(() => {
-            showLoading(false);
-            SCA.toast({
-                type: 'success',
-                title: 'Berhasil!',
-                message: 'Laporan berhasil di-generate!'
-            });
-        }, 1500);
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
     }
 };
 

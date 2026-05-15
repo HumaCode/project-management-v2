@@ -115,6 +115,12 @@ Proyek ini merupakan sistem manajemen proyek (V2) yang dibangun menggunakan Lara
     - **Visual Icon Selector**: Antarmuka grafis untuk memilih ikon Bootstrap.
     - **Dynamic AJAX Stats**: Statistik kategori yang terupdate otomatis.
     - Integrasi penuh dengan pola Service-Repository.
+- [x] **Report Builder Module**:
+    - **Professional Workspace**: Tata letak dua panel (4:8) yang memisahkan Perpustakaan Aset dan Kanvas Laporan.
+    - **Drag and Drop Interface**: Menggunakan **SortableJS** untuk penyusunan urutan halaman laporan secara interaktif.
+    - **Real-Time Filtering**: Sistem filter ganda (Project & Kategori) berbasis AJAX dengan integrasi Select2.
+    - **Asset Library**: Pratinjau dokumen dan gambar secara visual dengan dukungan metadata lengkap via `DokumenResource`.
+    - **Premium Interaction**: Animasi *loading* terpusat, notifikasi *toast* untuk setiap aksi, dan gaya tombol *preview* hijau zamrud yang eksklusif.
 - [x] **UI/UX Standardization (Standard Terbaru)**:
     - **Breadcrumb**: Dipindahkan ke sisi kanan atas agar konsisten dengan modul `Project Index` dan `User Management`.
     - **Header Grid**: Menggunakan struktur `ph-wrap` dengan `align-items: center` untuk perataan vertikal elemen judul dan navigasi.

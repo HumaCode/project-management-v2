@@ -106,6 +106,12 @@ Route::middleware(['auth'])->group(function () {
             Route::get('kategori-dokumen/getData', [\App\Http\Controllers\KategoriDokumen\KategoriDokumenController::class, 'getData'])->name('kategori-dokumen.getData');
             Route::resource('kategori-dokumen', \App\Http\Controllers\KategoriDokumen\KategoriDokumenController::class);
 
+            // reports
+            Route::redirect('reports', 'laporan');
+            Route::get('laporan', [\App\Http\Controllers\ReportController::class, 'index'])->name('reports.index');
+            Route::get('laporan/assets', [\App\Http\Controllers\ReportController::class, 'getAssets'])->name('reports.assets');
+            Route::post('laporan/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('reports.generate');
+
         }
     );
 });

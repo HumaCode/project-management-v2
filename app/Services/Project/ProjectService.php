@@ -8,6 +8,23 @@ use Illuminate\Support\Facades\DB;
 
 class ProjectService implements ProjectServiceInterface
 {
+    public function getAllProjects()
+    {
+        $user = auth()->user();
+        $query = Project::query();
+
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $query->where(function ($q) use ($user) {
+                $q->where('created_by', $user->id)
+                    ->orWhereHas('team.members', function ($sq) use ($user) {
+                        $sq->where('users.id', $user->id);
+                    });
+            });
+        }
+
+        return $query->latest()->get();
+    }
+
     public function getIndexData(): array
     {
         $user = auth()->user();

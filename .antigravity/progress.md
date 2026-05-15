@@ -118,6 +118,22 @@
     - [x] **Functional CRUD (AJAX)**:
         - Server-side pagination, sorting, and debounced search.
         - Complete Store, Update, and Delete logic with SCA Toast notifications.
+- [x] **Report Builder Module**:
+    - [x] **Architecture**: Service-Repository pattern with `ProjectServiceInterface` and `KategoriDokumenServiceInterface`.
+    - [x] **Dual-Panel Interface**: Implementation of a 4:8 Bootstrap grid layout for Asset Library and Report Canvas.
+    - [x] **Dynamic Asset Filtering**: 
+        - Centralized filters for Project and Category with **Select2** dark integration.
+        - Automatic category reset on project change for better UX.
+        - Real-time AJAX loading of project assets (images/documents) filtered by category.
+    - [x] **Interactive Report Canvas**:
+        - **Drag and Drop**: Integration of **SortableJS** for reordering report items.
+        - **Asset Addition**: Single-click addition of assets from library to canvas.
+        - **Custom Annotations**: Ability to add multi-line descriptions for each report item.
+    - [x] **Premium UI/UX**:
+        - **Glassmorphism Design**: High-end visual style consistent with the project dashboard.
+        - **Emerald Green Preview**: A distinct, vibrant preview button for document verification.
+        - **Unified Loading**: Standardized `showLoading` and `SCA.close` integration for all AJAX actions.
+    - [x] **Asset Transformation**: Integrated `DokumenResource` for consistent and rich asset metadata display.
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).
@@ -126,6 +142,7 @@
     - Implementasi breadcrumb dinamis di sisi kanan.
     - Optimalisasi responsivitas modal dan tabel pada smartphone.
     - **UX Safety**: Implementasi `SCA.loading` pada seluruh aksi hapus data (Proyek, Tim, Dokumen, Catatan, Kategori) untuk mencegah double-click dan memberikan feedback instan.
+    - **Asset Performance**: Fixed Select2 placeholder conflicts and grid breaks in Report Builder.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 - [x] **Project Management (Phase 5: Security & Optimization)**:

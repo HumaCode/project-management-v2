@@ -29,45 +29,44 @@
         <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="0">
             <div class="stat-card s-blue">
                 <div class="stat-ico"><i class="bi bi-kanban-fill"></i></div>
-                <div class="stat-num" data-count="24">0</div>
+                <div class="stat-num" data-count="{{ $top_stats['total_projects'] }}">0</div>
                 <div class="stat-lbl">Total Project</div>
-                <span class="stat-pill pill-up"><i class="bi bi-arrow-up-short"></i>+3 bulan ini</span>
+                <span class="stat-pill pill-up"><i class="bi bi-info-circle"></i> Semua project</span>
                 <div class="stat-bar">
-                    <div class="stat-fill"></div>
+                    <div class="stat-fill" style="width: 100%"></div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="80">
             <div class="stat-card s-cyan">
                 <div class="stat-ico"><i class="bi bi-arrow-repeat"></i></div>
-                <div class="stat-num" data-count="9">0</div>
+                <div class="stat-num" data-count="{{ $top_stats['total_in_progress'] }}">0</div>
                 <div class="stat-lbl">Sedang Berjalan</div>
-                <span class="stat-pill pill-eq"><i class="bi bi-dash"></i>Sama bulan lalu</span>
+                <span class="stat-pill pill-eq"><i class="bi bi-dash"></i> Aktif saat ini</span>
                 <div class="stat-bar">
-                    <div class="stat-fill"></div>
+                    <div class="stat-fill" style="width: {{ $top_stats['total_projects'] > 0 ? ($top_stats['total_in_progress'] / $top_stats['total_projects']) * 100 : 0 }}%"></div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="160">
             <div class="stat-card s-green">
                 <div class="stat-ico"><i class="bi bi-folder2-open"></i></div>
-                <div class="stat-num" data-count="137">0</div>
+                <div class="stat-num" data-count="{{ $top_stats['total_documents'] }}">0</div>
                 <div class="stat-lbl">Total Dokumen</div>
-                <span class="stat-pill pill-up"><i class="bi bi-arrow-up-short"></i>+18 minggu ini</span>
+                <span class="stat-pill pill-up"><i class="bi bi-files"></i> File tersimpan</span>
                 <div class="stat-bar">
-                    <div class="stat-fill"></div>
+                    <div class="stat-fill" style="width: 100%"></div>
                 </div>
             </div>
         </div>
         <div class="col-6 col-lg-3" data-aos="fade-up" data-aos-delay="240">
             <div class="stat-card s-warn">
                 <div class="stat-ico"><i class="bi bi-clock-history"></i></div>
-                <div class="stat-num" data-count="5">0</div>
+                <div class="stat-num" data-count="{{ $top_stats['upcoming_deadlines_count'] }}">0</div>
                 <div class="stat-lbl">Deadline Dekat</div>
-                <span class="stat-pill pill-dn"><i class="bi bi-arrow-down-short"></i>2 dalam 3
-                    hari</span>
+                <span class="stat-pill pill-dn"><i class="bi bi-alarm"></i> Dalam 3 hari</span>
                 <div class="stat-bar">
-                    <div class="stat-fill"></div>
+                    <div class="stat-fill" style="width: 100%; background: var(--err)"></div>
                 </div>
             </div>
         </div>
@@ -79,7 +78,7 @@
             <div class="crd h-100">
                 <div class="crd-head">
                     <div class="crd-title"><i class="bi bi-kanban-fill"></i>Project Aktif</div>
-                    <a href="#"
+                    <a href="{{ route('projects.index') }}"
                         style="font-size:12.5px;color:var(--cyan);font-family:var(--mono);display:flex;align-items:center;gap:4px">Lihat
                         semua <i class="bi bi-arrow-right"></i></a>
                 </div>
@@ -90,99 +89,69 @@
                                 <th>Nama Project</th>
                                 <th style="width:110px">Status</th>
                                 <th style="width:100px" class="d-none d-md-table-cell">Progress</th>
-                                <th style="width:90px" class="d-none d-lg-table-cell">Deadline</th>
+                                <th style="width:110px" class="d-none d-lg-table-cell">Deadline</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr class="ptr">
+                            @forelse($active_projects as $project)
+                            <tr class="ptr" onclick="window.location='{{ route('projects.show', $project->slug) }}'">
                                 <td>
-                                    <div class="proj-name">Sistem Informasi PPID</div>
-                                    <div class="proj-meta">3 anggota · 12 dokumen</div>
+                                    <div class="proj-name">{{ $project->name }}</div>
+                                    <div class="proj-meta">{{ $project->members_count }} anggota · {{ $project->dokumens_count }} dokumen</div>
                                 </td>
-                                <td><span class="status-tag st-prog"><span class="dot"></span>In
-                                        Progress</span></td>
+                                <td>
+                                    @php
+                                        $statusClasses = [
+                                            'todo' => 'st-todo',
+                                            'in_progress' => 'st-prog',
+                                            'on_hold' => 'st-warn',
+                                            'done' => 'st-done'
+                                        ];
+                                        $statusLabel = [
+                                            'todo' => 'To Do',
+                                            'in_progress' => 'In Progress',
+                                            'on_hold' => 'On Hold',
+                                            'done' => 'Done'
+                                        ];
+                                    @endphp
+                                    <span class="status-tag {{ $statusClasses[$project->status] ?? 'st-todo' }}">
+                                        <span class="dot"></span>{{ $statusLabel[$project->status] ?? $project->status }}
+                                    </span>
+                                </td>
                                 <td class="d-none d-md-table-cell">
                                     <div class="prog-bar">
-                                        <div class="prog-fill" style="width:75%"></div>
+                                        <div class="prog-fill" style="width:{{ $project->progress }}%"></div>
                                     </div>
-                                    <div
-                                        style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
-                                        75%</div>
+                                    <div style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
+                                        {{ $project->progress }}%</div>
                                 </td>
-                                <td class="d-none d-lg-table-cell"><span class="dl-tag soon">3 hari
-                                        lagi</span></td>
-                            </tr>
-                            <tr class="ptr">
-                                <td>
-                                    <div class="proj-name">Aplikasi E-Commerce Mobile</div>
-                                    <div class="proj-meta">5 anggota · 8 dokumen</div>
-                                </td>
-                                <td><span class="status-tag st-prog"><span class="dot"></span>In
-                                        Progress</span></td>
-                                <td class="d-none d-md-table-cell">
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width:42%"></div>
-                                    </div>
-                                    <div
-                                        style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
-                                        42%</div>
-                                </td>
-                                <td class="d-none d-lg-table-cell"><span class="dl-tag">15 Jan 2025</span>
-                                </td>
-                            </tr>
-                            <tr class="ptr">
-                                <td>
-                                    <div class="proj-name">Sistem Absensi Karyawan</div>
-                                    <div class="proj-meta">2 anggota · 5 dokumen</div>
-                                </td>
-                                <td><span class="status-tag st-done"><span class="dot"></span>Done</span></td>
-                                <td class="d-none d-md-table-cell">
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width:100%;background:var(--ok)">
-                                        </div>
-                                    </div>
-                                    <div
-                                        style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
-                                        100%</div>
-                                </td>
-                                <td class="d-none d-lg-table-cell"><span class="dl-tag">Selesai</span>
+                                <td class="d-none d-lg-table-cell">
+                                    @if($project->deadline)
+                                        @php
+                                            $diff = now()->diffInDays($project->deadline, false);
+                                            $dlClass = $diff < 0 ? 'late' : ($diff <= 3 ? 'soon' : '');
+                                        @endphp
+                                        <span class="dl-tag {{ $dlClass }}">
+                                            @if($diff < 0)
+                                                Terlambat!
+                                            @elseif($diff == 0)
+                                                Hari ini
+                                            @elseif($diff <= 7)
+                                                {{ $diff }} hari lagi
+                                            @else
+                                                {{ tgl_indo($project->deadline->format('Y-m-d')) }}
+                                            @endif
+                                        </span>
+                                    @else
+                                        -
+                                    @endif
                                 </td>
                             </tr>
-                            <tr class="ptr">
-                                <td>
-                                    <div class="proj-name">Dashboard Monitoring IoT</div>
-                                    <div class="proj-meta">4 anggota · 3 dokumen</div>
-                                </td>
-                                <td><span class="status-tag st-todo"><span class="dot"></span>To
-                                        Do</span></td>
-                                <td class="d-none d-md-table-cell">
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width:10%"></div>
-                                    </div>
-                                    <div
-                                        style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
-                                        10%</div>
-                                </td>
-                                <td class="d-none d-lg-table-cell"><span class="dl-tag">28 Feb 2025</span>
-                                </td>
+                            @empty
+                            <tr>
+                                <td colspan="4" class="text-center py-4 text-muted">Belum ada project aktif.</td>
                             </tr>
-                            <tr class="ptr">
-                                <td>
-                                    <div class="proj-name">Portal Layanan Publik</div>
-                                    <div class="proj-meta">6 anggota · 21 dokumen</div>
-                                </td>
-                                <td><span class="status-tag st-prog"><span class="dot"></span>In
-                                        Progress</span></td>
-                                <td class="d-none d-md-table-cell">
-                                    <div class="prog-bar">
-                                        <div class="prog-fill" style="width:60%"></div>
-                                    </div>
-                                    <div
-                                        style="font-family:var(--mono);font-size:10px;color:var(--muted);margin-top:3px">
-                                        60%</div>
-                                </td>
-                                <td class="d-none d-lg-table-cell"><span class="dl-tag late">Terlambat!</span></td>
-                            </tr>
+                            @endforelse
                         </tbody>
                     </table>
                 </div>
@@ -192,44 +161,28 @@
             <div class="crd h-100">
                 <div class="crd-head">
                     <div class="crd-title"><i class="bi bi-alarm-fill"></i>Deadline Dekat</div><span
-                        class="crd-badge">5</span>
+                        class="crd-badge">{{ $upcoming_deadlines->count() }}</span>
                 </div>
                 <div class="crd-body">
-                    <div class="dl-item">
-                        <div class="dl-bar" style="background:var(--err)"></div>
+                    @forelse($upcoming_deadlines as $dl)
+                    <div class="dl-item ptr" onclick="window.location='{{ route('projects.show', $dl->slug) }}'">
+                        @php
+                            $diff = now()->diffInDays($dl->deadline, false);
+                            $barColor = $diff < 0 ? 'var(--err)' : ($diff <= 3 ? 'var(--warn)' : 'var(--cyan)');
+                            $badgeClass = $diff < 0 ? 'dlb-r' : ($diff <= 3 ? 'dlb-y' : 'dlb-b');
+                        @endphp
+                        <div class="dl-bar" style="background:{{ $barColor }}"></div>
                         <div class="dl-info">
-                            <div class="dl-name">Sistem Informasi PPID</div>
-                            <div class="dl-date"><i class="bi bi-calendar3"></i> 7 Jan 2025</div>
-                        </div><span class="dl-badge dlb-r">H-1</span>
+                            <div class="dl-name">{{ $dl->name }}</div>
+                            <div class="dl-date"><i class="bi bi-calendar3"></i> {{ tgl_indo($dl->deadline->format('Y-m-d')) }}</div>
+                        </div>
+                        <span class="dl-badge {{ $badgeClass }}">
+                            {{ $diff < 0 ? 'Late' : ($diff == 0 ? 'Today' : 'H-'.$diff) }}
+                        </span>
                     </div>
-                    <div class="dl-item">
-                        <div class="dl-bar" style="background:var(--warn)"></div>
-                        <div class="dl-info">
-                            <div class="dl-name">Portal Layanan Publik</div>
-                            <div class="dl-date"><i class="bi bi-calendar3"></i> 9 Jan 2025</div>
-                        </div><span class="dl-badge dlb-y">H-3</span>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-bar" style="background:var(--cyan)"></div>
-                        <div class="dl-info">
-                            <div class="dl-name">E-Commerce Mobile</div>
-                            <div class="dl-date"><i class="bi bi-calendar3"></i> 13 Jan 2025</div>
-                        </div><span class="dl-badge dlb-b">H-7</span>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-bar" style="background:var(--cyan)"></div>
-                        <div class="dl-info">
-                            <div class="dl-name">Dashboard IoT Monitor</div>
-                            <div class="dl-date"><i class="bi bi-calendar3"></i> 14 Jan 2025</div>
-                        </div><span class="dl-badge dlb-b">H-7</span>
-                    </div>
-                    <div class="dl-item">
-                        <div class="dl-bar" style="background:var(--blue2)"></div>
-                        <div class="dl-info">
-                            <div class="dl-name">Laporan Akhir Q1</div>
-                            <div class="dl-date"><i class="bi bi-calendar3"></i> 15 Jan 2025</div>
-                        </div><span class="dl-badge dlb-b">H-7</span>
-                    </div>
+                    @empty
+                    <div class="text-center py-4 text-muted" style="font-size: 13px;">Tidak ada deadline dalam waktu dekat.</div>
+                    @endforelse
                 </div>
             </div>
         </div>
@@ -240,20 +193,36 @@
         <div class="col-12 col-md-5 col-xl-4" data-aos="fade-up" data-aos-delay="0">
             <div class="crd h-100">
                 <div class="crd-head">
-                    <div class="crd-title"><i class="bi bi-bar-chart-fill"></i>Upload per Bulan</div>
+                    <div class="crd-title"><i class="bi bi-bar-chart-fill"></i>Project Baru per Bulan</div>
                 </div>
-                <div class="crd-body">
-                    <div class="chart-wrap" id="chartWrap"></div>
+                <div class="crd-body d-flex flex-column h-100">
+                    <div class="chart-wrap mb-3" id="chartWrap"></div>
+                    
                     <div style="height:1px;background:var(--bd);margin:10px 0 8px"></div>
                     <div style="display:flex;justify-content:space-between">
-                        <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">Jan–Jun
-                            2024</span>
-                        <span style="font-family:var(--mono);font-size:11px;color:var(--cyan)">Total: 137
-                            dok</span>
+                        <span style="font-family:var(--mono);font-size:10px;color:var(--muted)">
+                            {{ now()->subMonths(5)->translatedFormat('M') }} – {{ now()->translatedFormat('M Y') }}
+                        </span>
+                        <span style="font-family:var(--mono);font-size:11px;color:var(--cyan)">Total: {{ array_sum($monthly_projects) }} project</span>
                     </div>
                 </div>
             </div>
         </div>
+
+        <script>
+            // Inject dynamic chart data SEBELUM dashboard.js dimuat
+            @php
+                $months = [];
+                for ($i = 5; $i >= 0; $i--) {
+                    $months[] = now()->subMonths($i)->translatedFormat('M');
+                }
+                $chartData = [];
+                foreach($months as $idx => $m) {
+                    $chartData[] = ['l' => $m, 'v' => $monthly_projects[$idx] ?? 0];
+                }
+            @endphp
+            window.dashboardChartData = @json($chartData);
+        </script>
         <div class="col-12 col-md-7 col-xl-8" data-aos="fade-up" data-aos-delay="80">
             <div class="crd h-100">
                 <div class="crd-head">
@@ -261,56 +230,40 @@
                         class="crd-badge">Live</span>
                 </div>
                 <div class="crd-body">
+                    @forelse($recent_activities as $act)
                     <div class="act-item">
-                        <div class="act-ico aic-c"><i class="bi bi-file-earmark-arrow-up-fill"></i></div>
+                        @php
+                            $iconClass = 'aic-b';
+                            $icon = 'bi-info-circle';
+                            
+                            if (str_contains($act->description, 'created') || str_contains($act->description, 'upload')) {
+                                $iconClass = 'aic-c';
+                                $icon = 'bi-plus-circle-fill';
+                            } elseif (str_contains($act->description, 'updated')) {
+                                $iconClass = 'aic-g';
+                                $icon = 'bi-pencil-square';
+                            } elseif (str_contains($act->description, 'deleted')) {
+                                $iconClass = 'aic-r';
+                                $icon = 'bi-trash-fill';
+                            }
+                        @endphp
+                        <div class="act-ico {{ $iconClass }}"><i class="bi {{ $icon }}"></i></div>
                         <div class="act-body">
-                            <div class="act-txt"><strong>Andi Wijaya</strong> mengupload <strong>ERD
-                                    v2.pdf</strong> ke project Sistem PPID</div>
-                            <div class="act-time"><i class="bi bi-clock"></i> 5 menit lalu</div>
-                        </div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-ico aic-g"><i class="bi bi-check-circle-fill"></i></div>
-                        <div class="act-body">
-                            <div class="act-txt">Status project <strong>Sistem Absensi</strong> diubah ke
-                                <strong style="color:var(--ok)">Done</strong>
+                            <div class="act-txt">
+                                <strong>{{ $act->causer->name ?? 'System' }}</strong> 
+                                {{ $act->description }} 
+                                @if($act->subject_type == 'App\Models\Project')
+                                    project <strong>{{ $act->subject->name ?? '' }}</strong>
+                                @elseif($act->subject_type == 'App\Models\Dokumen')
+                                    dokumen <strong>{{ $act->subject->nama ?? '' }}</strong>
+                                @endif
                             </div>
-                            <div class="act-time"><i class="bi bi-clock"></i> 22 menit lalu</div>
+                            <div class="act-time"><i class="bi bi-clock"></i> {{ $act->created_at->diffForHumans() }}</div>
                         </div>
                     </div>
-                    <div class="act-item">
-                        <div class="act-ico aic-b"><i class="bi bi-journal-plus"></i></div>
-                        <div class="act-body">
-                            <div class="act-txt"><strong>Siti Rahayu</strong> menambahkan catatan
-                                <strong>Notulen Rapat Sprint 3</strong>
-                            </div>
-                            <div class="act-time"><i class="bi bi-clock"></i> 1 jam lalu</div>
-                        </div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-ico aic-w"><i class="bi bi-person-plus-fill"></i></div>
-                        <div class="act-body">
-                            <div class="act-txt"><strong>Manager</strong> menambahkan <strong>Deni
-                                    Kurnia</strong> sebagai PIC E-Commerce</div>
-                            <div class="act-time"><i class="bi bi-clock"></i> 2 jam lalu</div>
-                        </div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-ico aic-c"><i class="bi bi-file-earmark-pdf-fill"></i></div>
-                        <div class="act-body">
-                            <div class="act-txt"><strong>Budi Santoso</strong> generate <strong>Laporan
-                                    PDF</strong> Portal Layanan</div>
-                            <div class="act-time"><i class="bi bi-clock"></i> 3 jam lalu</div>
-                        </div>
-                    </div>
-                    <div class="act-item">
-                        <div class="act-ico aic-b"><i class="bi bi-kanban-fill"></i></div>
-                        <div class="act-body">
-                            <div class="act-txt">Project baru <strong>Dashboard Monitoring IoT</strong>
-                                berhasil dibuat</div>
-                            <div class="act-time"><i class="bi bi-clock"></i> Kemarin, 16:30</div>
-                        </div>
-                    </div>
+                    @empty
+                    <div class="text-center py-5 text-muted">Belum ada aktivitas tercatat.</div>
+                    @endforelse
                 </div>
             </div>
         </div>

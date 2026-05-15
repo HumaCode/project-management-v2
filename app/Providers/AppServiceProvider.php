@@ -68,6 +68,10 @@ class AppServiceProvider extends ServiceProvider
         // kategori dokumen
         $this->app->bind(\App\Interface\KategoriDokumen\KategoriDokumenRepositoryInterface::class, \App\Repositories\KategoriDokumen\KategoriDokumenRepository::class);
         $this->app->bind(\App\Interface\KategoriDokumen\KategoriDokumenServiceInterface::class, \App\Services\KategoriDokumen\KategoriDokumenService::class);
+
+        // dashboard
+        $this->app->bind(\App\Repositories\Dashboard\DashboardRepositoryInterface::class, \App\Repositories\Dashboard\DashboardRepository::class);
+        $this->app->bind(\App\Interfaces\Dashboard\DashboardServiceInterface::class, \App\Services\Dashboard\DashboardService::class);
     }
 
     /**

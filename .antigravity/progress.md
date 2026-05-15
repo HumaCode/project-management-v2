@@ -152,6 +152,20 @@
         - Integrated **Picmo Emoji Picker** for expressive communication.
         - **Smooth Animations**: Used `AOS.refresh()` and smooth scroll for a seamless chat experience.
         - **Refined Data Rendering**: Abstracted note rendering into reusable JS functions for better maintainability.
+- [x] **Project Management (Phase 7: Dashboard & Global Caching)**:
+    - [x] **Dashboard Dynamization**: 
+        - Refactored Dashboard into Service-Repository architecture.
+        - Replaced hardcoded stats with real-time dynamic data (Projects, Docs, Deadlines).
+        - Integrated `Spatie Activitylog` for live activity tracking on the dashboard.
+    - [x] **Performance Optimization (Cache Versioning)**:
+        - Implemented **Global Cache Versioning** to handle mass cache invalidation instantly across all users.
+        - Integrated `project_cache_version` into all project-related cache keys.
+        - Automatic version incrementing on Create, Update, and Destroy actions.
+    - [x] **Premium UI/UX Enhancements**:
+        - **Dynamic Chart Scaling**: Implemented a flexible chart container that fills the entire vertical space of the card.
+        - **Bottom-Up Chart Rendering**: Adjusted flexbox alignment to ensure bars grow from the base up.
+        - **Automatic Sorting**: Defaulted all project lists (Index & Dashboard) to "Newest First" (DESC) for better task visibility.
+        - **Responsive Polish**: Refined chart labels and footer info for a consistent, data-driven experience.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

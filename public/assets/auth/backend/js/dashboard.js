@@ -31,56 +31,53 @@ document.querySelectorAll(".stat-card").forEach(function (card) {
 });
 
 /* ── Chart bars ── */
-var chartData = [
-    {
-        l: "Jan",
-        v: 18,
-    },
-    {
-        l: "Feb",
-        v: 24,
-    },
-    {
-        l: "Mar",
-        v: 15,
-    },
-    {
-        l: "Apr",
-        v: 31,
-    },
-    {
-        l: "Mei",
-        v: 27,
-    },
-    {
-        l: "Jun",
-        v: 22,
-    },
+var chartData = window.dashboardChartData || [
+    { l: "Jan", v: 0 },
+    { l: "Feb", v: 0 },
+    { l: "Mar", v: 0 },
+    { l: "Apr", v: 0 },
+    { l: "Mei", v: 0 },
+    { l: "Jun", v: 0 },
 ];
+
 var maxVal = Math.max.apply(
     null,
     chartData.map(function (d) {
-        return d.v;
+        return parseFloat(d.v) || 0;
     }),
-);
+) || 1;
+
 var wrap = document.getElementById("chartWrap");
-chartData.forEach(function (d, i) {
-    var col = document.createElement("div");
-    col.className = "chart-col";
-    col.innerHTML =
-        '<div class="chart-bar" style="height:0;transition:height 1.2s cubic-bezier(.4,0,.2,1) ' +
-        i * 120 +
-        'ms" data-p="' +
-        (d.v / maxVal) * 100 +
-        '" title="' +
-        d.v +
-        ' dokumen"></div><span class="chart-lbl">' +
-        d.l +
-        "</span>";
-    wrap.appendChild(col);
-});
-setTimeout(function () {
-    document.querySelectorAll(".chart-bar").forEach(function (b) {
-        b.style.height = b.dataset.p + "%";
+if (wrap) {
+    wrap.innerHTML = ""; // Clear fallback
+    chartData.forEach(function (d, i) {
+        var val = parseFloat(d.v) || 0;
+        var percent = (val / maxVal) * 100;
+        
+        var col = document.createElement("div");
+        col.className = "chart-col";
+        col.innerHTML =
+            '<div class="chart-bar" style="height:0;transition:height 1.2s cubic-bezier(.4,0,.2,1) ' +
+            i * 100 +
+            'ms" data-p="' +
+            percent +
+            '" title="' +
+            val +
+            (val > 1 ? " projects" : " project") +
+            '"></div><span class="chart-lbl">' +
+            d.l +
+            "</span>";
+        wrap.appendChild(col);
     });
-}, 500);
+
+    // Force animation after a short delay
+    setTimeout(function () {
+        var wrapHeight = wrap.clientHeight || 120;
+        document.querySelectorAll(".chart-bar").forEach(function (b) {
+            var p = parseFloat(b.dataset.p) || 0;
+            // Wadah chart-wrap tingginya dinamis, kita ambil dari clientHeight
+            var heightPx = (p / 100) * (wrapHeight - 20); // -20 for labels padding
+            b.style.height = heightPx + "px";
+        });
+    }, 200);
+}

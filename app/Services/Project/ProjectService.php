@@ -11,7 +11,8 @@ class ProjectService implements ProjectServiceInterface
     public function getIndexData(): array
     {
         $user = auth()->user();
-        $cacheKey = "project_stats_user_{$user->id}";
+        $version = $this->getCacheVersion();
+        $cacheKey = "project_stats_v{$version}_user_{$user->id}";
 
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($user) {
             $query = Project::query();
@@ -46,7 +47,8 @@ class ProjectService implements ProjectServiceInterface
     {
         $user = auth()->user();
         $page = request()->get('page', 1);
-        $cacheKey = "projects_list_user_{$user->id}_p{$page}_r{$rowPerPage}_s" . md5($search . $status . $sortCol . $sortDir);
+        $version = $this->getCacheVersion();
+        $cacheKey = "projects_list_v{$version}_user_{$user->id}_p{$page}_r{$rowPerPage}_s" . md5($search . $status . $sortCol . $sortDir);
 
         return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(10), function () use ($search, $status, $rowPerPage, $sortCol, $sortDir, $user) {
             // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
@@ -73,12 +75,16 @@ class ProjectService implements ProjectServiceInterface
                 $query->where('status', $status);
             }
 
-            // Sorting
-            $allowedSort = ['name', 'start_date', 'deadline', 'created_at', 'created_by'];
-            $sortCol = in_array($sortCol, $allowedSort) ? $sortCol : 'created_at';
-            $sortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
+            // Sorting - Paksa terbaru di atas jika tidak ada sortir spesifik
+            $allowedSort = ['name', 'start_date', 'deadline', 'created_at'];
+            $finalSortCol = in_array($sortCol, $allowedSort) ? $sortCol : 'created_at';
+            
+            // Jika kolomnya created_at, kita paksa DESC (terbaru) kecuali user minta ASC secara sadar
+            $finalSortDir = strtolower($sortDir) === 'asc' ? 'asc' : 'desc';
 
-            return $query->orderBy($sortCol, $sortDir)->paginate($rowPerPage);
+            return $query->orderBy($finalSortCol, $finalSortDir)
+                         ->orderBy('id', 'desc') // Tambahan fallback ID agar urutan input benar-benar akurat
+                         ->paginate($rowPerPage);
         });
     }
 
@@ -156,12 +162,20 @@ class ProjectService implements ProjectServiceInterface
         });
     }
 
+    private function getCacheVersion(): int
+    {
+        return \Illuminate\Support\Facades\Cache::get('project_cache_version', 1);
+    }
+
     private function clearProjectCache(?string $projectId = null): void
     {
-        // Clear global/stats cache for current user
-        \Illuminate\Support\Facades\Cache::forget('project_stats_user_' . auth()->id());
+        // Increment versi cache - INI AKAN LANGSUNG MEMBERSIHKAN SEMUA LIST UNTUK SEMUA USER
+        \Illuminate\Support\Facades\Cache::forever('project_cache_version', $this->getCacheVersion() + 1);
+
+        // Bersihkan dashboard data user aktif (atau bisa gunakan versi juga di DashboardService)
+        \Illuminate\Support\Facades\Cache::forget('dashboard_data_' . auth()->id());
         
-        // If a specific project is involved, clear the detail cache for current user
+        // Jika ada project spesifik, hapus detailnya
         if ($projectId) {
             \Illuminate\Support\Facades\Cache::forget("project_detail_{$projectId}_user_" . auth()->id());
         }

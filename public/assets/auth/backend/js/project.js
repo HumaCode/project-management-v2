@@ -11,7 +11,7 @@ $(function () {
         page: 1,
         per_page: 10,
         sort_col: '',
-        sort_dir: 'asc'
+        sort_dir: 'desc'
     };
 
     // Helpers
@@ -194,7 +194,7 @@ $(function () {
         window.tableState.search = '';
         window.tableState.status = '';
         window.tableState.sort_col = '';
-        window.tableState.sort_dir = 'asc';
+        window.tableState.sort_dir = 'desc';
         window.tableState.page = 1;
         window.loadData();
     });

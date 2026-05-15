@@ -128,6 +128,20 @@
     - **UX Safety**: Implementasi `SCA.loading` pada seluruh aksi hapus data (Proyek, Tim, Dokumen, Catatan, Kategori) untuk mencegah double-click dan memberikan feedback instan.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
+- [x] **Project Management (Phase 5: Security & Optimization)**:
+    - [x] **Granular Authorization**: 
+        - Implemented `DokumenPolicy` and `CatatanPolicy` for project-based access control.
+        - Team members are now strictly isolated to their assigned projects (Create, Read, Update, Delete).
+        - Role `dev` and `admin` retain global administrative bypass.
+    - [x] **Data Access Scoping**: 
+        - Refactored `DokumenRepository` and `CatatanRepository` to enforce security filtering at the database query level.
+        - Dashboard statistics are now dynamic and filtered based on user access (Total Documents, File Size, Total Notes).
+    - [x] **UI & UX Enhancements**:
+        - **Numbered Pagination**: Implemented smart numbered pagination (1 2 3 ...) for documents in the Project Detail view for a professional look.
+        - **Human-Readable File Size**: Automated file size detection using Spatie Media Library with a custom model attribute (`file_size_label`).
+        - **Interface Cleanup**: Removed redundant "Tambah Catatan" button from Catatan index header for a cleaner layout.
+    - [x] **AJAX Optimization**: Added dedicated AJAX endpoints for paginated project-specific documents and notes.
+
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:
   1. Setiap ada perubahan pada **Controller, Service, Model, atau Route**, jalankan:

@@ -233,4 +233,12 @@ class User extends Authenticatable implements HasMedia
         // Kembalikan maksimal 2 huruf saja (Misal: Amir Zakaria Subarjo -> AZ)
         return substr($initials, 0, 2);
     }
+
+    /**
+     * Relasi many-to-many ke tim di mana user menjadi anggota
+     */
+    public function teams(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(Team::class, 'team_user')->withPivot('role');
+    }
 }

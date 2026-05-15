@@ -36,7 +36,7 @@ class DokumenResource extends JsonResource
             ],
             'file_info' => [
                 'extension' => $this->getFirstMedia('files')->extension ?? ($this->type === 'article' ? 'ARTICLE' : ($this->type === 'code' ? 'CODE' : 'FILE')),
-                'size' => $this->getFirstMedia('files')->human_readable_size ?? ($this->type === 'file' ? '-' : 'Document Builder'),
+                'size' => $this->file_size_label,
                 'url' => $this->getFirstMediaUrl('files'),
             ],
             'created_at' => $this->created_at->format('d M Y H:i'),

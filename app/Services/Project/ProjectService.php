@@ -10,7 +10,20 @@ class ProjectService implements ProjectServiceInterface
 {
     public function getIndexData(): array
     {
-        $counts = Project::selectRaw("
+        $query = Project::query();
+
+        // Filter akses jika bukan admin/dev
+        $user = auth()->user();
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $query->where(function($q) use ($user) {
+                $q->where('created_by', $user->id)
+                  ->orWhereHas('team.members', function($sq) use ($user) {
+                      $sq->where('users.id', $user->id);
+                  });
+            });
+        }
+
+        $counts = $query->selectRaw("
             COUNT(*) as total,
             SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
             SUM(CASE WHEN status = 'done' THEN 1 ELSE 0 END) as done_count,
@@ -29,6 +42,18 @@ class ProjectService implements ProjectServiceInterface
     {
         // Eager load media also to avoid N+1 when processing thumbnail and avatars in Resource
         $query = Project::with(['creator.media', 'team.members.media', 'media']);
+
+        // Filter: Hanya tampilkan project di mana user adalah anggota tim atau pembuatnya
+        // Jika user bukan Super Admin (dev/admin), terapkan filter
+        $user = auth()->user();
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $query->where(function($q) use ($user) {
+                $q->where('created_by', $user->id)
+                  ->orWhereHas('team.members', function($sq) use ($user) {
+                      $sq->where('users.id', $user->id);
+                  });
+            });
+        }
 
         if ($search) {
             $query->where(function($q) use ($search) {
@@ -160,7 +185,7 @@ class ProjectService implements ProjectServiceInterface
                 ]),
             ],
             'stats' => $stats,
-            'dokumens' => $project->dokumens()->with('uploader')->latest()->limit(10)->get()->map(fn($d) => [
+            'dokumens' => $project->dokumens()->with(['uploader', 'media'])->latest()->paginate(5, ['*'], 'doc_page')->through(fn($d) => [
                 'id' => $d->id,
                 'nama' => $d->nama,
                 'versi' => $d->versi,
@@ -170,7 +195,8 @@ class ProjectService implements ProjectServiceInterface
                 'created_at' => $d->created_at->format('Y-m-d'),
                 'uploader' => [
                     'name' => $d->uploader?->name ?? 'Unknown',
-                ]
+                ],
+                'file_size' => $d->file_size_label
             ]),
             'catatans' => $project->diskusis()->with(['user', 'media', 'parent.user', 'parent.media'])->latest()->limit(20)->get()->map(fn($c) => [
                 'id' => $c->id,
@@ -199,22 +225,96 @@ class ProjectService implements ProjectServiceInterface
                     'display_avatar' => $c->user?->display_avatar,
                 ]
             ]),
-            'activities' => \Spatie\Activitylog\Models\Activity::where('subject_id', $project->id)
-                ->where('subject_type', get_class($project))
-                ->with('causer')
-                ->latest()
-                ->limit(10)
-                ->get()
-                ->map(fn($a) => [
-                    'description' => $a->description,
-                    'created_at' => $a->created_at->diffForHumans(),
-                    'causer' => [
-                        'name' => $a->causer?->name ?? 'System',
-                        'initials' => $a->causer?->initials ?? 'S',
-                    ],
-                    'properties' => $a->properties,
-                ])
+            'activities' => $this->getPaginatedActivities($project->id, 5),
+            'activities_meta' => [
+                'total' => \Spatie\Activitylog\Models\Activity::where(function($q) use ($project) {
+                    $q->where(function($sq) use ($project) {
+                        $sq->where('subject_type', \App\Models\Project::class)
+                           ->where('subject_id', $project->id);
+                    })->orWhere(function($sq) use ($project) {
+                        $sq->where('subject_type', \App\Models\Dokumen::class)
+                           ->whereIn('subject_id', $project->dokumens()->pluck('id'));
+                    })->orWhere(function($sq) use ($project) {
+                        $sq->where('subject_type', \App\Models\Diskusi::class)
+                           ->whereIn('subject_id', $project->diskusis()->pluck('id'));
+                    })->orWhere(function($sq) use ($project) {
+                        $sq->where('subject_type', \App\Models\Catatan::class)
+                           ->whereIn('subject_id', $project->catatans()->pluck('id'));
+                    });
+                })->count(),
+            ]
         ];
+    }
+
+    public function getPaginatedActivities(string $projectId, int $perPage = 10)
+    {
+        $project = Project::findOrFail($projectId);
+
+        $activities = \Spatie\Activitylog\Models\Activity::where(function($q) use ($project) {
+                $q->where(function($sq) use ($project) {
+                    $sq->where('subject_type', \App\Models\Project::class)
+                       ->where('subject_id', $project->id);
+                })->orWhere(function($sq) use ($project) {
+                    $sq->where('subject_type', \App\Models\Dokumen::class)
+                       ->whereIn('subject_id', $project->dokumens()->pluck('id'));
+                })->orWhere(function($sq) use ($project) {
+                    $sq->where('subject_type', \App\Models\Diskusi::class)
+                       ->whereIn('subject_id', $project->diskusis()->pluck('id'));
+                })->orWhere(function($sq) use ($project) {
+                    $sq->where('subject_type', \App\Models\Catatan::class)
+                       ->whereIn('subject_id', $project->catatans()->pluck('id'));
+                });
+            })
+            ->with(['causer', 'subject'])
+            ->latest()
+            ->paginate($perPage);
+
+        $activities->getCollection()->transform(function($a) {
+            $event = strtolower($a->description);
+            $subjectType = strtolower(class_basename($a->subject_type));
+            $subjectName = "";
+            
+            if ($a->subject) {
+                $subjectName = $a->subject->nama ?? $a->subject->name ?? $a->subject->title ?? "";
+            }
+
+            $friendlyDesc = "Melakukan aktivitas";
+            $icon = "bi-activity";
+            $color = "primary";
+
+            if ($event === 'created') {
+                $friendlyDesc = "Mengirim " . ($subjectType === 'project' ? 'proyek' : ($subjectType === 'dokumen' ? 'dokumen' : ($subjectType === 'catatan' ? 'catatan' : 'pesan diskusi'))) . " baru";
+                if ($subjectName) $friendlyDesc .= ": <b>$subjectName</b>";
+                $icon = "bi-plus-circle-fill";
+                $color = "success";
+            } elseif ($event === 'updated') {
+                $friendlyDesc = "Memperbarui detail " . ($subjectType === 'project' ? 'proyek' : ($subjectType === 'dokumen' ? 'dokumen' : ($subjectType === 'catatan' ? 'catatan' : 'pesan diskusi')));
+                if ($subjectName) $friendlyDesc .= ": <b>$subjectName</b>";
+                $icon = "bi-pencil-square";
+                $color = "info";
+            } elseif ($event === 'deleted') {
+                $friendlyDesc = "Menghapus " . ($subjectType === 'project' ? 'proyek' : ($subjectType === 'dokumen' ? 'dokumen' : ($subjectType === 'catatan' ? 'catatan' : 'pesan diskusi')));
+                $icon = "bi-trash-fill";
+                $color = "danger";
+            }
+
+            return [
+                'description' => $friendlyDesc,
+                'event' => $event,
+                'type' => $subjectType,
+                'icon' => $icon,
+                'color' => $color,
+                'created_at' => $a->created_at->diffForHumans(),
+                'causer' => [
+                    'name' => $a->causer?->name ?? 'System',
+                    'initials' => $a->causer?->initials ?? 'S',
+                    'display_avatar' => $a->causer?->display_avatar,
+                ],
+                'properties' => $a->properties,
+            ];
+        });
+
+        return $activities;
     }
 
     public function storeDiskusi(string $projectId, array $data): \App\Models\Diskusi
@@ -241,14 +341,6 @@ class ProjectService implements ProjectServiceInterface
     {
         $diskusi = \App\Models\Diskusi::findOrFail($id);
 
-        if ($diskusi->user_id !== auth()->id()) {
-            throw new \Exception('Anda tidak diizinkan mengubah komentar ini.');
-        }
-
-        if ($diskusi->created_at->diffInMinutes(now()) >= 5) {
-            throw new \Exception('Batas waktu pengeditan (5 menit) telah berakhir.');
-        }
-
         $diskusi->update([
             'content' => $data['content'] ?? '',
         ]);
@@ -259,11 +351,6 @@ class ProjectService implements ProjectServiceInterface
     public function deleteDiskusi(string $id): void
     {
         $diskusi = \App\Models\Diskusi::findOrFail($id);
-
-        if ($diskusi->user_id !== auth()->id()) {
-            throw new \Exception('Anda tidak diizinkan menghapus komentar ini.');
-        }
-
         $diskusi->delete();
     }
 }

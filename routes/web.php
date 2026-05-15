@@ -71,6 +71,8 @@ Route::middleware(['auth'])->group(function () {
             Route::redirect('project', 'projects');
             Route::get('projects/getAllPagination', [\App\Http\Controllers\Project\ProjectController::class, 'getAllPaginated'])->name('projects.allPagination');
             Route::get('projects/{project}/detail-data', [\App\Http\Controllers\Project\ProjectController::class, 'getDetailData'])->name('projects.detailData');
+            Route::get('projects/{project}/activities', [\App\Http\Controllers\Project\ProjectController::class, 'getActivities'])->name('projects.activities');
+            Route::get('projects/{project}/dokumens', [\App\Http\Controllers\Project\ProjectController::class, 'getDokumens'])->name('projects.dokumens');
             Route::post('projects/{project}/diskusi', [\App\Http\Controllers\Project\ProjectController::class, 'storeDiskusi'])->name('projects.diskusi.store');
             Route::put('projects/diskusi/{id}', [\App\Http\Controllers\Project\ProjectController::class, 'updateDiskusi'])->name('projects.diskusi.update');
             Route::delete('projects/diskusi/{id}', [\App\Http\Controllers\Project\ProjectController::class, 'destroyDiskusi'])->name('projects.diskusi.destroy');

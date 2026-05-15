@@ -94,11 +94,12 @@
 .tl-item{display:flex;gap:14px;padding:14px 0;border-bottom:1px solid var(--bd);position:relative}
 .tl-item:last-child{border-bottom:none}
 .tl-dot-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;width:32px;padding-top:2px}
-.tl-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;border:2px solid var(--cyan);background:#050e1d;position:relative;z-index:1}
-.tl-dot.fill{background:var(--cyan);box-shadow:0 0 8px rgba(0,200,255,.5)}
-.tl-dot.green{border-color:var(--ok);background:var(--ok);box-shadow:0 0 8px rgba(0,229,160,.4)}
-.tl-dot.warn{border-color:var(--warn);background:var(--warn)}
-.tl-dot.err{border-color:var(--err);background:var(--err)}
+.tl-dot{width:28px;height:28px;border-radius:50%;flex-shrink:0;border:1px solid var(--bd);background:rgba(255,255,255,0.05);position:relative;z-index:1;display:grid;place-items:center;font-size:12px;color:var(--dim)}
+.tl-dot.primary{border-color:var(--cyan);color:var(--cyan);background:rgba(0,200,255,0.1);box-shadow:0 0 10px rgba(0,200,255,0.15)}
+.tl-dot.success{border-color:var(--ok);color:var(--ok);background:rgba(0,229,160,0.1);box-shadow:0 0 10px rgba(0,229,160,0.15)}
+.tl-dot.info{border-color:var(--blue2);color:var(--blue2);background:rgba(26,143,227,0.1)}
+.tl-dot.danger{border-color:var(--err);color:var(--err);background:rgba(255,77,109,0.1)}
+.tl-dot.warn{border-color:var(--warn);color:var(--warn);background:rgba(245,158,11,0.1)}
 .tl-line{flex:1;width:1px;background:var(--bd);margin-top:3px}
 .tl-item:last-child .tl-line{display:none}
 .tl-content{flex:1;min-width:0}
@@ -768,4 +769,37 @@ select.modal-inp {
     background-position: right 12px center;
     background-size: 12px;
     padding-right: 32px;
+}
+
+/* Pagination Buttons */
+.pg-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--bd);
+    color: var(--dim);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    font-family: var(--mono);
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+.pg-btn:hover {
+    background: rgba(0, 200, 255, 0.1);
+    color: var(--cyan);
+    border-color: var(--cyan);
+}
+.pg-btn.active {
+    background: var(--cyan);
+    color: #000 !important;
+    border-color: var(--cyan);
+    font-weight: 700;
+}
+.pg-btn:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
 }

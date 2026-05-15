@@ -136,9 +136,9 @@ class ProjectController extends Controller
      */
     public function show(string $id)
     {
-        // Gate::authorize('read ' . $this->aksesPermission);
-        
         $project = $this->projectService->getProjectByUlid($id);
+        
+        $this->authorize('view', $project);
 
         $data = [
             'title' => 'Detail ' . $this->title,
@@ -159,8 +159,52 @@ class ProjectController extends Controller
     public function getDetailData(string $id)
     {
         try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('view', $project);
+
             $data = $this->projectService->getProjectDetailData($id);
             return ResponseHelper::success('Data detail project berhasil diambil', $data);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+    public function getActivities(Request $request, string $id)
+    {
+        try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('view', $project);
+
+            $perPage = $request->get('per_page', 10);
+            $activities = $this->projectService->getPaginatedActivities($id, $perPage);
+            
+            return ResponseHelper::success('Data aktivitas berhasil diambil', $activities);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
+    }
+
+    public function getDokumens(Request $request, string $id)
+    {
+        try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('view', $project);
+
+            $perPage = $request->get('per_page', 5);
+            $dokumens = $project->dokumens()->with(['uploader', 'media'])->latest()->paginate($perPage, ['*'], 'page')->through(fn($d) => [
+                'id' => $d->id,
+                'nama' => $d->nama,
+                'versi' => $d->versi,
+                'kategori' => $d->kategori,
+                'type' => $d->type,
+                'kategori_label' => $d->kategori_label,
+                'created_at' => $d->created_at->format('Y-m-d'),
+                'uploader' => [
+                    'name' => $d->uploader?->name ?? 'Unknown',
+                ],
+                'file_size' => $d->file_size_label
+            ]);
+            
+            return ResponseHelper::success('Data dokumen berhasil diambil', $dokumens);
         } catch (\Exception $e) {
             return ResponseHelper::error($e->getMessage(), 500);
         }
@@ -171,9 +215,9 @@ class ProjectController extends Controller
      */
     public function edit(string $id)
     {
-        // Gate::authorize('update ' . $this->aksesPermission);
-
         $project = $this->projectService->getProjectByUlid($id);
+        $this->authorize('update', $project);
+
         $teams = $this->teamService->getAllTeams();
 
         $data = [
@@ -193,9 +237,10 @@ class ProjectController extends Controller
      */
     public function update(\App\Http\Requests\Project\StoreProjectRequest $request, string $id)
     {
-        // Gate::authorize('update ' . $this->aksesPermission);
-
         try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('update', $project);
+
             $project = $this->projectService->updateProject($id, $request->validated());
 
             return ResponseHelper::success(
@@ -212,9 +257,10 @@ class ProjectController extends Controller
      */
     public function destroy(string $id)
     {
-        // Gate::authorize('delete ' . $this->aksesPermission);
-
         try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('delete', $project);
+
             $this->projectService->deleteProject($id);
 
             return ResponseHelper::success(
@@ -239,6 +285,9 @@ class ProjectController extends Controller
         ]);
 
         try {
+            $project = $this->projectService->getProjectByUlid($id);
+            $this->authorize('create', [\App\Models\Diskusi::class, $project]);
+
             $diskusi = $this->projectService->storeDiskusi($id, $params);
             return ResponseHelper::success('Komentar berhasil dikirim', $diskusi);
         } catch (\Exception $e) {
@@ -253,6 +302,9 @@ class ProjectController extends Controller
         ]);
 
         try {
+            $diskusi = \App\Models\Diskusi::findOrFail($id);
+            $this->authorize('update', $diskusi);
+
             $diskusi = $this->projectService->updateDiskusi($id, $params);
             return ResponseHelper::success('Komentar berhasil diperbarui', $diskusi);
         } catch (\Exception $e) {
@@ -263,6 +315,9 @@ class ProjectController extends Controller
     public function destroyDiskusi(string $id)
     {
         try {
+            $diskusi = \App\Models\Diskusi::findOrFail($id);
+            $this->authorize('delete', $diskusi);
+
             $this->projectService->deleteDiskusi($id);
             return ResponseHelper::success('Komentar berhasil dihapus');
         } catch (\Exception $e) {

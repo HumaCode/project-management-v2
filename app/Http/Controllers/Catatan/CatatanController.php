@@ -37,7 +37,19 @@ class CatatanController extends Controller
     public function index()
     {
         $stats = $this->catatanService->getIndexData();
-        $projects = Project::orderBy('name')->get();
+        $user = auth()->user();
+        $projectQuery = Project::orderBy('name');
+        
+        // Filter project jika bukan dev/admin
+        if (!$user->hasRole('dev') && !$user->hasRole('admin')) {
+            $projectQuery->where(function($q) use ($user) {
+                $q->whereHas('team.members', function($mq) use ($user) {
+                    $mq->where('users.id', $user->id);
+                })->orWhere('created_by', $user->id);
+            });
+        }
+        
+        $projects = $projectQuery->get();
         $users = User::orderBy('name')->get();
 
         $data = array_merge([
@@ -92,6 +104,12 @@ class CatatanController extends Controller
     {
         try {
             $data = $request->validated();
+            
+            // Cek akses ke project jika diisi
+            if (!empty($data['project_id'])) {
+                $this->authorize('create', [\App\Models\Catatan::class, $data['project_id']]);
+            }
+
             if (!isset($data['user_id'])) {
                 $data['user_id'] = auth()->id();
             }
@@ -109,6 +127,8 @@ class CatatanController extends Controller
     {
         try {
             $catatan = $this->catatanService->getCatatanById($id);
+            $this->authorize('view', $catatan);
+
             return ResponseHelper::success('Detail catatan berhasil diambil', CatatanResource::make($catatan));
         } catch (\Exception $e) {
             return ResponseHelper::error($e->getMessage(), 404);
@@ -121,9 +141,10 @@ class CatatanController extends Controller
     public function update(UpdateCatatanRequest $request, string $id)
     {
         try {
+            $catatan = \App\Models\Catatan::findOrFail($id);
+            $this->authorize('update', $catatan);
+
             $data = $request->validated();
-            // If user_id is not sent, we keep the existing one (handled by not including it in update)
-            // or we can explicitly remove it from the data array if it's null
             if (empty($data['user_id'])) {
                 unset($data['user_id']);
             }
@@ -140,6 +161,9 @@ class CatatanController extends Controller
     public function destroy(string $id)
     {
         try {
+            $catatan = $this->catatanService->getCatatanById($id);
+            $this->authorize('delete', $catatan);
+
             $this->catatanService->deleteCatatan($id);
             return ResponseHelper::success('Catatan berhasil dihapus');
         } catch (\Exception $e) {

@@ -11,5 +11,8 @@ interface ProjectServiceInterface
     public function updateProject(string $ulid, array $data): \App\Models\Project;
     public function deleteProject(string $ulid): bool;
     public function getProjectDetailData(string $ulid): array;
+    public function getPaginatedActivities(string $projectId, int $perPage = 10);
     public function storeDiskusi(string $projectId, array $data): \App\Models\Diskusi;
+    public function updateDiskusi(string $id, array $data): \App\Models\Diskusi;
+    public function deleteDiskusi(string $id): void;
 }

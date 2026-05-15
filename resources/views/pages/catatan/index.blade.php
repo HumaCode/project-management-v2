@@ -32,9 +32,6 @@
                 <span class="sep"><i class="bi bi-chevron-right"></i></span>
                 <span class="here">{{ $title }}</span>
             </div>
-            <button class="btn-add" data-bs-toggle="modal" data-bs-target="#addModal">
-                <span><i class="bi bi-plus-lg"></i> Tambah Catatan</span>
-            </button>
         </div>
 
 
@@ -46,7 +43,7 @@
         <div class="sc">
             <div class="sc-ico c"><i class="bi bi-journal-text"></i></div>
             <div>
-                <div class="sc-val" data-count="{{ $total_catatan }}">0</div>
+                <div class="sc-val count-up" data-target="{{ $total_catatan }}">{{ $total_catatan }}</div>
                 <div class="sc-lbl">Total Catatan</div>
                 <div class="sc-tr up"><i class="bi bi-arrow-up-short"></i>+0 minggu ini</div>
             </div>
@@ -54,7 +51,7 @@
         <div class="sc">
             <div class="sc-ico r"><i class="bi bi-exclamation-triangle-fill"></i></div>
             <div>
-                <div class="sc-val" data-count="{{ $total_high_priority }}">0</div>
+                <div class="sc-val count-up" data-target="{{ $total_high_priority }}">{{ $total_high_priority }}</div>
                 <div class="sc-lbl">Prioritas Tinggi</div>
                 <div class="sc-tr dn"><i class="bi bi-arrow-up-short"></i>+0 minggu ini</div>
             </div>
@@ -62,7 +59,7 @@
         <div class="sc">
             <div class="sc-ico g"><i class="bi bi-tags-fill"></i></div>
             <div>
-                <div class="sc-val" data-count="{{ $total_categories }}">0</div>
+                <div class="sc-val count-up" data-target="{{ $total_categories }}">{{ $total_categories }}</div>
                 <div class="sc-lbl">Kategori</div>
                 <div class="sc-tr neu"><i class="bi bi-dash"></i>semua aktif</div>
             </div>
@@ -70,7 +67,7 @@
         <div class="sc">
             <div class="sc-ico w"><i class="bi bi-kanban-fill"></i></div>
             <div>
-                <div class="sc-val" data-count="{{ $total_projects_related }}">0</div>
+                <div class="sc-val count-up" data-target="{{ $total_projects_related }}">{{ $total_projects_related }}</div>
                 <div class="sc-lbl">Project Terkait</div>
                 <div class="sc-tr neu"><i class="bi bi-dash"></i>aktif</div>
             </div>

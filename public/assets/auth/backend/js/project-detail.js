@@ -23,6 +23,117 @@ function initDrain(modalId, fillId){
 $(function() {
     const $container = $('#projectContainer');
     const dataUrl = $container.data('url');
+    const projectId = $container.data('id');
+    
+    // Activity Pagination State
+    let activityCurrentPage = 1;
+    let activityHasMore = false;
+
+    function renderDocuments(dokumens, append = false) {
+        let docRows = '';
+        dokumens.forEach((doc, i) => {
+            const num = (i + 1).toString().padStart(2, '0');
+            const extInfo = doc.type === 'file' ? 'FILE' : (doc.type === 'article' ? 'ARTIKEL' : 'KODE');
+            
+            docRows += `
+                <tr>
+                    <td style="color:var(--muted);font-family:var(--mono);font-size:11px">${num}</td>
+                    <td>
+                        <div class="doc-name">
+                            <div class="doc-ico ${doc.kategori}">
+                                <i class="bi ${doc.type === 'code' ? 'bi-code-square' : (doc.type === 'article' ? 'bi-file-text' : 'bi-file-earmark-fill')}"></i>
+                            </div>
+                            <div>
+                                <div class="doc-nm">${doc.nama}<span class="doc-ver">v${doc.versi || '1'}</span></div>
+                                <div style="font-size:11px;color:var(--muted)">${extInfo} · ${doc.kategori_label}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v${doc.versi || '1.0'}</span></td>
+                    <td class="d-none d-sm-table-cell doc-size">${doc.file_size || '-'}</td>
+                    <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">${formatDateIndo(doc.created_at)}</td>
+                    <td class="d-none d-md-table-cell" style="font-size:12.5px">${doc.uploader ? doc.uploader.name : '-'}</td>
+                    <td>
+                        <div style="display:flex;gap:4px;justify-content:center">
+                            <button class="btn-tbl-ico btn-view-doc" data-id="${doc.id}" title="Lihat"><i class="bi bi-eye"></i></button>
+                            <button class="btn-tbl-ico btn-del-doc" data-id="${doc.id}" data-nm="${doc.nama}" data-bs-toggle="modal" data-bs-target="#delDocModal" title="Hapus"><i class="bi bi-trash3"></i></button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+        });
+
+        if (docRows === '' && !append) docRows = '<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada dokumen.</td></tr>';
+        
+        if (append) {
+            $('#docTbl tbody').append(docRows);
+        } else {
+            $('#docTbl tbody').html(docRows);
+        }
+    }
+
+    function renderDocPagination(meta) {
+        const wrap = $('#docPaginationWrap');
+        if (meta.last_page <= 1) {
+            wrap.hide().html('');
+            return;
+        }
+
+        wrap.show().html('');
+        
+        // Prev button
+        wrap.append(`<button class="pg-btn btn-doc-pg" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`);
+
+        // Smart Pagination Logic
+        const lastPage = meta.last_page;
+        const current = meta.current_page;
+        const range = 1; 
+        
+        for (let i = 1; i <= lastPage; i++) {
+            if (i === 1 || i === lastPage || (i >= current - range && i <= current + range)) {
+                wrap.append(`<button class="pg-btn btn-doc-pg ${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`);
+            } else if (i === 2 && current - range > 2) {
+                wrap.append(`<span style="color:var(--muted); padding:0 4px; font-size:10px; align-self:center">...</span>`);
+                i = current - range - 1; // Jump to before range
+            } else if (i === current + range + 1 && current + range < lastPage - 1) {
+                wrap.append(`<span style="color:var(--muted); padding:0 4px; font-size:10px; align-self:center">...</span>`);
+                i = lastPage - 1; // Jump to last page
+            }
+        }
+
+        // Next button
+        wrap.append(`<button class="pg-btn btn-doc-pg" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`);
+    }
+
+    $(document).on('click', '.btn-doc-pg', function() {
+        const page = $(this).data('page');
+        if (!page || $(this).prop('disabled') || $(this).hasClass('active')) return;
+
+        $('#docTbl tbody').css('opacity', '0.5');
+
+        $.ajax({
+            url: `/projects/${projectId}/dokumens`,
+            method: 'GET',
+            data: {
+                page: page,
+                per_page: 5
+            },
+            success: function(res) {
+                if (res.success) {
+                    const docData = res.data.data;
+                    const docMeta = res.data;
+                    
+                    renderDocuments(docData, false);
+                    renderDocPagination(docMeta);
+                    
+                    $('#docFooter').html(`Menampilkan ${docData.length} dari ${docMeta.total} dokumen &mdash; <a href="/dokumen?project_id=${projectId}" style="color:var(--cyan)">Lihat semua</a>`);
+                }
+            },
+            complete: function() {
+                $('#docTbl tbody').css('opacity', '1');
+            }
+        });
+    });
 
     /* Count-up animation */
     function countUp(el, target){
@@ -160,42 +271,14 @@ $(function() {
                     $('#picList').html(picListHtml);
 
                     // Documents Table
-                    let docRows = '';
-                    data.dokumens.forEach((doc, i) => {
-                        const num = (i + 1).toString().padStart(2, '0');
-                        const extInfo = doc.type === 'file' ? 'FILE' : (doc.type === 'article' ? 'ARTIKEL' : 'KODE');
-                        
-                        docRows += `
-                            <tr>
-                                <td style="color:var(--muted);font-family:var(--mono);font-size:11px">${num}</td>
-                                <td>
-                                    <div class="doc-name">
-                                        <div class="doc-ico ${doc.kategori}">
-                                            <i class="bi ${doc.type === 'code' ? 'bi-code-square' : (doc.type === 'article' ? 'bi-file-text' : 'bi-file-earmark-fill')}"></i>
-                                        </div>
-                                        <div>
-                                            <div class="doc-nm">${doc.nama}<span class="doc-ver">v${doc.versi || '1'}</span></div>
-                                            <div style="font-size:11px;color:var(--muted)">${extInfo} · ${doc.kategori_label}</div>
-                                        </div>
-                                    </div>
-                                </td>
-                                <td class="col-hide-xs"><span style="font-family:var(--mono);font-size:11.5px;color:var(--cyan)">v${doc.versi || '1.0'}</span></td>
-                                <td class="d-none d-sm-table-cell doc-size">-</td>
-                                <td class="d-none d-md-table-cell" style="font-family:var(--mono);font-size:11.5px;color:var(--muted)">${formatDateIndo(doc.created_at)}</td>
-                                <td class="d-none d-md-table-cell" style="font-size:12.5px">${doc.uploader ? doc.uploader.name : '-'}</td>
-                                <td>
-                                    <div style="display:flex;gap:4px;justify-content:center">
-                                        <button class="btn-tbl-ico btn-view-doc" data-id="${doc.id}" title="Lihat"><i class="bi bi-eye"></i></button>
-                                        <button class="btn-tbl-ico btn-del-doc" data-id="${doc.id}" data-nm="${doc.nama}" data-bs-toggle="modal" data-bs-target="#delDocModal" title="Hapus"><i class="bi bi-trash3"></i></button>
-                                    </div>
-                                </td>
-                            </tr>
-                        `;
-                    });
+                    const docData = data.dokumens.data;
+                    const docMeta = data.dokumens;
+                    
+                    renderDocuments(docData, false);
+                    renderDocPagination(docMeta);
 
-                    if (docRows === '') docRows = '<tr><td colspan="7" class="text-center py-4 text-muted">Belum ada dokumen.</td></tr>';
-                    $('#docTbl tbody').html(docRows);
-                    $('#docFooter').html(`Menampilkan ${data.dokumens.length} dari ${stats.docs_count} dokumen &mdash; <a href="/dokumen?project_id=${p.id}" style="color:var(--cyan)">Lihat semua</a>`);
+                    $('#tabDocCount').text(docMeta.total);
+                    $('#docFooter').html(`Menampilkan ${docData.length} dari ${docMeta.total} dokumen &mdash; <a href="/dokumen?project_id=${p.id}" style="color:var(--cyan)">Lihat semua</a>`);
 
                     // Notes (Diskusi)
                     let noteHtml = '';
@@ -297,22 +380,13 @@ $(function() {
                     if (nw) nw.scrollTop = nw.scrollHeight;
 
                     // Activities
-                    let activityHtml = '';
-                    data.activities.forEach(act => {
-                        activityHtml += `
-                            <div class="tl-item">
-                                <div class="tl-dot-wrap"><div class="tl-dot fill"></div><div class="tl-line"></div></div>
-                                <div class="tl-content">
-                                    <div class="tl-title">${act.description}</div>
-                                    <div class="tl-desc">${act.properties && act.properties.old ? `Perubahan terdeteksi.` : 'Aktivitas tercatat.'}</div>
-                                    <div class="tl-user"><div class="tl-av">${act.causer ? act.causer.initials : 'S'}</div> ${act.causer ? act.causer.name : 'System'}</div>
-                                    <div class="tl-time">${act.created_at}</div>
-                                </div>
-                            </div>
-                        `;
-                    });
-                    if (activityHtml === '') activityHtml = '<div class="text-center py-4 text-muted">Belum ada aktivitas.</div>';
-                    $('#activityTimeline').html(activityHtml);
+                    const actData = data.activities.data;
+                    const actMeta = data.activities;
+                    
+                    activityCurrentPage = actMeta.current_page;
+                    
+                    renderActivities(actData, false);
+                    renderActivityPagination(actMeta);
 
                 }
             },
@@ -321,6 +395,112 @@ $(function() {
             }
         });
     };
+
+    function renderActivities(activities, append = false) {
+        let activityHtml = '';
+        activities.forEach(act => {
+            activityHtml += `
+                <div class="tl-item">
+                    <div class="tl-dot-wrap">
+                        <div class="tl-dot ${act.color || 'primary'}"><i class="bi ${act.icon || 'bi-activity'}"></i></div>
+                        <div class="tl-line"></div>
+                    </div>
+                    <div class="tl-content">
+                        <div class="tl-title">${act.description}</div>
+                        <div class="tl-desc">${act.properties && act.properties.old ? `Perubahan data terdeteksi pada sistem.` : 'Aktivitas berhasil dicatat.'}</div>
+                        <div class="tl-user">
+                            <div class="tl-av" ${act.causer.display_avatar ? `style="background-image:url('${act.causer.display_avatar}'); background-size:cover;"` : ''}>
+                                ${act.causer.display_avatar ? '' : act.causer.initials}
+                            </div> 
+                            ${act.causer ? act.causer.name : 'System'}
+                        </div>
+                        <div class="tl-time">${act.created_at}</div>
+                    </div>
+                </div>
+            `;
+        });
+
+        if (activityHtml === '' && !append) {
+            activityHtml = '<div class="text-center py-4 text-muted">Belum ada aktivitas.</div>';
+        }
+
+        if (append) {
+            $('#activityTimeline').append(activityHtml);
+        } else {
+            $('#activityTimeline').html(activityHtml);
+        }
+    }
+
+    function renderActivityPagination(meta) {
+        const wrap = $('#activityPaginationWrap');
+        if (meta.last_page <= 1) {
+            wrap.hide().html('');
+            return;
+        }
+
+        wrap.show().html('');
+        
+        // Prev button
+        wrap.append(`<button class="pg-btn btn-act-pg" data-page="${meta.current_page - 1}" ${meta.current_page === 1 ? 'disabled' : ''}><i class="bi bi-chevron-left"></i></button>`);
+
+        // Smart Pagination Logic
+        const lastPage = meta.last_page;
+        const current = meta.current_page;
+        const range = 1; 
+        
+        for (let i = 1; i <= lastPage; i++) {
+            if (i === 1 || i === lastPage || (i >= current - range && i <= current + range)) {
+                wrap.append(`<button class="pg-btn btn-act-pg ${i === current ? 'active' : ''}" data-page="${i}">${i}</button>`);
+            } else if (i === 2 && current - range > 2) {
+                wrap.append(`<span style="color:var(--muted); padding:0 4px; font-size:10px; align-self:center">...</span>`);
+                i = current - range - 1; // Jump to before range
+            } else if (i === current + range + 1 && current + range < lastPage - 1) {
+                wrap.append(`<span style="color:var(--muted); padding:0 4px; font-size:10px; align-self:center">...</span>`);
+                i = lastPage - 1; // Jump to last page
+            }
+        }
+
+        // Next button
+        wrap.append(`<button class="pg-btn btn-act-pg" data-page="${meta.current_page + 1}" ${meta.current_page === meta.last_page ? 'disabled' : ''}><i class="bi bi-chevron-right"></i></button>`);
+    }
+
+    $(document).on('click', '.btn-act-pg', function() {
+        const page = $(this).data('page');
+        if (!page || $(this).prop('disabled') || $(this).hasClass('active')) return;
+
+        $('#activityTimeline').css('opacity', '0.5');
+
+        $.ajax({
+            url: `/projects/${projectId}/activities`,
+            method: 'GET',
+            data: {
+                page: page,
+                per_page: 5
+            },
+            success: function(res) {
+                if (res.success) {
+                    const actData = res.data.data;
+                    const actMeta = res.data;
+                    
+                    activityCurrentPage = actMeta.current_page;
+                    
+                    renderActivities(actData, false); // Overwrite when page changes
+                    renderActivityPagination(actMeta);
+                    
+                    // Scroll to top of timeline if needed
+                    const actTab = $('#tab-aktivitas');
+                    if (actTab.length) {
+                        $('html, body').animate({
+                            scrollTop: actTab.offset().top - 100
+                        }, 300);
+                    }
+                }
+            },
+            complete: function() {
+                $('#activityTimeline').css('opacity', '1');
+            }
+        });
+    });
 
     /* Document Detail Modal Loader — Synced with Dokumen Module logic */
     $(document).on('click', '.btn-view-doc', function(e) {

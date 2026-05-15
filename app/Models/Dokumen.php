@@ -80,4 +80,17 @@ class Dokumen extends Model implements HasMedia
         $kategori = \App\Models\KategoriDokumen::where('slug', $this->kategori)->first();
         return $kategori ? $kategori->name : 'Tidak Diketahui';
     }
+
+    /**
+     * Get human readable file size from media.
+     */
+    public function getFileSizeLabelAttribute(): string
+    {
+        if ($this->type !== 'file') {
+            return 'Document Builder';
+        }
+
+        $media = $this->getFirstMedia('files');
+        return $media ? $media->human_readable_size : '-';
+    }
 }

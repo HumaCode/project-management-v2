@@ -214,6 +214,9 @@
             <div style="padding:10px 0 4px;text-align:center;font-family:var(--mono);font-size:11px;color:var(--muted)" id="docFooter">
               <!-- Loaded via AJAX -->
             </div>
+            <div id="docPaginationWrap" class="pg-wrap" style="margin-top: 5px; border-top: 1px dashed var(--bd); padding-top: 12px; display:flex; justify-content:center; gap:5px;">
+              <!-- Pagination buttons -->
+            </div>
           </div>
 
           <!-- Tab: Catatan -->
@@ -281,6 +284,9 @@
           <div class="tab-pane" id="tab-aktivitas">
             <div class="timeline" id="activityTimeline">
               <!-- Loaded via AJAX -->
+            </div>
+            <div id="activityPaginationWrap" style="margin-top:20px; display:flex; justify-content:center; gap:5px; flex-wrap:wrap">
+                <!-- Pagination numbers injected via JS -->
             </div>
           </div>
 

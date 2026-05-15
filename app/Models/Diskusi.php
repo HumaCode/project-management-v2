@@ -11,9 +11,19 @@ use Carbon\Carbon;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
+
 class Diskusi extends Model implements HasMedia
 {
-    use HasFactory, HasUlids, InteractsWithMedia;
+    use HasFactory, HasUlids, InteractsWithMedia, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('diskusi');
+    }
 
     protected $fillable = [
         'project_id',

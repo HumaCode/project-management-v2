@@ -18,7 +18,8 @@ RUN install-php-extensions \
     pdo_mysql \
     zip \
     opcache \
-    bcmath
+    bcmath \
+    exif
 
 # Set Caddy server name
 ENV SERVER_NAME=":80"

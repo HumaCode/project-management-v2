@@ -12,14 +12,26 @@ use App\Helpers\ResponseHelper;
 use App\Models\User;
 use Illuminate\Http\Request;
 
-class TeamController extends Controller
+use Illuminate\Routing\Controllers\HasMiddleware;
+use Illuminate\Routing\Controllers\Middleware;
+
+class TeamController extends Controller implements HasMiddleware
 {
     private TeamServiceInterface $teamService;
 
     public function __construct(TeamServiceInterface $teamService)
     {
         $this->teamService = $teamService;
-        $this->authorizeResource(\App\Models\Team::class, 'team');
+    }
+
+    public static function middleware(): array
+    {
+        return [
+            new Middleware('can:viewAny,' . \App\Models\Team::class, only: ['index', 'getData']),
+            new Middleware('can:create,' . \App\Models\Team::class, only: ['store']),
+            new Middleware('can:update,team', only: ['update', 'edit']),
+            new Middleware('can:delete,team', only: ['destroy']),
+        ];
     }
 
     public function index()

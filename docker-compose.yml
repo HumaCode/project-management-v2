@@ -9,6 +9,7 @@ services:
       - "8000:80"
       - "443:443"
       - "443:443/udp"
+      - "8080:8080"
     volumes:
       - .:/app
     environment:

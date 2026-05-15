@@ -55,11 +55,26 @@ $(function() {
     // Inisialisasi submit form menggunakan helper global dari main.js
     if (typeof handleFormSubmit === 'function') {
         handleFormSubmit("#formDokumen").onSuccess(function(res) {
+            // Simpan nilai yang ingin dipertahankan
+            const userId = $('#sel2User').val();
+            const uploadDate = $('#formDokumen input[name="tanggal_upload"]').val();
+
             $('#addModal').modal('hide');
             $('#formDokumen')[0].reset();
+
+            // Kembalikan nilai yang dipertahankan
+            $('#sel2User').val(userId).trigger('change');
+            $('#formDokumen input[name="tanggal_upload"]').val(uploadDate);
+
+            // Paksa Select2 lain untuk clear (kembali ke placeholder)
+            $('#sel2Kat').val('').trigger('change');
+            $('#sel2Proj').val('').trigger('change');
+            $('#sel2Type').val('file').trigger('change');
+
             $('#previewContainer').hide();
             $('#dropZoneContent').show();
             $('#fileName').html('PDF, DOCX, XLSX, PPTX, ZIP, PNG &mdash; Maks. 50 MB');
+
             window.loadData();
         }).init();
 

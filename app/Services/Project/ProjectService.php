@@ -158,7 +158,7 @@ class ProjectService implements ProjectServiceInterface
                     ->toMediaCollection('thumbnail');
             }
             
-            $this->clearProjectCache();
+            $this->clearProjectCache($project->id);
 
             return $project;
         });
@@ -176,9 +176,11 @@ class ProjectService implements ProjectServiceInterface
             // umumnya otomatis terhapus saat model di-delete, namun jika diperlukan bisa dipanggil clearMediaCollection)
             $project->clearMediaCollection('thumbnail');
             
+            $result = $project->delete();
+
             $this->clearProjectCache();
 
-            return $project->delete();
+            return $result;
         });
     }
 

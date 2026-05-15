@@ -13,8 +13,8 @@ return new class extends Migration
     {
         Schema::table('activity_log', function (Blueprint $table) {
             // Kita ubah tipe data id morph-nya menjadi string/ulid agar support ULID
-            $table->string('subject_id')->change();
-            $table->string('causer_id')->change();
+            $table->string('subject_id')->nullable()->change();
+            $table->string('causer_id')->nullable()->change();
         });
     }
 

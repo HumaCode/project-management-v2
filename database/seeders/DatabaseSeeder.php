@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             MenuSeeder::class,
             ProjectSeeder::class,
             DokumenSeeder::class,
+            KategoriDokumenSeeder::class,
         ]);
     }
 }

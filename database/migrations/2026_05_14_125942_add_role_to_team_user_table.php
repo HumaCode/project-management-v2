@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('team_user', function (Blueprint $table) {
-            $table->string('role')->nullable()->after('user_id');
-        });
+        if (!Schema::hasColumn('team_user', 'role')) {
+            Schema::table('team_user', function (Blueprint $table) {
+                $table->string('role')->nullable()->after('user_id');
+            });
+        }
     }
 
     /**
@@ -21,8 +23,10 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('team_user', function (Blueprint $table) {
-            $table->dropColumn('role');
-        });
+        if (Schema::hasColumn('team_user', 'role')) {
+            Schema::table('team_user', function (Blueprint $table) {
+                $table->dropColumn('role');
+            });
+        }
     }
 };

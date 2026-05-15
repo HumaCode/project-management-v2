@@ -38,6 +38,8 @@ class DokumenService implements DokumenServiceInterface
             $dokumen->addMedia($data['file'])->toMediaCollection('files');
         }
 
+        $this->clearDokumenCache();
+
         return $dokumen;
     }
 
@@ -51,6 +53,8 @@ class DokumenService implements DokumenServiceInterface
             $dokumen->addMedia($data['file'])->toMediaCollection('files');
         }
 
+        $this->clearDokumenCache();
+
         return $dokumen;
     }
 
@@ -61,11 +65,22 @@ class DokumenService implements DokumenServiceInterface
 
     public function saveDokumenItems(string $id, array $items)
     {
-        return $this->dokumenRepository->saveItems($id, $items);
+        $result = $this->dokumenRepository->saveItems($id, $items);
+        $this->clearDokumenCache();
+        return $result;
     }
 
     public function deleteDokumen(string $id)
     {
-        return $this->dokumenRepository->delete($id);
+        $result = $this->dokumenRepository->delete($id);
+        $this->clearDokumenCache();
+        return $result;
+    }
+
+    private function clearDokumenCache(): void
+    {
+        if (auth()->check()) {
+            \Illuminate\Support\Facades\Cache::forget("dokumen_stats_user_" . auth()->id());
+        }
     }
 }

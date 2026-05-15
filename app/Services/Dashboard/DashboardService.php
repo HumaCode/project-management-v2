@@ -30,4 +30,16 @@ class DashboardService implements DashboardServiceInterface
             ];
         });
     }
+
+    public function getRecentActivities(int $perPage = 6)
+    {
+        // We don't cache this as it's often paginated and dynamic
+        return $this->repository->getRecentActivities($perPage);
+    }
+
+    public function getActiveProjects(int $perPage = 5)
+    {
+        // We don't cache this as it's often paginated and dynamic
+        return $this->repository->getActiveProjects($perPage);
+    }
 }

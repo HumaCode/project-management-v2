@@ -41,7 +41,6 @@ body {
     background: var(--bg);
     color: var(--txt);
     min-height: 100vh;
-    overflow-x: hidden;
 }
 
 a {
@@ -49,18 +48,48 @@ a {
     color: inherit;
 }
 
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 200, 255, 0.15) transparent;
+/* ─── Scrollbar ─── */
+::-webkit-scrollbar {
+    width: 8px; /* Sedikit lebih tebal agar terlihat jelas */
+    height: 8px;
 }
 
-*::-webkit-scrollbar {
+::-webkit-scrollbar-track {
+    background: rgba(5, 14, 29, 0.5); /* Track gelap transparan */
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--cyan); /* Warna cyan menyala sesuai highlight */
+    border-radius: 10px;
+    border: 2px solid rgba(5, 14, 29, 0.8); /* Memberi efek mengambang */
+    box-shadow: inset 0 0 6px rgba(255, 255, 255, 0.3); /* Subtle glow inside */
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: #00e5ff; /* Lebih terang saat di-hover */
+    box-shadow: 0 0 12px var(--cyan); /* Neon glow outside */
+}
+
+/* Specific containers that need custom scrollbar */
+.sb-nav::-webkit-scrollbar,
+.select2-results__options::-webkit-scrollbar {
     width: 4px;
 }
 
-*::-webkit-scrollbar-thumb {
-    background: rgba(0, 200, 255, 0.15);
+.sb-nav::-webkit-scrollbar-thumb,
+.select2-results__options::-webkit-scrollbar-thumb {
+    background: rgba(0, 200, 255, 0.1);
     border-radius: 4px;
+}
+
+/* Firefox - Nonaktifkan agar konsisten dengan gaya Cyberpunk */
+* {
+    scrollbar-width: none; 
+}
+/* Kembalikan auto hanya untuk root */
+html {
+    scrollbar-width: thin;
+    scrollbar-color: var(--cyan) transparent;
 }
 
 /* ─── Canvas BG ─── */
@@ -1715,6 +1744,62 @@ a {
     cursor: pointer;
     transition: all 0.25s;
     flex-shrink: 0;
+}
+
+/* ── Pagination Cyberpunk Style ── */
+.dashboard-pagination .pagination {
+    gap: 5px;
+    border: none;
+}
+
+.dashboard-pagination .page-item .page-link {
+    background: rgba(0, 200, 255, 0.05);
+    border: 1px solid var(--bd);
+    color: var(--dim);
+    border-radius: 8px;
+    padding: 6px 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    transition: all 0.3s ease;
+}
+
+.dashboard-pagination .page-item.active .page-link {
+    background: linear-gradient(135deg, var(--blue), var(--cyan));
+    border-color: var(--cyan);
+    color: #fff;
+    box-shadow: 0 0 10px rgba(0, 200, 255, 0.4);
+}
+
+.dashboard-pagination .page-item .page-link:hover {
+    background: rgba(0, 200, 255, 0.15);
+    color: var(--cyan);
+    border-color: var(--cyan);
+    transform: translateY(-1px);
+}
+
+.dashboard-pagination .page-item.disabled .page-link {
+    background: rgba(255, 255, 255, 0.02);
+    border-color: rgba(255, 255, 255, 0.05);
+    color: var(--muted);
+}
+
+/* Hide ALL Laravel default pagination info/descriptions (we added our own above) */
+.dashboard-pagination nav > div:first-child,
+.dashboard-pagination nav .hidden.sm\:flex-1,
+.dashboard-pagination nav .flex-1.flex.justify-between.sm\:hidden,
+.dashboard-pagination nav p.text-sm {
+    display: none !important;
+}
+
+/* Ensure only the links container is visible */
+.dashboard-pagination nav > div:last-child {
+    display: flex !important;
+    width: 100%;
+    justify-content: center;
+}
+
+.dashboard-pagination nav .relative.z-0.inline-flex.rtl\:flex-row-reverse.shadow-sm.rounded-md {
+    box-shadow: none !important;
 }
 
 .btn-reset:hover {

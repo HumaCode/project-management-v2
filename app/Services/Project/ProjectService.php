@@ -111,15 +111,18 @@ class ProjectService implements ProjectServiceInterface
         });
     }
 
-    public function getProjectByUlid(string $ulid): Project
+    public function getProjectByUlid(string $id): Project
     {
-        return Project::with(['team.members.media', 'media'])->findOrFail($ulid);
+        return Project::with(['team.members.media', 'media'])
+            ->where('id', $id)
+            ->orWhere('slug', $id)
+            ->firstOrFail();
     }
 
-    public function updateProject(string $ulid, array $data): Project
+    public function updateProject(string $id, array $data): Project
     {
-        return DB::transaction(function () use ($ulid, $data) {
-            $project = Project::findOrFail($ulid);
+        return DB::transaction(function () use ($id, $data) {
+            $project = Project::where('id', $id)->orWhere('slug', $id)->firstOrFail();
 
             // Transform dates
             if (isset($data['start_date'])) {
@@ -144,10 +147,10 @@ class ProjectService implements ProjectServiceInterface
         });
     }
 
-    public function deleteProject(string $ulid): bool
+    public function deleteProject(string $id): bool
     {
-        return DB::transaction(function () use ($ulid) {
-            $project = Project::findOrFail($ulid);
+        return DB::transaction(function () use ($id) {
+            $project = Project::where('id', $id)->orWhere('slug', $id)->firstOrFail();
 
             // Bersihkan relasi many-to-many dengan PIC (agar bersih di pivot table)
             $project->pics()->detach();
@@ -181,10 +184,13 @@ class ProjectService implements ProjectServiceInterface
         }
     }
 
-    public function getProjectDetailData(string $ulid): array
+    public function getProjectDetailData(string $id): array
     {
         $userId = auth()->id();
-        $project = Project::with(['team.members.media', 'creator.media'])->findOrFail($ulid);
+        $project = Project::with(['team.members.media', 'creator.media'])
+            ->where('id', $id)
+            ->orWhere('slug', $id)
+            ->firstOrFail();
         
         // Stats calculation
         $stats = [
@@ -286,9 +292,9 @@ class ProjectService implements ProjectServiceInterface
         ];
     }
 
-    public function getPaginatedActivities(string $projectId, int $perPage = 10)
+    public function getPaginatedActivities(string $id, int $perPage = 10)
     {
-        $project = Project::findOrFail($projectId);
+        $project = Project::where('id', $id)->orWhere('slug', $id)->firstOrFail();
 
         $activities = \Spatie\Activitylog\Models\Activity::where(function($q) use ($project) {
                 $q->where(function($sq) use ($project) {

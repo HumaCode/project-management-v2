@@ -391,12 +391,12 @@
 }
 
 .crd .table-responsive::-webkit-scrollbar {
-    height: 5px;
+    height: 6px;
 }
 
 .crd .table-responsive::-webkit-scrollbar-thumb {
-    background: rgba(0, 200, 255, 0.2);
-    border-radius: 3px;
+    background: var(--cyan);
+    border-radius: 10px;
 }
 
 .table-pms {
@@ -470,16 +470,16 @@
 }
 
 .table-responsive::-webkit-scrollbar-track {
-    background: rgba(0, 200, 255, 0.02);
+    background: rgba(5, 14, 29, 0.5);
 }
 
 .table-responsive::-webkit-scrollbar-thumb {
-    background: rgba(0, 200, 255, 0.1);
+    background: var(--cyan);
     border-radius: 10px;
 }
 
 .table-responsive::-webkit-scrollbar-thumb:hover {
-    background: rgba(0, 200, 255, 0.2);
+    background: #00e5ff;
 }
 
 .td-info-name {

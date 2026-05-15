@@ -166,6 +166,19 @@
         - **Bottom-Up Chart Rendering**: Adjusted flexbox alignment to ensure bars grow from the base up.
         - **Automatic Sorting**: Defaulted all project lists (Index & Dashboard) to "Newest First" (DESC) for better task visibility.
         - **Responsive Polish**: Refined chart labels and footer info for a consistent, data-driven experience.
+- [x] **Project Management (Phase 9: Dashboard AJAX & UI Refinement)**:
+    - [x] **Dual AJAX Pagination**: 
+        - Implemented non-reloading, jQuery-driven pagination for both **Recent Activities** and **Active Projects**.
+        - Optimized `DashboardController` to serve targeted partial views for dynamic updates.
+    - [x] **Custom Pagination View**:
+        - Developed `custom-dashboard.blade.php` to render only navigation links, removing redundant 'Showing results' text.
+        - Synchronized 'Menampilkan...' info placement across all dashboard modules for a cleaner look.
+    - [x] **Architecture Refinement**:
+        - Refactored `DashboardRepository` and `DashboardService` to support dynamic paginated result sets.
+        - Abstracted dashboard components into partials (`recent-activities.blade.php`, `active-projects.blade.php`) for better maintainability.
+    - [x] **UX Polish**:
+        - Integrated `SCA.loading` (via opacity transition) for instant feedback during data transitions.
+        - Automatic `AOS.refresh()` on every AJAX load to maintain high-quality entrance animations.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

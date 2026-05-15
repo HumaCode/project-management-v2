@@ -30,32 +30,7 @@
     margin: 0;
     padding: 0;
 }
-html {
-    scroll-behavior: smooth;
-}
-body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--txt);
-    min-height: 100vh;
-    overflow-x: hidden;
-}
-a {
-    text-decoration: none;
-    color: inherit;
-}
-* {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(0, 200, 255, 0.15) transparent;
-}
-*::-webkit-scrollbar {
-    width: 4px;
-    height: 4px;
-}
-*::-webkit-scrollbar-thumb {
-    background: rgba(0, 200, 255, 0.2);
-    border-radius: 4px;
-}
+/* Global styles handled in global.css */
 
 /* ── Canvas ── */
 #bgc {

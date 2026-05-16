@@ -119,10 +119,20 @@ Route::middleware(['auth'])->group(function () {
             // Settings
             Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
             Route::post('settings/profile', [\App\Http\Controllers\SettingController::class, 'updateProfile'])->name('settings.update-profile');
+            Route::post('settings/profile/avatar', [\App\Http\Controllers\SettingController::class, 'updateAvatar'])->name('settings.update-avatar');
             Route::post('settings/security', [\App\Http\Controllers\SettingController::class, 'updateSecurity'])->name('settings.update-security');
-            Route::post('settings/email', [\App\Http\Controllers\SettingController::class, 'updateEmail'])->name('settings.update-email');
+            Route::post('settings/app', [\App\Http\Controllers\SettingController::class, 'updateApp'])->name('settings.update-app');
+            Route::post('settings/email', [\App\Http\Controllers\SettingController::class, 'updateEmail'])->name('settings.update-mail');
             Route::post('settings/email/test', [\App\Http\Controllers\SettingController::class, 'sendTestMail'])->name('settings.send-test-mail');
             Route::post('settings/maintenance', [\App\Http\Controllers\SettingController::class, 'updateMaintenance'])->name('settings.update-maintenance');
+            Route::get('settings/clear-cache', [\App\Http\Controllers\SettingController::class, 'clearCache'])->name('settings.clear-cache');
+            
+            // Backups
+            Route::post('settings/backups/settings', [\App\Http\Controllers\SettingController::class, 'updateBackup'])->name('settings.update-backup');
+            Route::post('settings/backups', [\App\Http\Controllers\SettingController::class, 'runBackup'])->name('settings.run-backup');
+            Route::get('settings/backups/history', [\App\Http\Controllers\SettingController::class, 'getBackupHistoryHtml'])->name('settings.backup-history');
+            Route::get('settings/backups/download/{id}', [\App\Http\Controllers\SettingController::class, 'downloadBackup'])->name('settings.download-backup');
+            Route::delete('settings/backups/delete/{id}', [\App\Http\Controllers\SettingController::class, 'deleteBackup'])->name('settings.delete-backup');
 
         }
     );

@@ -177,6 +177,10 @@
     - Optimalisasi responsivitas modal dan tabel pada smartphone.
     - **UX Safety**: Implementasi `SCA.loading` pada seluruh aksi hapus data (Proyek, Tim, Dokumen, Catatan, Kategori) untuk mencegah double-click dan memberikan feedback instan.
     - **Asset Performance**: Fixed Select2 placeholder conflicts and grid breaks in Report Builder.
+    - **Real-time Team Stats**: Implementasi refresh statistik otomatis via AJAX pada Manajemen Tim dan penambahan caching (15 menit) pada `TeamRepository`.
+- [x] **Infrastructure Hardening**:
+    - [x] **Docker Evolution**: Pembaruan `Dockerfile` dengan integrasi **Composer** dan standarisasi environment **PHP 8.4** untuk mendukung Laravel 12 & Spatie Activitylog v5.
+    - [x] **Maintenance Security**: Implementasi *Force Logout* dan *Session Invalidation* otomatis bagi pengguna non-developer saat mode pemeliharaan aktif.
 - [ ] **Recaptcha Integration**: Penambahan keamanan pada form login/register.
 
 - [x] **Project Management (Phase 5: Security & Optimization)**:
@@ -230,6 +234,22 @@
     - [x] **UX Polish**:
         - Integrated `SCA.loading` (via opacity transition) for instant feedback during data transitions.
         - Automatic `AOS.refresh()` on every AJAX load to maintain high-quality entrance animations.
+
+- [x] **System Settings & Backup Management**:
+    - [x] **Database Backup System**:
+        - Integrated **Spatie Laravel Backup v10** with custom AJAX triggers.
+        - **Premium UI History**: Glassmorphism history list with dynamic file counting and scrollable container.
+        - **Secure Media Integration**: Automatic file migration from backup disk to **Private Storage** via Spatie Media Library.
+        - **Duplicate Prevention**: Listener-level filename validation to prevent redundant records.
+        - **AJAX Actions**: Manual backup trigger and history deletion with real-time UI updates and SCA notifications.
+    - [x] **Settings Management**:
+        - Registered and implemented missing routes for Profile, App, and Email updates.
+        - **Premium Index View**: Restored original template integrity using `<x-master-layout>`.
+        - **Dynamic Updates**: Support for Avatar, Identity, and SMTP configuration updates.
+    - [x] **UX & Stability**:
+        - Standardized `SCA` API calls (Confirm, Toast, Loading) across the settings module.
+        - Implemented button disabling during long-running backup processes to prevent race conditions.
+        - Integrated premium cyberpunk-themed empty states for the backup history list.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

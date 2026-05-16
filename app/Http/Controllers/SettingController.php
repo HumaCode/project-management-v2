@@ -44,8 +44,41 @@ class SettingController extends Controller
             'settings' => $settings,
             'counts' => $counts,
             'logo' => $logo,
-            'favicon' => $favicon
+            'favicon' => $favicon,
+            'backups' => $this->getBackupList()
         ]);
+    }
+
+    /**
+     * Get list of backup files.
+     */
+    private function getBackupList(): array
+    {
+        $backups = \App\Models\Backup::latest()->get();
+        
+        return $backups->map(function ($bk) {
+            return [
+                'id' => $bk->id,
+                'filename' => $bk->name,
+                'size' => $bk->size,
+                'date' => $bk->created_at->format('d M Y'),
+                'time' => $bk->created_at->format('H:i'),
+                'type' => $bk->type,
+            ];
+        })->toArray();
+    }
+
+    /**
+     * Format bytes to human readable format.
+     */
+    private function formatBytes($bytes, $precision = 2): string
+    {
+        $units = ['B', 'KB', 'MB', 'GB', 'TB'];
+        $bytes = max($bytes, 0);
+        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
+        $pow = min($pow, count($units) - 1);
+        $bytes /= pow(1024, $pow);
+        return round($bytes, $precision) . ' ' . $units[$pow];
     }
 
     /**
@@ -88,6 +121,32 @@ class SettingController extends Controller
     }
 
     /**
+     * Update user avatar.
+     */
+    public function updateAvatar(Request $request): JsonResponse
+    {
+        try {
+            $user = auth()->user();
+            
+            if ($request->hasFile('avatar')) {
+                $user->clearMediaCollection('avatars');
+                $user->addMediaFromRequest('avatar')->toMediaCollection('avatars');
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Foto profil berhasil diperbarui',
+                'avatar_url' => $user->getFirstMediaUrl('avatars')
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui foto profil: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Update security settings.
      */
     public function updateSecurity(Request $request): JsonResponse
@@ -111,6 +170,26 @@ class SettingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal memperbarui keamanan: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update application settings.
+     */
+    public function updateApp(Request $request): JsonResponse
+    {
+        try {
+            $this->settingService->updateProfile($request->except(['_token']));
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Identitas aplikasi berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui identitas aplikasi: ' . $e->getMessage()
             ], 500);
         }
     }
@@ -198,6 +277,123 @@ class SettingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal memperbarui status: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    /**
+     * Clear system cache.
+     */
+    public function clearCache(): JsonResponse
+    {
+        try {
+            // 1. Kosongkan seluruh data cache di Database (Tabel cache)
+            \Illuminate\Support\Facades\Cache::flush();
+            
+            // 2. Bersihkan cache tampilan (Blade views) - Aman untuk AJAX
+            \Illuminate\Support\Facades\Artisan::call('view:clear');
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Cache database dan tampilan berhasil dibersihkan'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal membersihkan cache: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get backup history HTML partial.
+     */
+    public function getBackupHistoryHtml(): string
+    {
+        $backups = $this->getBackupList();
+        return view('pages.setting.partials._backup_list', compact('backups'))->render();
+    }
+
+    /**
+     * Update auto backup settings.
+     */
+    public function updateBackup(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->except(['_token']);
+            
+            // Handle checkboxes
+            $checkboxes = ['backup_auto_enabled', 'backup_notification_enabled'];
+            foreach ($checkboxes as $cb) {
+                $data[$cb] = $request->has($cb) ? '1' : '0';
+            }
+
+            $this->settingService->updateProfile($data);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Jadwal backup berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui jadwal backup: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Run a new system backup.
+     */
+    public function runBackup(): JsonResponse
+    {
+        try {
+            // Jalankan artisan command di background
+            \Illuminate\Support\Facades\Artisan::call('backup:run', ['--only-db' => true]);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Backup database berhasil dibuat'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal membuat backup: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Download a backup file.
+     */
+    public function downloadBackup(int $id)
+    {
+        $backup = \App\Models\Backup::findOrFail($id);
+        $media = $backup->getFirstMedia('backup_files');
+
+        if (!$media || !file_exists($media->getPath())) {
+            abort(404, 'File backup tidak ditemukan');
+        }
+
+        return response()->download($media->getPath(), $media->file_name);
+    }
+
+    /**
+     * Delete a backup file.
+     */
+    public function deleteBackup(int $id): JsonResponse
+    {
+        try {
+            $backup = \App\Models\Backup::findOrFail($id);
+            $backup->delete(); // Otomatis menghapus file media
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'File backup berhasil dihapus'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal menghapus backup: ' . $e->getMessage()
             ], 500);
         }
     }

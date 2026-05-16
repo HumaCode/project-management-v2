@@ -43,7 +43,7 @@
             <div class="sc c w-100 m-0">
                 <div class="sc-ico c"><i class="bi bi-people-fill"></i></div>
                 <div>
-                    <div class="sc-val">{{ $total_teams }}</div>
+                    <div class="sc-val" id="totalTeams">{{ $total_teams }}</div>
                     <div class="sc-lbl">Total Tim</div>
                 </div>
             </div>
@@ -52,7 +52,7 @@
             <div class="sc g w-100 m-0">
                 <div class="sc-ico g"><i class="bi bi-person-check-fill"></i></div>
                 <div>
-                    <div class="sc-val">{{ $total_members }}</div>
+                    <div class="sc-val" id="totalMembers">{{ $total_members }}</div>
                     <div class="sc-lbl">Anggota Terdaftar</div>
                 </div>
             </div>

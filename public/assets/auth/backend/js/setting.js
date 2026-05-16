@@ -162,4 +162,172 @@ $(function () {
         });
     }
 
+    // Clear Cache Logic
+    $('#btnClearCache').on('click', function () {
+        const btn = $(this);
+        const url = btn.data('url');
+        const originalHtml = btn.html();
+
+        console.log('Clear cache clicked. URL:', url);
+
+        SCA.confirm(
+            'Bersihkan Cache?',
+            'Tindakan ini akan menghapus seluruh cache aplikasi, view, dan konfigurasi. Aplikasi mungkin terasa sedikit lambat pada request pertama setelah ini.',
+            {
+                confirmText: 'Ya, Bersihkan',
+                confirmButtonClass: 'btn-danger',
+                onConfirm: function () {
+                    console.log('Confirmation accepted. Sending AJAX to:', url);
+                    btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat spin"></i> Memproses...');
+
+                    $.ajax({
+                        url: url,
+                        method: "GET",
+                        success: function (res) {
+                            console.log('AJAX Success:', res);
+                            if (res.status === 'success') {
+                                SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                            }
+                        },
+                        error: function (err) {
+                            console.error('AJAX Error:', err);
+                            let msg = "Gagal membersihkan cache";
+                            if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                            SCA.toast({ type: 'danger', title: 'Error', message: msg });
+                        },
+                        complete: function () {
+                            btn.prop('disabled', false).html(originalHtml);
+                        }
+                    });
+                }
+            }
+        );
+    });
+    
+    // Load Backup History
+    function loadBackupHistory() {
+        $.ajax({
+            url: "/settings/backups/history",
+            method: "GET",
+            success: function (html) {
+                $('#backupHistoryContainer').html(html);
+                
+                // Update file count badge in header
+                const count = $(html).find('.backup-card').length;
+                $('.det-hd-badge').text(count + ' file');
+            }
+        });
+    }
+
+    // Save Backup Settings
+    $('#formBackupSetting').on('submit', function (e) {
+        e.preventDefault();
+        const form = $(this);
+        const btn = $('#btnSaveBackupSetting');
+        const originalHtml = btn.html();
+
+        btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat spin"></i> Menyimpan...');
+
+        $.ajax({
+            url: "/settings/backups/settings",
+            method: "POST",
+            data: form.serialize(),
+            success: function (res) {
+                if (res.status === 'success') {
+                    SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                }
+            },
+            error: function (err) {
+                SCA.toast({ type: 'danger', title: 'Error', message: 'Gagal menyimpan jadwal backup' });
+            },
+            complete: function () {
+                btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+
+    // Manual Backup
+    $('#btnRunBackupManual').on('click', function () {
+        const url = $(this).data('url');
+        const $btn = $(this);
+
+        SCA.confirm(
+            "Konfirmasi Backup",
+            "Apakah Anda yakin ingin melakukan backup database sekarang? Proses ini mungkin memakan waktu beberapa menit."
+        ).then((confirmed) => {
+            if (confirmed) {
+                // Disable button and show loading
+                $btn.prop('disabled', true).addClass('opacity-50');
+                
+                SCA.loading({
+                    title: "Memproses Backup",
+                    message: "Sedang mencadangkan database, mohon tunggu..."
+                });
+
+                $.ajax({
+                    url: url,
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(response) {
+                        SCA.close();
+                        if (response.status === 'success') {
+                            SCA.toast({ type: 'success', title: 'Berhasil', message: response.message });
+                            loadBackupHistory();
+                        } else {
+                            SCA.toast({ type: 'danger', title: 'Gagal', message: response.message });
+                        }
+                    },
+                    error: function(xhr) {
+                        SCA.close();
+                        const msg = xhr.responseJSON ? xhr.responseJSON.message : "Terjadi kesalahan saat memproses backup";
+                        SCA.toast({ type: 'danger', title: 'Error', message: msg });
+                    },
+                    complete: function() {
+                        // Re-enable button
+                        $btn.prop('disabled', false).removeClass('opacity-50');
+                    }
+                });
+            }
+        });
+    });
+
+    // Delete Backup
+    $(document).on('click', '.btnDeleteBackup', function () {
+        const btn = $(this);
+        const url = btn.data('url');
+        const filename = btn.data('filename');
+
+        SCA.confirm(
+            'Hapus Backup?',
+            `Anda akan menghapus file backup <strong>${filename}</strong> secara permanen.`
+        ).then(function (isConfirmed) {
+            if (isConfirmed) {
+                SCA.loading({ title: "Menghapus Backup", message: "Sedang menghapus file dari storage..." });
+                $.ajax({
+                    url: url,
+                    method: "DELETE",
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function (res) {
+                        SCA.close();
+                        if (res.status === 'success') {
+                            SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                            loadBackupHistory();
+                        }
+                    },
+                    error: function (err) {
+                        SCA.close();
+                        SCA.toast({ type: 'danger', title: 'Error', message: 'Gagal menghapus file backup' });
+                    },
+                    complete: function () {
+                        // SCA.close() already called in success/error
+                    }
+                });
+            }
+        });
+    });
+
 });

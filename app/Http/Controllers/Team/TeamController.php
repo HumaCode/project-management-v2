@@ -51,8 +51,14 @@ class TeamController extends Controller implements HasMiddleware
             $rowPerPage = $request->get('rowPerPage', 10);
 
             $teams = $this->teamService->getPaginatedTeams($search, $rowPerPage);
+            $stats = $this->teamService->getIndexData();
 
-            return ResponseHelper::success('Berhasil mengambil data tim.', TeamResource::collection($teams)->response()->getData(true));
+            return ResponseHelper::success('Berhasil mengambil data tim.', 
+                TeamResource::collection($teams)
+                    ->additional(['stats' => $stats])
+                    ->response()
+                    ->getData(true)
+            );
         } catch (\Exception $e) {
             return ResponseHelper::error('Gagal mengambil data tim: ' . $e->getMessage(), 500);
         }

@@ -122,5 +122,11 @@ class AppServiceProvider extends ServiceProvider
                     'notifiable' => $notifiable,
                 ]);
         });
+
+        // Register Backup Listener
+        \Illuminate\Support\Facades\Event::listen(
+            \Spatie\Backup\Events\BackupWasSuccessful::class,
+            \App\Listeners\BackupSuccessfulListener::class
+        );
     }
 }

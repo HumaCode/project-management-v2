@@ -5,6 +5,7 @@ namespace App\Repositories\Team;
 use App\Interface\Team\TeamRepositoryInterface;
 use App\Models\Team;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
 
 class TeamRepository implements TeamRepositoryInterface
 {
@@ -45,6 +46,8 @@ class TeamRepository implements TeamRepositoryInterface
             $team->members()->sync($syncData);
         }
 
+        $this->clearCache();
+
         return $team;
     }
 
@@ -66,23 +69,39 @@ class TeamRepository implements TeamRepositoryInterface
             $team->members()->sync($syncData);
         }
 
+        $this->clearCache();
+
         return $team;
     }
 
     public function delete(string $id)
     {
         $team = Team::findOrFail($id);
-        return $team->delete();
+        $deleted = $team->delete();
+        if ($deleted) {
+            $this->clearCache();
+        }
+        return $deleted;
     }
 
     public function countTeams(): int
     {
-        return Team::count();
+        return Cache::remember('team_count_total', now()->addMinutes(15), function () {
+            return Team::count();
+        });
     }
 
     public function countDistinctMembers(): int
     {
-        return DB::table('team_user')->distinct('user_id')->count();
+        return Cache::remember('team_member_count_distinct', now()->addMinutes(15), function () {
+            return DB::table('team_user')->distinct()->count('user_id');
+        });
+    }
+
+    public function clearCache(): void
+    {
+        Cache::forget('team_count_total');
+        Cache::forget('team_member_count_distinct');
     }
 
     public function all()

@@ -15,6 +15,7 @@ Menyimpan konfigurasi maintenance dalam grup `maintenance`:
 - **Logika**: 
   - Mengecek status `maintenance_mode` di database.
   - Jika aktif ('1'), melempar `Abort(503)` atau menampilkan view maintenance kustom.
+  - **Security Hardening**: Jika user (non-dev) sedang dalam kondisi login saat maintenance diaktifkan, middleware akan otomatis melakukan `Auth::logout()` dan `Session::invalidate()` sebelum menampilkan halaman maintenance. Hal ini mencegah adanya sesi "menggantung" selama pemeliharaan.
   - **Bypass**: User dengan role `dev` tetap bisa mengakses aplikasi untuk keperluan debugging/update.
 - **Registrasi**: Didaftarkan di grup middleware `web` di `bootstrap/app.php` agar memiliki akses ke sesi dan autentikasi user.
 

@@ -77,6 +77,12 @@
 
                 window.renderInfo(meta);
                 window.renderPagination(meta);
+
+                // Update Stats Cards
+                if (res.data.stats) {
+                    $('#totalTeams').text(res.data.stats.total_teams);
+                    $('#totalMembers').text(res.data.stats.total_members);
+                }
             },
             error(xhr) {
                 let msg = 'Terjadi kesalahan sistem';

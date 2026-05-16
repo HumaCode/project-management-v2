@@ -26,12 +26,20 @@ class CheckMaintenanceMode
                     ->pluck('value', 'key');
 
                 if (isset($settings['maintenance_mode']) && $settings['maintenance_mode'] === '1') {
-                    // Cek apakah user adalah 'dev'
-                    if (Auth::check() && Auth::user()->hasRole('dev')) {
-                        return $next($request);
+                    // Jika user login
+                    if (Auth::check()) {
+                        // Jika dev, biarkan lewat
+                        if (Auth::user()->hasRole('dev')) {
+                            return $next($request);
+                        }
+
+                        // Jika bukan dev, paksa logout dan bersihkan session
+                        Auth::logout();
+                        $request->session()->invalidate();
+                        $request->session()->regenerateToken();
                     }
 
-                    // Jika bukan dev, tampilkan halaman maintenance
+                    // Tampilkan halaman maintenance (sekarang user sudah logout)
                     return response()->view('errors.maintenance', [
                         'message' => $settings['maintenance_message'] ?? 'Sistem sedang dalam pemeliharaan.',
                         'endTime' => $settings['maintenance_end_time'] ?? null

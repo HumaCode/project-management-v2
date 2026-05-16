@@ -517,7 +517,7 @@
                 <div class="sec-card" data-aos="fade-up">
                     <div class="sec-card-hd">
                         <div class="sec-card-title"><i class="bi bi-database-fill-down"></i> Backup Otomatis</div>
-                        <button class="btn-save" style="height:34px;padding:0 14px;font-size:12.5px" data-bs-toggle="modal" data-bs-target="#backupModal">
+                        <button class="btn-save" id="btnRunBackupManual" style="height:34px;padding:0 14px;font-size:12.5px" data-url="{{ route('settings.run-backup') }}">
                             <span><i class="bi bi-database-fill-down"></i> Backup Sekarang</span>
                         </button>
                     </div>
@@ -586,31 +586,10 @@
                 <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
                     <div class="sec-card-hd">
                         <div class="sec-card-title"><i class="bi bi-clock-history"></i> Riwayat Backup</div>
-                        <span class="det-hd-badge">4 file</span>
+                        <span class="det-hd-badge">{{ count($backups) }} file</span>
                     </div>
-                    <div class="sec-card-body p-3">
-                        <div class="backup-card">
-                            <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
-                            <div>
-                                <div class="bk-nm">backup_2025-03-08_02-00.sql</div>
-                                <div class="bk-meta">8 Mar 2025 &bull; 02:00 &bull; 14.2 MB</div>
-                            </div>
-                            <div class="bk-actions">
-                                <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i> Unduh</button>
-                                <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
-                            </div>
-                        </div>
-                        <div class="backup-card">
-                            <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
-                            <div>
-                                <div class="bk-nm">backup_2025-03-07_02-00.sql</div>
-                                <div class="bk-meta">7 Mar 2025 &bull; 02:00 &bull; 13.9 MB</div>
-                            </div>
-                            <div class="bk-actions">
-                                <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i> Unduh</button>
-                                <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
-                            </div>
-                        </div>
+                    <div class="sec-card-body p-3" id="backupHistoryContainer" style="max-height: 400px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: var(--cyan) rgba(255,255,255,0.05);">
+                        @include('pages.setting.partials._backup_list')
                     </div>
                 </div>
             </div>
@@ -732,30 +711,7 @@
     </div>
 
     <!-- Modals -->
-    <!-- Backup Modal -->
-    <div class="modal fade m-dark" id="backupModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="m-hd" style="border-bottom-color:rgba(0,200,255,.1)">
-                    <h5 class="m-hd-title" style="color:var(--cyan)"><i class="bi bi-database-fill-down"></i> Konfirmasi Backup</h5>
-                    <button class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
-                </div>
-                <div class="m-bd">
-                    <p style="font-size:14px;color:var(--dim);line-height:1.6">Sistem akan melakukan kompresi database dan menyimpannya ke server. Proses ini mungkin memakan waktu beberapa menit tergantung ukuran data.</p>
-                    <div class="fg mt-3">
-                        <label class="fl">Nama File (Opsional)</label>
-                        <input type="text" class="fi" placeholder="Manual_Backup_{{ date('Y-m-d') }}" />
-                    </div>
-                </div>
-                <div class="m-ft" style="border-top-color:rgba(0,200,255,.1)">
-                    <button class="btn-mcancel" data-bs-dismiss="modal">Batal</button>
-                    <button class="btn-save" id="btnBackupConfirm" style="background:linear-gradient(135deg,var(--blue),var(--cyan))">
-                        <span><i class="bi bi-play-fill"></i> Mulai Backup</span>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+    <!-- Backup Modal removed for SCA.confirm -->
 
     <!-- Reset Modal -->
     <div class="modal fade m-dark" id="resetModal" tabindex="-1">

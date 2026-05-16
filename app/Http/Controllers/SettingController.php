@@ -397,4 +397,127 @@ class SettingController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get system activities via AJAX.
+     */
+    public function activities(Request $request): JsonResponse
+    {
+        $query = \Spatie\Activitylog\Models\Activity::latest()->with('causer');
+
+        // Filter by Event
+        if ($request->filled('event')) {
+            $query->where('event', $request->event);
+        }
+
+        // Filter by Module/Log Name
+        if ($request->filled('module')) {
+            $query->where('log_name', $request->module);
+        }
+
+        // Filter by Date Range (More robust parsing)
+        if ($request->filled('date')) {
+            $dateInput = $request->date;
+            // Handle both " to " and " - " as separators
+            $dates = preg_split('/ (to|-) /', $dateInput);
+            
+            if (count($dates) == 2) {
+                $query->whereBetween('created_at', [trim($dates[0]) . ' 00:00:00', trim($dates[1]) . ' 23:59:59']);
+            } else {
+                $query->whereDate('created_at', trim($dates[0]));
+            }
+        }
+
+        $activities = $query->paginate(5);
+
+        return response()->json([
+            'status' => 'success',
+            'html' => view('pages.setting.partials._activity_log', compact('activities'))->render()
+        ]);
+    }
+
+    /**
+     * Export system activities to Excel (XLS).
+     */
+    public function exportActivities(Request $request)
+    {
+        $query = \Spatie\Activitylog\Models\Activity::latest()->with('causer');
+
+        // Filter by Date Range (More robust parsing)
+        if ($request->filled('date')) {
+            $dateInput = $request->date;
+            $dates = preg_split('/ (to|-) /', $dateInput);
+            
+            if (count($dates) == 2) {
+                $query->whereBetween('created_at', [trim($dates[0]) . ' 00:00:00', trim($dates[1]) . ' 23:59:59']);
+            } else {
+                $query->whereDate('created_at', trim($dates[0]));
+            }
+        }
+
+        $activities = $query->get();
+        $filename = "Laporan_Aktivitas_" . date('d-m-Y_His') . ".xls";
+
+        $headers = [
+            "Content-type"        => "application/vnd.ms-excel",
+            "Content-Disposition" => "attachment; filename=$filename",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        ];
+
+        $callback = function() use($activities) {
+            // Output HTML table with Excel-specific XML/CSS for better styling
+            echo "<html>
+                    <head>
+                        <meta charset='utf-8'>
+                        <style>
+                            .head { background-color: #0d6efd; color: #ffffff; font-weight: bold; text-align: center; }
+                            .cell { border: 1px solid #dee2e6; padding: 5px; }
+                            .center { text-align: center; }
+                            .bold { font-weight: bold; }
+                        </style>
+                    </head>
+                    <body>
+                        <table border='1'>
+                            <tr>
+                                <th class='head cell' width='50'>ID</th>
+                                <th class='head cell' width='120'>MODUL</th>
+                                <th class='head cell' width='100'>AKSI</th>
+                                <th class='head cell' width='200'>SUBJEK</th>
+                                <th class='head cell' width='150'>AKTOR</th>
+                                <th class='head cell' width='350'>DESKRIPSI</th>
+                                <th class='head cell' width='180'>WAKTU</th>
+                            </tr>";
+
+            foreach ($activities as $act) {
+                $eventLabel = match($act->event) {
+                    'created' => 'TAMBAH',
+                    'updated' => 'UBAH',
+                    'deleted' => 'HAPUS',
+                    'login'   => 'LOGIN',
+                    'logout'  => 'LOGOUT',
+                    default   => strtoupper($act->event)
+                };
+
+                $subject = class_basename($act->subject_type ?? 'System');
+                $causer = $act->causer ? $act->causer->name : 'System';
+                
+                echo "<tr>
+                        <td class='cell center'>{$act->id}</td>
+                        <td class='cell center'>".strtoupper($act->log_name)."</td>
+                        <td class='cell center bold'>{$eventLabel}</td>
+                        <td class='cell'>{$subject} (#{$act->subject_id})</td>
+                        <td class='cell'>{$causer}</td>
+                        <td class='cell'>{$act->description}</td>
+                        <td class='cell center'>{$act->created_at->format('d/m/Y H:i:s')}</td>
+                      </tr>";
+            }
+            echo "      </table>
+                    </body>
+                  </html>";
+        };
+
+        return response()->stream($callback, 200, $headers);
+    }
 }

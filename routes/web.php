@@ -131,6 +131,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('settings/backups/settings', [\App\Http\Controllers\SettingController::class, 'updateBackup'])->name('settings.update-backup');
             Route::post('settings/backups', [\App\Http\Controllers\SettingController::class, 'runBackup'])->name('settings.run-backup');
             Route::get('settings/backups/history', [\App\Http\Controllers\SettingController::class, 'getBackupHistoryHtml'])->name('settings.backup-history');
+            Route::get('settings/activities', [\App\Http\Controllers\SettingController::class, 'activities'])->name('settings.activities');
+            Route::get('settings/activities/export', [\App\Http\Controllers\SettingController::class, 'exportActivities'])->name('settings.activities.export');
             Route::get('settings/backups/download/{id}', [\App\Http\Controllers\SettingController::class, 'downloadBackup'])->name('settings.download-backup');
             Route::delete('settings/backups/delete/{id}', [\App\Http\Controllers\SettingController::class, 'deleteBackup'])->name('settings.delete-backup');
 

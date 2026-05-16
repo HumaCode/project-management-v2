@@ -2,6 +2,7 @@
     @push('css')
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
+        <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/project.css') }}">
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/setting.css') }}?v={{ time() }}">
         <style>
             .pg-hd { display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
@@ -661,51 +662,69 @@
         </div>
 
         <!-- Log Aktivitas Sistem -->
-        <div class="sec-card" data-aos="fade-up" data-aos-delay="80">
-            <div class="sec-card-hd">
+        <div class="tbl-card" data-aos="fade-up" data-aos-delay="80" style="margin-top: 30px;">
+            <div class="sec-card-hd" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
                 <div class="sec-card-title"><i class="bi bi-journal-code"></i> Log Aktivitas Sistem</div>
                 <div class="bk-actions">
-                    <button class="btn-bk"><i class="bi bi-filter"></i> Filter</button>
-                    <button class="btn-bk"><i class="bi bi-download"></i> Export</button>
+                    <button type="button" class="btn-bk" id="btnToggleFilter"><i class="bi bi-filter"></i> Filter</button>
+                    <button type="button" class="btn-bk" id="btnExportLog" data-url="{{ route('settings.activities.export') }}"><i class="bi bi-download"></i> Export</button>
                 </div>
             </div>
-            <div class="sec-card-body p-0 overflow-auto">
-                <table class="log-table">
-                    <thead>
-                        <tr>
-                            <th>Tipe</th>
-                            <th>Event</th>
-                            <th>Detail</th>
-                            <th>Waktu</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td><span class="log-type lt-ok"><i class="bi bi-check-circle-fill"></i></span></td>
-                            <td><strong>Backup berhasil</strong></td>
-                            <td>backup_2025-03-08_02-00.sql</td>
-                            <td>2025-03-08 02:00</td>
-                        </tr>
-                        <tr>
-                            <td><span class="log-type lt-info"><i class="bi bi-gear-fill"></i></span></td>
-                            <td><strong>Setting disimpan</strong></td>
-                            <td>Profil sistem diperbarui oleh Admin</td>
-                            <td>2025-03-07 14:32</td>
-                        </tr>
-                        <tr>
-                            <td><span class="log-type lt-warn"><i class="bi bi-exclamation-triangle-fill"></i></span></td>
-                            <td><strong>SMTP gagal</strong></td>
-                            <td>Koneksi ke smtp.gmail.com timeout</td>
-                            <td>2025-03-07 09:15</td>
-                        </tr>
-                        <tr>
-                            <td><span class="log-type lt-err"><i class="bi bi-x-circle-fill"></i></span></td>
-                            <td><strong>Login gagal</strong></td>
-                            <td>5x percobaan dari IP 10.0.1.55</td>
-                            <td>2025-03-06 22:44</td>
-                        </tr>
-                    </tbody>
-                </table>
+
+            <!-- Filter Bar -->
+            <div id="filterBar" class="p-3" style="display: none; background: rgba(0,200,255,0.02); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div class="row g-2">
+                    <div class="col-md-4">
+                        <div class="input-with-icon">
+                            <input type="text" class="fi datetimepicker" id="filterDate" placeholder="Pilih Rentang Tanggal..." readonly>
+                            <i class="bi bi-calendar3"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="filter-select w-100" id="filterEvent" style="height: 38px;">
+                            <option value="">Semua Aksi</option>
+                            <option value="created">Menambahkan</option>
+                            <option value="updated">Mengubah</option>
+                            <option value="deleted">Menghapus</option>
+                            <option value="login">Login</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="filter-select w-100" id="filterModule" style="height: 38px;">
+                            <option value="">Semua Modul</option>
+                            <option value="default">System Log</option>
+                            <option value="project">Project</option>
+                            <option value="document">Document</option>
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button class="btn-bk w-100 btn-bk-rm" id="btnResetFilter" style="height: 38px;"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Export Bar -->
+            <div id="exportBar" class="p-3" style="display: none; background: rgba(167, 139, 250, 0.03); border-bottom: 1px solid rgba(255,255,255,0.05);">
+                <div class="row g-2 align-items-center">
+                    <div class="col-md-8">
+                        <div class="input-with-icon">
+                            <input type="text" class="fi datetimepicker" id="exportDate" placeholder="Pilih Rentang Tanggal untuk Export (Kosongkan = Semua)..." readonly>
+                            <i class="bi bi-calendar-event"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <button class="btn-bk w-100" id="btnDownloadExcel" style="height: 38px; background: rgba(0, 229, 160, 0.1); border-color: rgba(0, 229, 160, 0.2); color: var(--ok);"><i class="bi bi-file-earmark-excel"></i> Download Excel</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="systemActivitiesContainer" data-url="{{ route('settings.activities') }}" style="transition: opacity .3s ease;">
+                <div class="text-center py-5">
+                    <div class="spinner-border text-cyan spinner-border-sm" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <div class="mt-2" style="font-size: 12px; color: var(--dim); font-family: var(--mono);">SYNCHRONIZING LOGS...</div>
+                </div>
             </div>
         </div>
     </div>

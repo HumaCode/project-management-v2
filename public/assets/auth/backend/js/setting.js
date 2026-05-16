@@ -330,4 +330,121 @@ $(function () {
         });
     });
 
+    // Load System Activities
+    function loadSystemActivities(page = 1) {
+        const container = $('#systemActivitiesContainer');
+        const url = container.data('url');
+
+        if (!url) return;
+
+        // Get filter values
+        const filters = {
+            page: page,
+            date: $('#filterDate').val(),
+            event: $('#filterEvent').val(),
+            module: $('#filterModule').val()
+        };
+
+        container.css('opacity', '0.5');
+
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: filters,
+            success: function(response) {
+                if (response.status === 'success') {
+                    container.html(response.html);
+                    if (typeof AOS !== 'undefined') AOS.refresh();
+                }
+            },
+            error: function(xhr) {
+                container.html('<div class="text-center py-5 text-danger">Gagal memuat log aktivitas</div>');
+            },
+            complete: function() {
+                container.css('opacity', '1');
+            }
+        });
+    }
+
+    // Toggle Filter Bar
+    $(document).on('click', '#btnToggleFilter', function() {
+        $('#exportBar').hide();
+        $('#filterBar').slideToggle(300);
+    });
+
+    // Toggle Export Bar
+    $(document).on('click', '#btnExportLog', function() {
+        $('#filterBar').hide();
+        $('#exportBar').slideToggle(300);
+    });
+
+    // Handle Download Excel
+    $(document).on('click', '#btnDownloadExcel', function() {
+        const baseUrl = $('#btnExportLog').data('url');
+        const date = $('#exportDate').val();
+        
+        if (!baseUrl) {
+            console.error('Export URL not found');
+            return;
+        }
+
+        const exportUrl = new URL(baseUrl, window.location.origin);
+        if (date) exportUrl.searchParams.append('date', date);
+        
+        window.location.href = exportUrl.toString();
+    });
+
+    // Handle Filter Changes
+    $('#filterEvent, #filterModule').on('change', function() {
+        loadSystemActivities();
+    });
+
+    // Reset Filter
+    $('#btnResetFilter').on('click', function() {
+        $('#filterDate').val('');
+        $('#filterEvent').val('');
+        $('#filterModule').val('');
+        if ($('#filterDate').data('flatpickr')) {
+            $('#filterDate').data('flatpickr').clear();
+        }
+        loadSystemActivities();
+    });
+
+    // Initialize Flatpickr for Filter
+    if ($('#filterDate').length) {
+        const fp = flatpickr("#filterDate", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            conjunction: " to ",
+            locale: "id",
+            onChange: function(selectedDates, dateStr) {
+                if (selectedDates.length === 2 || selectedDates.length === 0) {
+                    loadSystemActivities();
+                }
+            }
+        });
+        $('#filterDate').data('flatpickr', fp);
+    }
+
+    // Initialize Flatpickr for Export
+    if ($('#exportDate').length) {
+        flatpickr("#exportDate", {
+            mode: "range",
+            dateFormat: "Y-m-d",
+            conjunction: " to ",
+            locale: "id"
+        });
+    }
+
+    // Handle Activity Pagination
+    $(document).on('click', '#systemActivitiesContainer .pagination a', function(e) {
+        e.preventDefault();
+        const page = $(this).attr('href').split('page=')[1];
+        loadSystemActivities(page);
+    });
+
+    // Initial Load
+    if ($('#systemActivitiesContainer').length) {
+        loadSystemActivities();
+    }
 });

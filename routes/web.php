@@ -115,6 +115,10 @@ Route::middleware(['auth'])->group(function () {
             Route::post('laporan/preview', [\App\Http\Controllers\ReportController::class, 'preview'])->name('reports.preview');
             Route::post('laporan/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('reports.generate');
             Route::delete('laporan/{id}', [\App\Http\Controllers\ReportController::class, 'destroy'])->name('reports.destroy');
+            
+            // Settings
+            Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
+            Route::post('settings/profile', [\App\Http\Controllers\SettingController::class, 'updateProfile'])->name('settings.update-profile');
 
         }
     );

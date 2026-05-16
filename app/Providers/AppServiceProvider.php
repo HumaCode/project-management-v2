@@ -82,6 +82,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        view()->composer('layouts.master', \App\Http\ViewComposers\SettingComposer::class);
+
         // Memodifikasi tampilan email Reset Password
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {
 

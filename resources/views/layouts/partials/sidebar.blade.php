@@ -1,9 +1,15 @@
 <aside class="sidebar" id="sidebar">
     <div class="sb-brand">
-        <div class="sb-logo"><i class="bi bi-diagram-3-fill"></i></div>
+        <div class="sb-logo">
+            @if(!empty($cms_settings['app_logo']))
+                <img src="{{ $cms_settings['app_logo'] }}" style="width:100%;height:100%;object-fit:contain" alt="Logo">
+            @else
+                <i class="bi bi-diagram-3-fill"></i>
+            @endif
+        </div>
         <div class="sb-title">
-            <span class="name">PMS</span>
-            <span class="sub">Project Management</span>
+            <span class="name">{{ $cms_settings['app_name'] ?? 'PMS' }}</span>
+            <span class="sub">PROJECT MANAGEMENT</span>
         </div>
     </div>
     <nav class="sb-nav">

@@ -162,6 +162,12 @@
         - Integrated **SCA.dialog** for report deletion with instant UI feedback.
         - **Secure Downloads**: Encapsulated download logic behind a validated controller route to protect private assets.
 
+- [x] **System Maintenance Module (Global Lock)**:
+    - [x] **Database Persistence**: Integration with `settings` table for `maintenance_mode`, `message`, and `end_time`.
+    - [x] **Middleware Control**: Implemented `CheckMaintenanceMode` with `dev` role bypass and auto-abort logic.
+    - [x] **Premium UI/UX**: Professional maintenance page with Glassmorphism and Neon Orange theme.
+    - [x] **Real-time Countdown**: Integrated JavaScript-based countdown timer for estimated completion.
+    - [x] **Admin Integration**: AJAX-driven toggle and Flatpickr datetime selection in the Admin Panel.
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).

@@ -23,16 +23,73 @@ $(function () {
 
     $('#formProfile').on('submit', function (e) {
         e.preventDefault();
-        const btn = $('#btnSaveProfile');
+        saveSettings(this, '#btnSaveProfile', "/settings/profile");
+    });
+
+    $('#formSecurity').on('submit', function (e) {
+        e.preventDefault();
+        saveSettings(this, '#btnSaveSecurity', "/settings/security");
+    });
+
+    $('#formEmail').on('submit', function (e) {
+        e.preventDefault();
+        saveSettings(this, '#btnSaveEmail', "/settings/email");
+    });
+
+    $('#btnTestMail').on('click', function () {
+        const btn = $(this);
+        const originalHtml = btn.html();
+        const recipient = $('#testEmailRecipient').val();
+
+        if (!recipient) {
+            SCA.toast({ type: 'warning', title: 'Peringatan', message: 'Masukkan email penerima terlebih dahulu' });
+            return;
+        }
+
+        // Ambil data dari form SMTP
+        const formData = new FormData($('#formEmail')[0]);
+        formData.append('email', recipient);
+
+        btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat spin"></i> Mengirim...');
+
+        $.ajax({
+            url: "/settings/email/test",
+            method: "POST",
+            data: formData,
+            processData: false,
+            contentType: false,
+            success: function (res) {
+                if (res.status === 'success') {
+                    SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                }
+            },
+            error: function (err) {
+                let msg = "Gagal mengirim email test";
+                if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                SCA.toast({ type: 'danger', title: 'Error', message: msg });
+            },
+            complete: function () {
+                btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+
+    $('#formMaintenance').on('submit', function (e) {
+        e.preventDefault();
+        saveSettings(this, '#btnSaveMaintenance', "/settings/maintenance");
+    });
+
+    function saveSettings(form, btnSelector, url) {
+        const btn = $(btnSelector);
         const originalHtml = btn.html();
 
         // Loading state
         btn.prop('disabled', true).html('<span><i class="bi bi-arrow-repeat spin"></i> Menyimpan...</span>');
 
-        const formData = new FormData(this);
+        const formData = new FormData(form);
 
         $.ajax({
-            url: "/settings/profile",
+            url: url,
             method: "POST",
             data: formData,
             processData: false,
@@ -51,7 +108,7 @@ $(function () {
                 btn.prop('disabled', false).html(originalHtml);
             }
         });
-    });
+    }
 
     // Image Preview
     $('#logoUpload').on('change', function () {
@@ -92,14 +149,17 @@ $(function () {
         }
     });
 
-    // Simulation for other buttons (UI Feedback)
-    $('.btn-save:not(#btnSaveProfile)').on('click', function () {
-        const btn = $(this);
-        const originalHtml = btn.html();
-        btn.prop('disabled', true).html('<span><i class="bi bi-arrow-repeat spin"></i> Menyimpan...</span>');
-        setTimeout(() => {
-            btn.prop('disabled', false).html(originalHtml);
-            SCA.toast({ type: 'success', title: 'Berhasil', message: 'Pengaturan berhasil diperbarui' });
-        }, 1200);
-    });
+    // ══════════════════════════════════════════════
+    // INITIALIZATIONS
+    // ══════════════════════════════════════════════
+    if (typeof flatpickr !== 'undefined') {
+        $(".datetimepicker").flatpickr({
+            enableTime: true,
+            dateFormat: "Y-m-d H:i",
+            time_24hr: true,
+            minDate: "today",
+            locale: "id"
+        });
+    }
+
 });

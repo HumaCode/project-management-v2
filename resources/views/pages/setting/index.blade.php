@@ -1,5 +1,7 @@
 <x-master-layout>
     @push('css')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+        <link rel="stylesheet" type="text/css" href="https://npmcdn.com/flatpickr/dist/themes/dark.css">
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/setting.css') }}?v={{ time() }}">
         <style>
             .pg-hd { display: flex !important; justify-content: space-between !important; align-items: center !important; flex-wrap: wrap; gap: 20px; margin-bottom: 30px; }
@@ -22,10 +24,16 @@
             .bc .here { color: var(--cyan); font-weight: 600; }
             .bc a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
             .bc a:hover { color: var(--cyan); }
+            
+            .input-with-icon { position: relative; }
+            .input-with-icon i { position: absolute; right: 15px; top: 50%; transform: translateY(-50%); color: var(--muted); pointer-events: none; }
+            .fi.datetimepicker { padding-right: 40px !important; }
         </style>
     @endpush
 
     @push('js')
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://npmcdn.com/flatpickr/dist/l10n/id.js"></script>
         <script src="{{ asset('assets/auth/backend/js/setting.js') }}?v={{ time() }}"></script>
     @endpush
 
@@ -64,7 +72,7 @@
                     <span class="cat-tag">Deskripsi</span>
                 </div>
                 <div class="cat-footer">
-                    <span class="cat-count">5 pengaturan</span>
+                    <span class="cat-count">{{ $counts['profile'] ?? 0 }} pengaturan</span>
                     <div class="cat-arrow"><i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
@@ -81,7 +89,7 @@
                     <span class="cat-tag">Login Attempt</span>
                 </div>
                 <div class="cat-footer">
-                    <span class="cat-count">8 pengaturan</span>
+                    <span class="cat-count">{{ $counts['security'] ?? 0 }} pengaturan</span>
                     <div class="cat-arrow"><i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
@@ -98,7 +106,7 @@
                     <span class="cat-tag">Template</span>
                 </div>
                 <div class="cat-footer">
-                    <span class="cat-count">6 pengaturan</span>
+                    <span class="cat-count">{{ $counts['email'] ?? 0 }} pengaturan</span>
                     <div class="cat-arrow"><i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
@@ -114,7 +122,7 @@
                     <span class="cat-tag">Log Sistem</span>
                 </div>
                 <div class="cat-footer">
-                    <span class="cat-count">4 pengaturan</span>
+                    <span class="cat-count">{{ $counts['maintenance'] ?? 0 }} pengaturan</span>
                     <div class="cat-arrow"><i class="bi bi-arrow-right"></i></div>
                 </div>
             </div>
@@ -295,93 +303,106 @@
             <span class="det-hd-badge" style="color:var(--ok)"><i class="bi bi-circle-fill" style="font-size:6px;color:var(--ok);margin-right:4px"></i>Terkonfigurasi</span>
         </div>
 
-        <!-- Password Policy -->
-        <div class="sec-card" data-aos="fade-up">
-            <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-key-fill"></i> Kebijakan Password</div>
-            </div>
-            <div class="sec-card-body">
-                <div class="row g-3">
-                    <div class="col-12 col-md-4">
-                        <div class="fg">
-                            <label class="fl">Panjang Minimum</label>
-                            <input type="number" class="fi" value="8" min="6" max="32" />
-                            <div class="fg-note">Minimal 6 karakter</div>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="fg">
-                            <label class="fl">Karakter Spesial</label>
-                            <div class="sw-row">
-                                <div class="sw-left">
-                                    <div class="sw-title">Wajibkan Simbol</div>
-                                </div>
-                                <label class="sw-wrap sw-ok">
-                                    <input type="checkbox" checked />
-                                    <span class="sw-track"></span>
-                                </label>
+        <form id="formSecurity">
+            @csrf
+            <!-- Password Policy -->
+            <div class="sec-card" data-aos="fade-up">
+                <div class="sec-card-hd">
+                    <div class="sec-card-title"><i class="bi bi-key-fill"></i> Kebijakan Password</div>
+                </div>
+                <div class="sec-card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-4">
+                            <div class="fg">
+                                <label class="fl">Panjang Minimum</label>
+                                <input type="number" name="password_min_length" class="fi" value="{{ $settings['password_min_length'] ?? '8' }}" min="6" max="32" />
+                                <div class="fg-note">Minimal 6 karakter</div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="fg">
-                            <label class="fl">Kombinasi Angka</label>
-                            <div class="sw-row">
-                                <div class="sw-left">
-                                    <div class="sw-title">Wajibkan Angka</div>
+                        <div class="col-12 col-md-4">
+                            <div class="fg">
+                                <label class="fl">Karakter Spesial</label>
+                                <div class="sw-row">
+                                    <div class="sw-left">
+                                        <div class="sw-title">Wajibkan Simbol</div>
+                                    </div>
+                                    <label class="sw-wrap sw-ok">
+                                        <input type="checkbox" name="password_require_symbol" value="1" {{ ($settings['password_require_symbol'] ?? '1') == '1' ? 'checked' : '' }} />
+                                        <span class="sw-track"></span>
+                                    </label>
                                 </div>
-                                <label class="sw-wrap sw-ok">
-                                    <input type="checkbox" checked />
-                                    <span class="sw-track"></span>
-                                </label>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-4">
+                            <div class="fg">
+                                <label class="fl">Kombinasi Angka</label>
+                                <div class="sw-row">
+                                    <div class="sw-left">
+                                        <div class="sw-title">Wajibkan Angka</div>
+                                    </div>
+                                    <label class="sw-wrap sw-ok">
+                                        <input type="checkbox" name="password_require_number" value="1" {{ ($settings['password_require_number'] ?? '1') == '1' ? 'checked' : '' }} />
+                                        <span class="sw-track"></span>
+                                    </label>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Global Auth -->
-        <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
-            <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-shield-lock-fill"></i> Global Authentication</div>
+            <!-- Global Auth -->
+            <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
+                <div class="sec-card-hd">
+                    <div class="sec-card-title"><i class="bi bi-shield-lock-fill"></i> Global Authentication</div>
+                </div>
+                <div class="sec-card-body">
+                    <div class="sw-row">
+                        <div class="sw-left">
+                            <div class="sw-title">Wajibkan 2FA / OTP Login</div>
+                            <div class="sw-sub">Gunakan verifikasi kode melalui Email untuk setiap login.</div>
+                        </div>
+                        <label class="sw-wrap sw-ok">
+                            <input type="checkbox" name="enable_otp" value="1" {{ ($settings['enable_otp'] ?? '0') == '1' ? 'checked' : '' }} />
+                            <span class="sw-track"></span>
+                        </label>
+                    </div>
+                    <div class="sw-row">
+                        <div class="sw-left">
+                            <div class="sw-title">Login via Google</div>
+                            <div class="sw-sub">Izinkan pengguna masuk menggunakan akun Google (Socialite).</div>
+                        </div>
+                        <label class="sw-wrap sw-ok">
+                            <input type="checkbox" name="enable_google_login" value="1" {{ ($settings['enable_google_login'] ?? '1') == '1' ? 'checked' : '' }} />
+                            <span class="sw-track"></span>
+                        </label>
+                    </div>
+                    <div class="sw-row">
+                        <div class="sw-left">
+                            <div class="sw-title">Izinkan Registrasi Publik</div>
+                            <div class="sw-sub">Buka form pendaftaran untuk pengguna baru di halaman login.</div>
+                        </div>
+                        <label class="sw-wrap sw-ok">
+                            <input type="checkbox" name="allow_registration" value="1" {{ ($settings['allow_registration'] ?? '1') == '1' ? 'checked' : '' }} />
+                            <span class="sw-track"></span>
+                        </label>
+                    </div>
+                    <div class="sw-row">
+                        <div class="sw-left">
+                            <div class="sw-title">Approval Admin</div>
+                            <div class="sw-sub">Setiap user baru yang mendaftar harus disetujui admin sebelum aktif.</div>
+                        </div>
+                        <label class="sw-wrap sw-ok">
+                            <input type="checkbox" name="admin_approval" value="1" {{ ($settings['admin_approval'] ?? '1') == '1' ? 'checked' : '' }} />
+                            <span class="sw-track"></span>
+                        </label>
+                    </div>
+                    <div class="save-row">
+                        <button type="submit" class="btn-save" id="btnSaveSecurity"><span><i class="bi bi-floppy-fill"></i> Simpan Keamanan</span></button>
+                    </div>
+                </div>
             </div>
-            <div class="sec-card-body">
-                <div class="sw-row">
-                    <div class="sw-left">
-                        <div class="sw-title">Wajibkan 2FA (Semua User)</div>
-                        <div class="sw-sub">Paksa seluruh pengguna untuk mengaktifkan OTP via Email/App.</div>
-                    </div>
-                    <label class="sw-wrap">
-                        <input type="checkbox" />
-                        <span class="sw-track"></span>
-                    </label>
-                </div>
-                <div class="sw-row">
-                    <div class="sw-left">
-                        <div class="sw-title">Izinkan Registrasi Publik</div>
-                        <div class="sw-sub">Buka form pendaftaran untuk pengguna baru di halaman login.</div>
-                    </div>
-                    <label class="sw-wrap sw-ok">
-                        <input type="checkbox" checked />
-                        <span class="sw-track"></span>
-                    </label>
-                </div>
-                <div class="sw-row">
-                    <div class="sw-left">
-                        <div class="sw-title">Approval Admin</div>
-                        <div class="sw-sub">Setiap user baru yang mendaftar harus disetujui admin.</div>
-                    </div>
-                    <label class="sw-wrap sw-ok">
-                        <input type="checkbox" checked />
-                        <span class="sw-track"></span>
-                    </label>
-                </div>
-                <div class="save-row">
-                    <button class="btn-save"><span><i class="bi bi-floppy-fill"></i> Simpan Keamanan</span></button>
-                </div>
-            </div>
-        </div>
+        </form>
     </div>
 
     <!-- ══════════════════════════════════════════════
@@ -398,74 +419,83 @@
             <span class="det-hd-badge" style="color:var(--warn)"><i class="bi bi-circle-fill" style="font-size:6px;color:var(--ok);margin-right:4px"></i>Connected</span>
         </div>
 
-        <div class="sec-card" data-aos="fade-up">
-            <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-server"></i> SMTP Server Configuration</div>
-            </div>
-            <div class="sec-card-body">
-                <div class="row g-3">
-                    <div class="col-12 col-md-8">
-                        <div class="fg">
-                            <label class="fl">SMTP Host</label>
-                            <input type="text" class="fi" value="smtp.pmssystem.id" />
+        <form id="formEmail">
+            @csrf
+            <div class="sec-card" data-aos="fade-up">
+                <div class="sec-card-hd">
+                    <div class="sec-card-title"><i class="bi bi-server"></i> SMTP Server Configuration</div>
+                </div>
+                <div class="sec-card-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-8">
+                            <div class="fg">
+                                <label class="fl">SMTP Host</label>
+                                <input type="text" name="mail_host" class="fi" value="{{ $settings['mail_host'] ?? '' }}" placeholder="e.g. smtp.mailtrap.io" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-4">
-                        <div class="fg">
-                            <label class="fl">Port</label>
-                            <input type="number" class="fi" value="587" />
+                        <div class="col-12 col-md-4">
+                            <div class="fg">
+                                <label class="fl">Port</label>
+                                <input type="number" name="mail_port" class="fi" value="{{ $settings['mail_port'] ?? '2525' }}" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="fg">
-                            <label class="fl">Username</label>
-                            <input type="text" class="fi" value="notifications@pmssystem.id" />
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">Username</label>
+                                <input type="text" name="mail_username" class="fi" value="{{ $settings['mail_username'] ?? '' }}" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="fg">
-                            <label class="fl">Password</label>
-                            <div class="pw-wrap">
-                                <input type="password" class="fi" value="••••••••••••" />
-                                <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">Password</label>
+                                <div class="pw-wrap">
+                                    <input type="password" name="mail_password" class="fi" value="{{ $settings['mail_password'] ?? '' }}" />
+                                    <button type="button" class="pw-eye"><i class="bi bi-eye"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">Encryption</label>
+                                <select name="mail_encryption" class="fsl">
+                                    <option value="none" {{ ($settings['mail_encryption'] ?? 'tls') == 'none' ? 'selected' : '' }}>None</option>
+                                    <option value="ssl" {{ ($settings['mail_encryption'] ?? 'tls') == 'ssl' ? 'selected' : '' }}>SSL</option>
+                                    <option value="tls" {{ ($settings['mail_encryption'] ?? 'tls') == 'tls' ? 'selected' : '' }}>TLS</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">From Address</label>
+                                <input type="email" name="mail_from_address" class="fi" value="{{ $settings['mail_from_address'] ?? '' }}" />
+                            </div>
+                        </div>
+                        <div class="col-12">
+                            <div class="fg">
+                                <label class="fl">From Name</label>
+                                <input type="text" name="mail_from_name" class="fi" value="{{ $settings['mail_from_name'] ?? 'Project Management System' }}" />
                             </div>
                         </div>
                     </div>
-                    <div class="col-12 col-md-6">
-                        <div class="fg">
-                            <label class="fl">Encryption</label>
-                            <select class="fsl">
-                                <option>None</option>
-                                <option>SSL</option>
-                                <option selected>TLS</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-12 col-md-6">
-                        <div class="fg">
-                            <label class="fl">From Address</label>
-                            <input type="email" class="fi" value="noreply@pmssystem.id" />
-                        </div>
-                    </div>
                 </div>
             </div>
-        </div>
 
-        <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
-            <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-send-check-fill"></i> Test Email Delivery</div>
-            </div>
-            <div class="sec-card-body">
-                <p style="font-size:12.5px;color:var(--dim);margin-bottom:12px">Kirim email percobaan untuk memastikan konfigurasi SMTP Anda sudah benar.</p>
-                <div class="smtp-test-row">
-                    <input type="email" class="fi" placeholder="Masukkan email penerima..." />
-                    <button class="btn-test"><i class="bi bi-send-fill"></i> Kirim Test</button>
+            <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
+                <div class="sec-card-hd">
+                    <div class="sec-card-title"><i class="bi bi-send-check-fill"></i> Test Email Delivery</div>
                 </div>
-                <div class="save-row">
-                    <button class="btn-save"><span><i class="bi bi-floppy-fill"></i> Simpan SMTP</span></button>
+                <div class="sec-card-body">
+                    <p style="font-size:12.5px;color:var(--dim);margin-bottom:12px">Kirim email percobaan untuk memastikan konfigurasi SMTP Anda sudah benar.</p>
+                    <div class="smtp-test-row">
+                        <input type="email" id="testEmailRecipient" class="fi" placeholder="Masukkan email penerima..." />
+                        <button type="button" class="btn-test" id="btnTestMail"><i class="bi bi-send-fill"></i> Kirim Test</button>
+                    </div>
+                    <div class="save-row">
+                        <button type="submit" class="btn-save" id="btnSaveEmail"><span><i class="bi bi-floppy-fill"></i> Simpan SMTP</span></button>
+                    </div>
                 </div>
             </div>
-        </div>
+        </form>
     </div>
 
     <!-- ══════════════════════════════════════════════
@@ -481,105 +511,222 @@
             </div>
         </div>
 
-        <!-- Maintenance Mode -->
-        <div class="sec-card" data-aos="fade-up">
-            <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-tools"></i> Maintenance Mode</div>
-            </div>
-            <div class="sec-card-body">
-                <div class="maint-toggle">
-                    <div class="maint-ico"><i class="bi bi-cone-striped"></i></div>
-                    <div class="maint-info">
-                        <div class="mt-title">Aktifkan Mode Pemeliharaan</div>
-                        <div class="mt-sub">Aplikasi hanya dapat diakses oleh Admin.</div>
+        <div class="row g-4">
+            <div class="col-12 col-lg-7">
+                <!-- Backup Otomatis -->
+                <div class="sec-card" data-aos="fade-up">
+                    <div class="sec-card-hd">
+                        <div class="sec-card-title"><i class="bi bi-database-fill-down"></i> Backup Otomatis</div>
+                        <button class="btn-save" style="height:34px;padding:0 14px;font-size:12.5px" data-bs-toggle="modal" data-bs-target="#backupModal">
+                            <span><i class="bi bi-database-fill-down"></i> Backup Sekarang</span>
+                        </button>
                     </div>
-                    <label class="sw-big">
-                        <input type="checkbox" id="maintToggle" />
-                        <span class="sw-big-track"></span>
-                    </label>
+                    <div class="sec-card-body">
+                        <div class="row g-3 mb-3">
+                            <div class="col-12 col-md-6">
+                                <div class="fg">
+                                    <label class="fl">Frekuensi Backup</label>
+                                    <select class="fsl">
+                                        <option>Setiap jam</option>
+                                        <option selected>Setiap hari</option>
+                                        <option>Setiap minggu</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="fg">
+                                    <label class="fl">Jam Backup</label>
+                                    <input type="time" class="fi" value="02:00" />
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="fg">
+                                    <label class="fl">Simpan Backup Selama</label>
+                                    <select class="fsl">
+                                        <option>7 hari</option>
+                                        <option selected>30 hari</option>
+                                        <option>90 hari</option>
+                                        <option>Selamanya</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <div class="fg">
+                                    <label class="fl">Lokasi Penyimpanan</label>
+                                    <select class="fsl">
+                                        <option selected>Server Lokal</option>
+                                        <option>Google Drive</option>
+                                        <option>S3 / MinIO</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="sw-row">
+                            <div class="sw-left">
+                                <div class="sw-title">Backup Otomatis Aktif</div>
+                                <div class="sw-sub">Jalankan backup sesuai jadwal yang ditentukan</div>
+                            </div>
+                            <label class="sw-wrap sw-ok"><input type="checkbox" checked /><span class="sw-track"></span></label>
+                        </div>
+                        <div class="sw-row">
+                            <div class="sw-left">
+                                <div class="sw-title">Notifikasi Email setelah Backup</div>
+                                <div class="sw-sub">Kirim laporan hasil backup ke admin</div>
+                            </div>
+                            <label class="sw-wrap sw-ok"><input type="checkbox" checked /><span class="sw-track"></span></label>
+                        </div>
+                        <div class="save-row">
+                            <button class="btn-cancel">Reset</button>
+                            <button class="btn-save"><span><i class="bi bi-floppy-fill"></i> Simpan Jadwal</span></button>
+                        </div>
+                    </div>
                 </div>
-                <div class="warn-box" id="maintWarn" style="display:none;margin-bottom:14px">
-                    <i class="bi bi-exclamation-triangle-fill"></i>
-                    <p><strong>Perhatian:</strong> Pengguna umum akan dialihkan ke halaman "Maintenance" dan tidak dapat melakukan aktivitas apapun sampai mode ini dimatikan.</p>
+
+                <!-- Riwayat Backup -->
+                <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
+                    <div class="sec-card-hd">
+                        <div class="sec-card-title"><i class="bi bi-clock-history"></i> Riwayat Backup</div>
+                        <span class="det-hd-badge">4 file</span>
+                    </div>
+                    <div class="sec-card-body p-3">
+                        <div class="backup-card">
+                            <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
+                            <div>
+                                <div class="bk-nm">backup_2025-03-08_02-00.sql</div>
+                                <div class="bk-meta">8 Mar 2025 &bull; 02:00 &bull; 14.2 MB</div>
+                            </div>
+                            <div class="bk-actions">
+                                <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i> Unduh</button>
+                                <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
+                            </div>
+                        </div>
+                        <div class="backup-card">
+                            <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
+                            <div>
+                                <div class="bk-nm">backup_2025-03-07_02-00.sql</div>
+                                <div class="bk-meta">7 Mar 2025 &bull; 02:00 &bull; 13.9 MB</div>
+                            </div>
+                            <div class="bk-actions">
+                                <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i> Unduh</button>
+                                <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="fg">
-                    <label class="fl">Pesan Maintenance kustom</label>
-                    <textarea class="fta" placeholder="Contoh: Kami sedang melakukan pembaruan sistem rutin. Mohon kembali lagi nanti."></textarea>
+            </div>
+
+            <div class="col-12 col-lg-5">
+                <div class="sec-card" data-aos="fade-up">
+                    <div class="sec-card-hd">
+                        <div class="sec-card-title"><i class="bi bi-cone-striped"></i> Mode Maintenance</div>
+                    </div>
+                    <div class="sec-card-body">
+                        <form id="formMaintenance">
+                            @csrf
+                            <div class="maint-toggle">
+                                <div class="maint-ico"><i class="bi bi-cone-striped"></i></div>
+                                <div class="maint-info">
+                                    <div class="mt-title">Mode Maintenance</div>
+                                    <div class="mt-sub">Redirect semua user ke halaman maintenance</div>
+                                </div>
+                                <label class="sw-big">
+                                    <input type="checkbox" name="maintenance_mode" id="maintToggle" {{ ($settings['maintenance_mode'] ?? '0') == '1' ? 'checked' : '' }} />
+                                    <span class="sw-big-track"></span>
+                                </label>
+                            </div>
+                            <div class="fg">
+                                <label class="fl">Pesan Maintenance</label>
+                                <textarea class="fta" name="maintenance_message" placeholder="Sistem sedang dalam pemeliharaan. Kami akan segera kembali. Terima kasih atas kesabaran Anda.">{{ $settings['maintenance_message'] ?? '' }}</textarea>
+                            </div>
+                            <div class="fg">
+                                <label class="fl">Estimasi Selesai</label>
+                                <div class="input-with-icon">
+                                    <input type="text" class="fi datetimepicker" id="maintEndTime" name="maintenance_end_time" value="{{ $settings['maintenance_end_time'] ?? '' }}" placeholder="Pilih tanggal dan jam..." />
+                                    <i class="bi bi-calendar-event"></i>
+                                </div>
+                            </div>
+                            <div class="save-row">
+                                <button type="submit" class="btn-save" id="btnSaveMaintenance"><span><i class="bi bi-floppy-fill"></i> Simpan</span></button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-                <div class="save-row">
-                    <button class="btn-save"><span><i class="bi bi-power"></i> Update Status</span></button>
+
+                <!-- Zona Bahaya -->
+                <div class="sec-card danger-card" data-aos="fade-up" data-aos-delay="40">
+                    <div class="sec-card-hd">
+                        <div class="sec-card-title text-danger"><i class="bi bi-fire"></i> Zona Bahaya</div>
+                    </div>
+                    <div class="sec-card-body">
+                        <div class="warn-box mb-3">
+                            <i class="bi bi-exclamation-triangle-fill"></i>
+                            <p>Tindakan di bawah bersifat <strong>permanen dan tidak dapat dibatalkan</strong>. Lakukan hanya jika benar-benar diperlukan.</p>
+                        </div>
+                        <div class="sw-row border-0">
+                            <div class="sw-left">
+                                <div class="sw-title">Hapus Cache Sistem</div>
+                                <div class="sw-sub">Bersihkan cache aplikasi & query</div>
+                            </div>
+                            <button class="btn-bk btn-bk-rm" style="height:32px;padding:0 12px"><i class="bi bi-trash3-fill"></i> Hapus Cache</button>
+                        </div>
+                        <div class="sw-row border-0">
+                            <div class="sw-left">
+                                <div class="sw-title">Reset ke Default</div>
+                                <div class="sw-sub">Kembalikan semua pengaturan</div>
+                            </div>
+                            <button class="btn-bk btn-bk-rm" style="height:32px;padding:0 12px"><i class="bi bi-arrow-counterclockwise"></i> Reset</button>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        <!-- Auto Backup -->
-        <div class="sec-card" data-aos="fade-up" data-aos-delay="40">
+        <!-- Log Aktivitas Sistem -->
+        <div class="sec-card" data-aos="fade-up" data-aos-delay="80">
             <div class="sec-card-hd">
-                <div class="sec-card-title"><i class="bi bi-clock-history"></i> Automatic Database Backup</div>
-                <button class="btn-save" data-bs-toggle="modal" data-bs-target="#backupModal" style="height:32px;padding:0 12px;font-size:11.5px">
-                    <span><i class="bi bi-play-circle-fill"></i> Backup Sekarang</span>
-                </button>
-            </div>
-            <div class="sec-card-body">
-                <div class="sw-row">
-                    <div class="sw-left">
-                        <div class="sw-title">Jadwalkan Backup Harian</div>
-                        <div class="sw-sub">Database akan di-backup setiap jam 02:00 WIB.</div>
-                    </div>
-                    <label class="sw-wrap sw-ok">
-                        <input type="checkbox" checked />
-                        <span class="sw-track"></span>
-                    </label>
-                </div>
-                <div class="fg mt-3">
-                    <label class="fl">Penyimpanan Cloud (S3/G Drive)</label>
-                    <div class="info-box ib-cyan">
-                        <i class="bi bi-info-circle-fill"></i>
-                        <p>Fitur sinkronisasi ke Google Drive sedang dalam tahap pengembangan (v2.1).</p>
-                    </div>
-                </div>
-
-                <div class="mt-4">
-                    <label class="fl">5 Backup Terakhir</label>
-                    <div class="backup-card">
-                        <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
-                        <div>
-                            <div class="bk-nm">db_backup_2026-05-15.sql.gz</div>
-                            <div class="bk-meta">Kemarin, 02:00 &bull; 12.4 MB</div>
-                        </div>
-                        <div class="bk-actions">
-                            <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i></button>
-                            <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
-                    <div class="backup-card">
-                        <div class="bk-ico"><i class="bi bi-file-earmark-zip-fill"></i></div>
-                        <div>
-                            <div class="bk-nm">db_backup_2026-05-14.sql.gz</div>
-                            <div class="bk-meta">14 Mei 2026, 02:00 &bull; 12.2 MB</div>
-                        </div>
-                        <div class="bk-actions">
-                            <button class="btn-bk btn-bk-dl"><i class="bi bi-download"></i></button>
-                            <button class="btn-bk btn-bk-rm"><i class="bi bi-trash3-fill"></i></button>
-                        </div>
-                    </div>
+                <div class="sec-card-title"><i class="bi bi-journal-code"></i> Log Aktivitas Sistem</div>
+                <div class="bk-actions">
+                    <button class="btn-bk"><i class="bi bi-filter"></i> Filter</button>
+                    <button class="btn-bk"><i class="bi bi-download"></i> Export</button>
                 </div>
             </div>
-        </div>
-
-        <!-- Danger Zone -->
-        <div class="sec-card" style="border-color:rgba(255,77,109,.25)" data-aos="fade-up" data-aos-delay="80">
-            <div class="sec-card-hd" style="background:rgba(255,77,109,.05)">
-                <div class="sec-card-title" style="color:var(--err)"><i class="bi bi-fire"></i> Danger Zone</div>
-            </div>
-            <div class="sec-card-body">
-                <div class="sw-row">
-                    <div class="sw-left">
-                        <div class="sw-title">Reset Seluruh Sistem</div>
-                        <div class="sw-sub">Menghapus seluruh data proyek, dokumen, dan riwayat. (Wajib backup dulu!)</div>
-                    </div>
-                    <button class="btn-danger" data-bs-toggle="modal" data-bs-target="#resetModal"><i class="bi bi-exclamation-octagon-fill"></i> Reset</button>
-                </div>
+            <div class="sec-card-body p-0 overflow-auto">
+                <table class="log-table">
+                    <thead>
+                        <tr>
+                            <th>Tipe</th>
+                            <th>Event</th>
+                            <th>Detail</th>
+                            <th>Waktu</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><span class="log-type lt-ok"><i class="bi bi-check-circle-fill"></i></span></td>
+                            <td><strong>Backup berhasil</strong></td>
+                            <td>backup_2025-03-08_02-00.sql</td>
+                            <td>2025-03-08 02:00</td>
+                        </tr>
+                        <tr>
+                            <td><span class="log-type lt-info"><i class="bi bi-gear-fill"></i></span></td>
+                            <td><strong>Setting disimpan</strong></td>
+                            <td>Profil sistem diperbarui oleh Admin</td>
+                            <td>2025-03-07 14:32</td>
+                        </tr>
+                        <tr>
+                            <td><span class="log-type lt-warn"><i class="bi bi-exclamation-triangle-fill"></i></span></td>
+                            <td><strong>SMTP gagal</strong></td>
+                            <td>Koneksi ke smtp.gmail.com timeout</td>
+                            <td>2025-03-07 09:15</td>
+                        </tr>
+                        <tr>
+                            <td><span class="log-type lt-err"><i class="bi bi-x-circle-fill"></i></span></td>
+                            <td><strong>Login gagal</strong></td>
+                            <td>5x percobaan dari IP 10.0.1.55</td>
+                            <td>2025-03-06 22:44</td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>

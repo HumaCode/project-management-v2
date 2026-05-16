@@ -119,6 +119,10 @@ Route::middleware(['auth'])->group(function () {
             // Settings
             Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
             Route::post('settings/profile', [\App\Http\Controllers\SettingController::class, 'updateProfile'])->name('settings.update-profile');
+            Route::post('settings/security', [\App\Http\Controllers\SettingController::class, 'updateSecurity'])->name('settings.update-security');
+            Route::post('settings/email', [\App\Http\Controllers\SettingController::class, 'updateEmail'])->name('settings.update-email');
+            Route::post('settings/email/test', [\App\Http\Controllers\SettingController::class, 'sendTestMail'])->name('settings.send-test-mail');
+            Route::post('settings/maintenance', [\App\Http\Controllers\SettingController::class, 'updateMaintenance'])->name('settings.update-maintenance');
 
         }
     );

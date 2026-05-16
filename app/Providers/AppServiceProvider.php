@@ -82,7 +82,28 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        view()->composer('layouts.master', \App\Http\ViewComposers\SettingComposer::class);
+        view()->composer(['layouts.master', 'layouts.guest'], \App\Http\ViewComposers\SettingComposer::class);
+
+        // Global Mail Config Override from Database
+        try {
+            if (\Schema::hasTable('settings')) {
+                $mailSettings = \App\Models\Setting::where('group', 'email')->pluck('value', 'key');
+                
+                if ($mailSettings->isNotEmpty()) {
+                    config([
+                        'mail.mailers.smtp.host'       => $mailSettings['mail_host'] ?? config('mail.mailers.smtp.host'),
+                        'mail.mailers.smtp.port'       => $mailSettings['mail_port'] ?? config('mail.mailers.smtp.port'),
+                        'mail.mailers.smtp.username'   => $mailSettings['mail_username'] ?? config('mail.mailers.smtp.username'),
+                        'mail.mailers.smtp.password'   => $mailSettings['mail_password'] ?? config('mail.mailers.smtp.password'),
+                        'mail.mailers.smtp.encryption' => $mailSettings['mail_encryption'] ?? config('mail.mailers.smtp.encryption'),
+                        'mail.from.address'            => $mailSettings['mail_from_address'] ?? config('mail.from.address'),
+                        'mail.from.name'               => $mailSettings['mail_from_name'] ?? config('mail.from.name'),
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Silently fail if DB not connected or table not found during migration
+        }
 
         // Memodifikasi tampilan email Reset Password
         ResetPassword::toMailUsing(function (object $notifiable, string $token) {

@@ -13,8 +13,14 @@
         <!-- LEFT: Brand -->
         <div class="col-12 col-lg-5 brand-panel">
             <div class="brand-logo">
-                <div class="logo-icon"><i class="bi bi-diagram-3-fill"></i></div>
-                <div class="logo-text"><strong>PMS</strong>Project Management System</div>
+                <div class="logo-icon">
+                    @if(!empty($cms_settings['app_logo']))
+                        <img src="{{ $cms_settings['app_logo'] }}" style="width:32px;height:32px;object-fit:contain" alt="Logo">
+                    @else
+                        <i class="bi bi-diagram-3-fill"></i>
+                    @endif
+                </div>
+                <div class="logo-text"><strong>{{ $cms_settings['app_name'] ?? 'PMS' }}</strong>{{ $cms_settings['app_description'] ?? 'Project Management System' }}</div>
             </div>
             <div class="brand-headline">
                 <div class="brand-tag">Platform v2.0</div>
@@ -93,9 +99,11 @@
                         </button>
                     </form>
 
+                    @if(($cms_settings['enable_otp'] ?? '0') == '1')
                     <button type="button" class="btn-otp-toggle" id="btnOtpToggle" style="margin-top: 16px;">
                         <i class="bi bi-shield-lock-fill"></i> Masuk dengan Kode OTP (Passwordless)
                     </button>
+                    @endif
                 </div>
 
                 <!-- ══ OTP LOGIN FLOW ══ -->
@@ -179,15 +187,19 @@
                     </button>
                 </div>
 
+                @if(($cms_settings['enable_google_login'] ?? '1') == '1')
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 
                 <div class="social-row" style="grid-template-columns: 1fr;">
                     <a href="{{ route('auth.google') }}" class="btn-social"><i class="bi bi-google"></i><span>Daftar
                             dengan Google</span></a>
                 </div>
+                @endif
 
+                @if(($cms_settings['allow_registration'] ?? '1') == '1')
                 <div class="register-row">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></div>
-                <div class="sys-info">PMS v2.0 &mdash; <span>secure connection</span> &mdash; &copy; 2025</div>
+                @endif
+                <div class="sys-info">{{ $cms_settings['app_name'] ?? 'PMS' }} {{ $cms_settings['app_version'] ?? 'v2.0' }} &mdash; <span>secure connection</span> &mdash; &copy; {{ date('Y') }}</div>
 
             </div>
         </div>

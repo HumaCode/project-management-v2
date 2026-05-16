@@ -216,16 +216,49 @@ const ReportBuilder = {
             });
         });
 
-        if (items.length === 0) {
+        const projectId = $('#projectSelect').val();
+
+        if (!projectId || items.length === 0) {
             SCA.toast({
                 type: 'warning',
                 title: 'Perhatian',
-                message: 'Pilih setidaknya satu dokumen untuk laporan'
+                message: 'Pilih project dan setidaknya satu dokumen untuk membuat laporan.'
             });
             return;
         }
 
-        this.submitForm('/laporan/generate', items);
+        showLoading(true, {
+            title: "Menghasilkan PDF...",
+            message: "Sedang menyusun laporan dan menyimpan ke riwayat."
+        });
+
+        $.ajax({
+            url: '/laporan/generate',
+            method: 'POST',
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                project_id: projectId,
+                items: items,
+                cover_image: (typeof CoverBuilder !== 'undefined') ? CoverBuilder.coverImage : null
+            },
+            success: (res) => {
+                showLoading(false);
+                SCA.toast({
+                    type: 'success',
+                    title: 'Berhasil!',
+                    message: res.message
+                });
+                ReportHistory.load(); // Refresh history table
+            },
+            error: (xhr) => {
+                showLoading(false);
+                SCA.toast({
+                    type: 'danger',
+                    title: 'Gagal!',
+                    message: xhr.responseJSON?.message || 'Gagal menghasilkan laporan PDF.'
+                });
+            }
+        });
     },
 
     submitForm(url, items, target = '_self') {
@@ -270,6 +303,162 @@ const ReportBuilder = {
     }
 };
 
+/**
+ * Report History Module
+ * Handles AJAX history table and pagination
+ */
+const ReportHistory = {
+    currentPage: 1,
+
+    init() {
+        this.load();
+    },
+
+    load(page = 1) {
+        this.currentPage = page;
+        const $body = $('#historyBody');
+        const date = $('#historyDateFilter').val();
+        
+        $.ajax({
+            url: '/laporan/history',
+            method: 'GET',
+            data: { 
+                page: page,
+                date: date
+            },
+            beforeSend: () => {
+                // Optional: show small spinner in table
+            },
+            success: (res) => {
+                this.render(res.data);
+                this.renderPagination(res.meta);
+            },
+            error: () => {
+                $body.html('<tr><td colspan="5" class="text-center py-4 text-danger">Gagal memuat riwayat.</td></tr>');
+            }
+        });
+    },
+
+    reset() {
+        $('#historyDateFilter').val('');
+        this.load(1);
+    },
+
+    render(data) {
+        const $body = $('#historyBody');
+        $body.empty();
+
+        if (!data || data.length === 0) {
+            $body.html('<tr><td colspan="5" class="text-center py-5 opacity-50">Belum ada riwayat laporan.</td></tr>');
+            return;
+        }
+
+        data.forEach(item => {
+            const date = new Date(item.created_at).toLocaleDateString('id-ID', {
+                day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
+            });
+
+            const html = `
+                <tr>
+                    <td class="ps-4">
+                        <div class="td-info-name">${item.title}</div>
+                        <div class="td-info-desc">ID: ${item.id}</div>
+                    </td>
+                    <td>
+                        <span class="badge-status bs-progress">
+                            <span class="dot"></span>
+                            ${item.project?.name || '-'}
+                        </span>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="av-item" style="width: 28px; height: 28px; font-size: 10px;">${item.user?.initials || 'U'}</div>
+                            <span class="fw-600" style="font-size: 13px;">${item.user?.name || 'Unknown'}</span>
+                        </div>
+                    </td>
+                    <td class="td-mono">${date}</td>
+                    <td class="text-end pe-4">
+                        <div class="d-flex justify-content-end gap-2">
+                            <a href="/laporan/download/${item.id}" class="btn-act" title="Download PDF">
+                                <i class="bi bi-download"></i>
+                            </a>
+                            <button class="btn-act btn-act-danger" onclick="ReportHistory.delete('${item.id}')" title="Hapus">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+            `;
+            $body.append(html);
+        });
+    },
+
+    renderPagination(meta) {
+        const $pager = $('#historyPagination');
+        $pager.empty();
+
+        if (meta.last_page <= 1) {
+            $pager.hide();
+            return;
+        }
+        $pager.show();
+
+        let html = `<div class="pagi-info">Menampilkan <span>${meta.total}</span> riwayat laporan</div>`;
+        html += `<div class="pagi-btns">`;
+        
+        if (meta.current_page > 1) {
+            html += `<button class="pg-btn" onclick="ReportHistory.load(${meta.current_page - 1})"><i class="bi bi-chevron-left"></i></button>`;
+        }
+
+        // Simple page numbers
+        for (let i = 1; i <= meta.last_page; i++) {
+            const active = i === meta.current_page ? 'active' : '';
+            html += `<button class="pg-btn ${active}" onclick="ReportHistory.load(${i})">${i}</button>`;
+        }
+
+        if (meta.current_page < meta.last_page) {
+            html += `<button class="pg-btn" onclick="ReportHistory.load(${meta.current_page + 1})"><i class="bi bi-chevron-right"></i></button>`;
+        }
+
+        html += `</div>`;
+        $pager.append(html);
+    },
+
+    delete(id) {
+        SCA.dialog({
+            type: "danger",
+            title: "Hapus Riwayat?",
+            message: "File laporan akan dihapus permanen dari sistem.",
+            confirmText: "Ya, Hapus",
+            cancelText: "Batal",
+            showCancel: true,
+        }).then((confirmed) => {
+            if (!confirmed) return;
+
+            showLoading(true, {
+                title: "Menghapus...",
+                message: "Sedang menghapus file dan riwayat laporan."
+            });
+
+            $.ajax({
+                url: `/laporan/${id}`,
+                method: 'DELETE',
+                data: { _token: $('meta[name="csrf-token"]').attr('content') },
+                success: (res) => {
+                    showLoading(false);
+                    SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                    this.load(this.currentPage);
+                },
+                error: (xhr) => {
+                    showLoading(false);
+                    SCA.toast({ type: 'danger', title: 'Gagal', message: xhr.responseJSON?.message || 'Gagal menghapus riwayat.' });
+                }
+            });
+        });
+    }
+};
+
 $(document).ready(() => {
     ReportBuilder.init();
+    ReportHistory.init();
 });

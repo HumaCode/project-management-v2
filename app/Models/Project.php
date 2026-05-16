@@ -105,4 +105,12 @@ class Project extends Model implements HasMedia
     {
         return $this->hasMany(Diskusi::class);
     }
+
+    /**
+     * Get the generated reports for the project.
+     */
+    public function laporans(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Laporan::class);
+    }
 }

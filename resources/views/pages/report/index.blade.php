@@ -102,7 +102,17 @@
                 box-shadow: 0 0 50px rgba(0,0,0,0.5) !important;
                 border: 10px solid #1a1a1a;
                 border-radius: 4px;
+                transform-origin: center center;
+                transition: transform 0.3s ease;
             }
+            
+            /* Responsive Canvas Scaling */
+            @media (max-width: 1400px) { .canvas-wrapper { transform: scale(0.8); } }
+            @media (max-width: 1200px) { .canvas-wrapper { transform: scale(0.7); } }
+            @media (max-width: 992px) { .canvas-wrapper { transform: scale(0.6); } }
+            @media (max-height: 800px) { .canvas-wrapper { transform: scale(0.65); } }
+            @media (max-height: 700px) { .canvas-wrapper { transform: scale(0.55); } }
+
             .modal-header, .modal-footer {
                 background: #071528;
                 border-color: rgba(255,255,255,0.05) !important;
@@ -227,6 +237,48 @@
         </div>
     </div>
 
+    <!-- History Section -->
+    <div class="row mt-5" data-aos="fade-up" data-aos-delay="300">
+        <div class="col-12">
+            <div class="crd">
+                <div class="crd-head">
+                    <div class="crd-title"><i class="bi bi-clock-history"></i> Riwayat Laporan Terakhir</div>
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="filter-wrap">
+                            <i class="bi bi-calendar3"></i>
+                            <input type="date" id="historyDateFilter" class="filter-input" onchange="ReportHistory.load()" style="width: 150px; min-width: unset;">
+                        </div>
+                        <button class="btn-act" onclick="ReportHistory.reset()" title="Reset & Segarkan Data">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
+                    </div>
+                </div>
+                <div class="table-responsive">
+                    <table class="table-pms mb-0">
+                        <thead>
+                            <tr>
+                                <th class="ps-4">Judul Laporan</th>
+                                <th>Project</th>
+                                <th>Dibuat Oleh</th>
+                                <th>Tanggal</th>
+                                <th class="text-end pe-4">Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="historyBody">
+                            <!-- Loaded via AJAX -->
+                            <tr>
+                                <td colspan="5" class="text-center py-5 opacity-50">Mengambil data riwayat...</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="pagi" id="historyPagination">
+                    <!-- Pagination info and buttons -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Cover Builder -->
     <div class="modal fade" id="modalCover" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
@@ -237,7 +289,7 @@
                 </div>
                 <div class="modal-body p-0 d-flex overflow-hidden">
                     <!-- Tools Sidebar -->
-                    <div class="col-md-4 border-end tools-column" style="max-height: 80vh; overflow-y: auto; padding-right: 10px;">
+                    <div class="col-md-4 col-lg-3 border-end tools-column custom-scroll" style="max-height: 85vh; overflow-y: auto; padding: 20px;">
                         <div class="mb-4">
                             <label class="flt-label mb-3">Tambah Elemen</label>
                             <div class="d-grid gap-2">
@@ -398,16 +450,16 @@
                             </div>
                         </div>
 
-                        <div class="mt-auto">
-                            <div class="alert alert-info py-2" style="font-size: 11px; background: rgba(0, 200, 255, 0.1); border: 1px solid var(--cyan);">
-                                <i class="bi bi-info-circle me-1"></i> Klik objek di kanvas untuk mengedit, geser, atau mengubah ukuran.
+                        <div class="mt-4">
+                            <div class="alert alert-info py-2 mb-0" style="font-size: 11px; background: rgba(0, 200, 255, 0.05); border: 1px solid rgba(0, 200, 255, 0.2); color: rgba(255,255,255,0.6);">
+                                <i class="bi bi-info-circle me-1"></i> Klik objek di kanvas untuk mengedit atau menggeser.
                             </div>
                         </div>
                     </div>
 
                     <!-- Canvas Area -->
-                    <div class="flex-grow-1 d-flex align-items-center justify-content-center bg-black-20 p-4" style="overflow: auto;">
-                        <div class="canvas-wrapper shadow-lg bg-white" style="width: 595px; height: 842px;"> <!-- A4 Ratio -->
+                    <div class="flex-grow-1 d-flex align-items-center justify-content-center bg-black-20 p-2 p-md-4" style="overflow: hidden; background: #0b1119;">
+                        <div class="canvas-wrapper shadow-lg bg-white" style="width: 595px; height: 842px; flex-shrink: 0;"> <!-- A4 Ratio -->
                             <canvas id="coverCanvas"></canvas>
                         </div>
                     </div>

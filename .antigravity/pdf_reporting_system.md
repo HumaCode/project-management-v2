@@ -29,6 +29,15 @@ Sistem ini memungkinkan pengguna untuk membangun cover laporan secara dinamis me
 - **Standard Alignment**: Seluruh teks laporan dipaksa rata kiri (Left Aligned) sejajar dengan garis pembatas biru (Blue Bar) untuk estetika profesional.
 - **Centered Images**: Elemen visual (gambar) otomatis diletakkan di tengah (Center) untuk keseimbangan tata letak.
 
+### 4. History & Security
+- **Data Tracking**: Setiap laporan yang dihasilkan disimpan di tabel `laporans` dengan metadata (Judul, Project ID, User ID).
+- **Private Storage**: File PDF disimpan menggunakan Spatie Media Library pada disk `local` (lokasi: `storage/app/private/`). File ini **tidak dapat diakses publik** secara langsung via URL.
+- **Access Control**: 
+    - Implementasi `LaporanPolicy` menggunakan Laravel Gates.
+    - User hanya dapat melihat/mengunduh laporan jika merupakan anggota tim dari proyek terkait.
+    - Admin & Dev memiliki otorisasi penuh (Global Bypass).
+- **Secure Download**: Pengunduhan dilakukan melalui endpoint `/laporan/download/{id}` yang melakukan pengecekan otorisasi sebelum melakukan stream file.
+
 ## Maintenance Notes
 - Jika ingin menambah template baru, edit fungsi `applyTemplate(templateName)` di `cover-builder-v2.js`.
 - Pastikan folder `storage/fonts` memiliki izin tulis untuk DomPDF jika menggunakan font kustom di masa depan.

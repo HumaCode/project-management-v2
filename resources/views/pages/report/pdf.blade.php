@@ -8,9 +8,13 @@
         @page {
             margin: 2.5cm 2cm 2.5cm 2cm;
         }
+        
+        /* Margin 0 hanya jika ada cover */
+        @if(isset($cover_image) && $cover_image)
         @page:first {
             margin: 0 !important;
         }
+        @endif
 
         body {
             font-family: 'Helvetica', 'Arial', sans-serif;
@@ -23,14 +27,12 @@
 
         /* Halaman Cover */
         .cover-page {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 210mm;
-            height: 297mm;
+            width: 100%;
+            height: 100%;
             page-break-after: always;
-            z-index: 9999;
             background-color: #fff;
+            margin: 0;
+            padding: 0;
         }
         .cover-image {
             width: 100%;
@@ -67,8 +69,7 @@
 
         /* Konten Utama */
         .content-wrapper {
-            margin-top: {{ (isset($cover_image) && $cover_image) ? '0' : '2.5cm' }};
-            padding-top: {{ (isset($cover_image) && $cover_image) ? '0' : '0' }};
+            /* Margin diatur otomatis oleh @page */
         }
 
         .doc-item {
@@ -97,7 +98,12 @@
         }
         .image-content img {
             max-width: 100%;
-            border-radius: 4px;
+            max-height: 380px; /* Diturunkan sedikit lagi agar lebih pas */
+            width: auto;
+            height: auto;
+            border-radius: 8px;
+            border: 1px solid #e0e0e0; 
+            display: inline-block;
         }
 
         /* PREMIUM CODE WINDOW STYLE */

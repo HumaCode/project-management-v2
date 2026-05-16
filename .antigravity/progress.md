@@ -146,6 +146,21 @@
         - **Conditional Header**: Smart logic to hide/show report headers based on cover presence and page number.
         - **Premium Assets Rendering**: MacOS-style 'Code Windows' for source code, centered image balancing, and rigid left-alignment for text.
     - [x] **Architecture**: Service-Repository pattern with Base64 image processing for canvas exports.
+- [x] **Project Management (Phase 11: Persistent PDF History & Security)**:
+    - [x] **Database & Relation**: Migration for `laporans` table with ULID and user relationship.
+    - [x] **Secure PDF History**: 
+        - Persistent tracking of all generated reports in the database.
+        - Integration with **Spatie Media Library** using **Private Storage** (`local` disk) for high security.
+        - **Granular Access Policy**: Implementation of `LaporanPolicy` ensuring team members only access reports for their assigned projects.
+        - Admin/Dev global access bypass for management oversight.
+    - [x] **Premium AJAX History Table**:
+        - Integrated a new "Riwayat Laporan Terakhir" section with **Glassmorphism** styling (Synced with Project Index style).
+        - Implementation of non-reloading, jQuery-driven pagination and real-time history refresh.
+        - **Dynamic Date Filtering**: Integrated a date-picker filter directly in the history header with instant AJAX reloading.
+        - **Reset Functionality**: Combined refresh & reset logic into a single intuitive action.
+    - [x] **UX & Security Polish**:
+        - Integrated **SCA.dialog** for report deletion with instant UI feedback.
+        - **Secure Downloads**: Encapsulated download logic behind a validated controller route to protect private assets.
 
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).

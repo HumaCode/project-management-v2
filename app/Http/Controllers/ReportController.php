@@ -11,20 +11,27 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Dokumen;
 
+use App\Interface\Report\ReportServiceInterface;
+use App\Models\Laporan;
+use Illuminate\Support\Facades\Gate;
+
 class ReportController extends Controller
 {
     protected $projectService;
     protected $kategoriService;
     protected $dokumenService;
+    protected $reportService;
 
     public function __construct(
         ProjectServiceInterface $projectService,
         KategoriDokumenServiceInterface $kategoriService,
-        DokumenServiceInterface $dokumenService
+        DokumenServiceInterface $dokumenService,
+        ReportServiceInterface $reportService
     ) {
         $this->projectService = $projectService;
         $this->kategoriService = $kategoriService;
         $this->dokumenService = $dokumenService;
+        $this->reportService = $reportService;
     }
 
     public function index(Request $request)
@@ -48,8 +55,12 @@ class ReportController extends Controller
             return response()->json([]);
         }
 
-        // We use paginate with a large number or implement a getAll in service
-        // For now, let's use the existing paginated method but with a high limit
+        // Check project access
+        $project = \App\Models\Project::findOrFail($projectId);
+        if (Gate::denies('create', [Laporan::class, $project])) {
+            return response()->json(['message' => 'Anda tidak memiliki akses ke project ini.'], 403);
+        }
+
         $assets = $this->dokumenService->getPaginatedDokumens(
             search: null,
             kategori: $categoryId,
@@ -58,6 +69,21 @@ class ReportController extends Controller
         );
 
         return DokumenResource::collection($assets);
+    }
+
+    public function history(Request $request)
+    {
+        $history = $this->reportService->getHistory($request);
+        
+        return response()->json([
+            'data' => $history->items(),
+            'meta' => [
+                'current_page' => $history->currentPage(),
+                'last_page' => $history->lastPage(),
+                'total' => $history->total(),
+                'per_page' => $history->perPage(),
+            ]
+        ]);
     }
 
     public function preview(Request $request)
@@ -111,42 +137,52 @@ class ReportController extends Controller
 
     public function generate(Request $request)
     {
-        $items = $request->input('items', []);
-        
-        if (empty($items)) {
-            return response()->json(['message' => 'Pilih setidaknya satu dokumen.'], 422);
-        }
-
-        $documents = [];
-        foreach ($items as $item) {
-            $doc = Dokumen::with(['project', 'items'])->find($item['id']);
-            if ($doc) {
-                $doc->custom_description = $item['desc'] ?? $doc->keterangan;
-                $media = $doc->getFirstMedia('files');
-                if ($media) {
-                    $doc->file_path = $media->getPath();
-                    $doc->is_image = str_starts_with($media->mime_type, 'image/');
-                }
-                
-                foreach($doc->items as $docItem) {
-                    if ($docItem->type === 'image') {
-                        $itemMedia = $docItem->getFirstMedia('item_files');
-                        $docItem->file_path = $itemMedia ? $itemMedia->getPath() : null;
-                    }
-                }
-
-                $documents[] = $doc;
+        try {
+            $projectId = $request->project_id;
+            $project = \App\Models\Project::findOrFail($projectId);
+            
+            if (Gate::denies('create', [Laporan::class, $project])) {
+                return response()->json(['message' => 'Anda tidak memiliki izin untuk membuat laporan di project ini.'], 403);
             }
+
+            $laporan = $this->reportService->generateReport($request);
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Laporan berhasil dibuat dan disimpan ke riwayat.',
+                'data' => $laporan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json(['message' => $e->getMessage()], 500);
+        }
+    }
+
+    public function download($id)
+    {
+        $laporan = Laporan::findOrFail($id);
+        
+        if (Gate::denies('view', $laporan)) {
+            abort(403, 'Anda tidak memiliki akses ke laporan ini.');
         }
 
-        $pdf = Pdf::loadView('pages.report.pdf', [
-            'documents' => $documents,
-            'title' => 'Laporan Proyek',
-            'project' => $documents[0]->project ?? null,
-            'date' => now()->translatedFormat('d F Y'),
-            'cover_image' => $request->input('cover_image')
-        ]);
+        $media = $laporan->getFirstMedia('reports');
+        if (!$media) {
+            abort(404, 'File laporan tidak ditemukan.');
+        }
 
-        return $pdf->download('laporan-' . now()->timestamp . '.pdf');
+        return response()->download($media->getPath(), $media->file_name);
+    }
+
+    public function destroy($id)
+    {
+        $laporan = Laporan::findOrFail($id);
+        
+        if (Gate::denies('delete', $laporan)) {
+            return response()->json(['message' => 'Anda tidak memiliki izin untuk menghapus laporan ini.'], 403);
+        }
+
+        $this->reportService->deleteReport($id);
+
+        return response()->json(['message' => 'Laporan berhasil dihapus.']);
     }
 }

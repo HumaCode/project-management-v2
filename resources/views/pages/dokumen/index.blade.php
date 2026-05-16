@@ -1,4 +1,5 @@
 <x-master-layout>
+    @section('title', $title)
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/user.css') }}">
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/dokumen.css') }}">

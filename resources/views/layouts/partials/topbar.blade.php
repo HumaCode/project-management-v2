@@ -5,11 +5,12 @@
     <div class="tb-crumb d-none d-lg-flex">
         <i class="bi bi-house-fill" style="color:var(--muted)"></i>
         <i class="bi bi-chevron-right" style="opacity:.3;font-size:10px;margin:0 4px"></i>
-        <span class="cur">@yield('title', 'Dashboard')</span>
+        <span class="cur">{{ $title ?? (View::hasSection('title') ? View::getSection('title') : 'Dashboard') }}</span>
     </div>
     <div class="tb-search ms-2">
         <i class="bi bi-search"></i>
-        <input type="text" placeholder="Cari project, dokumen..." />
+        <input type="text" id="globalSearchInput" placeholder="Cari project, dokumen, catatan..." autocomplete="off" />
+        <div class="tb-search-results" id="globalSearchResults"></div>
     </div>
     <div class="tb-right">
         <button class="btn-bell">

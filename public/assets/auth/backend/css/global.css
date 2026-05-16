@@ -670,6 +670,107 @@ html {
     font-size: 14px;
 }
 
+/* ── Global Search Results ── */
+.tb-search-results {
+    position: absolute;
+    top: calc(100% + 10px);
+    left: 0;
+    right: 0;
+    width: 350px;
+    background: rgba(5, 14, 29, 0.98);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--bdh);
+    border-radius: var(--rs);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8), 0 0 10px rgba(0, 200, 255, 0.1);
+    max-height: 450px;
+    overflow-y: auto;
+    display: none;
+    z-index: 1000;
+}
+
+.tb-search-results.active {
+    display: block;
+    animation: fadeInDown 0.2s ease-out;
+}
+
+@keyframes fadeInDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.sr-group {
+    padding: 12px 0 6px;
+}
+
+.sr-label {
+    padding: 0 14px 6px;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--cyan);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.sr-label::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(0, 200, 255, 0.2), transparent);
+}
+
+.sr-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 14px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.sr-item:hover {
+    background: rgba(0, 200, 255, 0.08);
+}
+
+.sr-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.sr-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--txt);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.sr-extra {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: var(--mono);
+}
+
+.sr-no-results {
+    padding: 30px 20px;
+    text-align: center;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.sr-no-results i {
+    display: block;
+    font-size: 24px;
+    margin-bottom: 10px;
+    position: static;
+    transform: none;
+}
+
+
 .tb-right {
     margin-left: auto;
     display: flex;

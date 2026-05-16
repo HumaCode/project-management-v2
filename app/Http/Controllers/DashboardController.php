@@ -33,6 +33,9 @@ class DashboardController extends Controller
         }
 
         $data = $this->dashboardService->getDashboardData();
+        $data['title'] = 'Dashboard';
+        $data['subtitle'] = 'Ringkasan aktivitas dan performa project Anda';
+        
         return view('pages.dashboard.dashboard-dev', $data);
     }
 }

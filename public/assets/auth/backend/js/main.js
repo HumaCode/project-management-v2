@@ -603,3 +603,92 @@ function resetPassword(id, name, email) {
         }
     });
 }
+
+/* ============================================================
+   GLOBAL SEARCH HANDLER
+============================================================ */
+$(document).ready(function() {
+    const $searchInput = $('#globalSearchInput');
+    const $resultsContainer = $('#globalSearchResults');
+    let searchTimeout = null;
+
+    $searchInput.on('input', function() {
+        const query = $(this).val().trim();
+
+        clearTimeout(searchTimeout);
+
+        if (query.length < 2) {
+            $resultsContainer.removeClass('active').empty();
+            return;
+        }
+
+        searchTimeout = setTimeout(() => {
+            performGlobalSearch(query);
+        }, 500);
+
+    });
+
+    // Close results when clicking outside
+    $(document).on('click', function(e) {
+        if (!$(e.target).closest('.tb-search').length) {
+            $resultsContainer.removeClass('active');
+        }
+    });
+
+    function performGlobalSearch(query) {
+        $.ajax({
+            url: '/global-search',
+            method: 'GET',
+            data: { q: query },
+            success: function(res) {
+                renderSearchResults(res);
+            },
+            error: function() {
+                $resultsContainer.removeClass('active').empty();
+            }
+        });
+    }
+
+    function renderSearchResults(data) {
+        let html = '';
+        let hasResults = false;
+
+        const categories = [
+            { key: 'projects', label: 'Projects', icon: 'bi bi-kanban' },
+            { key: 'documents', label: 'Dokumen', icon: 'bi bi-file-earmark-text' },
+            { key: 'notes', label: 'Catatan', icon: 'bi bi-journal-text' }
+        ];
+
+        categories.forEach(cat => {
+            if (data[cat.key] && data[cat.key].length > 0) {
+                hasResults = true;
+                html += `
+                    <div class="sr-group">
+                        <div class="sr-label"><i class="${cat.icon}"></i> ${cat.label}</div>
+                        ${data[cat.key].map(item => `
+                            <div class="sr-item" onclick="window.location.href='${item.url}'">
+                                <div class="sr-info">
+                                    <div class="sr-title">${item.title}</div>
+                                    <div class="sr-extra">${item.extra}</div>
+                                </div>
+                                <i class="bi bi-chevron-right ms-auto" style="font-size:10px; opacity:0.3"></i>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            }
+        });
+
+        if (!hasResults) {
+            html = `
+                <div class="sr-no-results">
+                    <i class="bi bi-search"></i>
+                    <div>Tidak ada hasil untuk pencarian ini</div>
+                </div>
+            `;
+        }
+
+        $resultsContainer.html(html).addClass('active');
+    }
+});
+

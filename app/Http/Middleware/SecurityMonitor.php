@@ -18,8 +18,8 @@ class SecurityMonitor
     {
         $input = json_encode($request->all());
 
-        // 1. Detect SQL Injection
-        $sqliPattern = '/(union\s+select|select\s+.*\s+from|insert\s+into|update\s+.*\s+set|delete\s+from|drop\s+table|--|#|\b(or|and)\b\s+\d+\s*=\s*\d+|\b(or|and)\b\s+[\'"].*[\'"]\s*=\s*[\'"].*[\'"])/i';
+        // 1. Detect SQL Injection (Refined to prevent false positives on hex colors '#', double dashes '--', and natural sentences)
+        $sqliPattern = '/(union\s+select|insert\s+into|delete\s+from|drop\s+table|\b(or|and)\b\s+\d+\s*=\s*\d+|\b(or|and)\b\s+[\'"].*[\'"]\s*=\s*[\'"].*[\'"])/i';
         if (preg_match($sqliPattern, $input) || preg_match($sqliPattern, $request->getRequestUri())) {
             $this->logThreat($request, 'SQL Injection Attempt');
             abort(403, 'Suspicious activity detected: SQL Injection blocked.');

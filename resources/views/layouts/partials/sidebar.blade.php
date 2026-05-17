@@ -33,8 +33,15 @@
 
                 {{-- Menu Items --}}
                 @foreach ($filtered as $menu)
+                    @php
+                        $isActive = request()->is($menu->url . '*');
+                        // Handle redirect alias/mismatch for tim vs teams
+                        if ($menu->url === 'tim' && request()->is('teams*')) {
+                            $isActive = true;
+                        }
+                    @endphp
                     <a href="{{ url($menu->url) }}"
-                        class="nav-link {{ request()->is($menu->url . '*') ? 'active' : '' }}">
+                        class="nav-link {{ $isActive ? 'active' : '' }}">
 
                         <span class="nav-icon">
                             <i class="{{ $menu->icon }}"></i>

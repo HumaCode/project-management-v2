@@ -156,6 +156,165 @@ document.addEventListener("click", function (e) {
     }
 });
 
+/* ── Notification dropdown ── */
+$(document).ready(function() {
+    const $notifTrigger = $('#notifTrigger');
+    const $notifDropdown = $('#notifDropdown');
+    const $notifDot = $('#notifDot');
+    const $notifDropdownBody = $('#notifDropdownBody');
+    const $notifMarkAll = $('#notifMarkAll');
+
+    // 1. Initial check for unread count to show/hide the red dot
+    function checkUnreadCount() {
+        $.ajax({
+            url: '/notifications/recent',
+            method: 'GET',
+            success: function(res) {
+                if (res.success) {
+                    updateNotificationDot(res.unread_count);
+                }
+            }
+        });
+    }
+
+    function updateNotificationDot(count) {
+        if (count > 0) {
+            $notifDot.removeClass('d-none');
+        } else {
+            $notifDot.addClass('d-none');
+        }
+    }
+
+    // Run on load
+    checkUnreadCount();
+
+    // Polling every 30 seconds for live updates
+    setInterval(checkUnreadCount, 30000);
+
+    // 2. Click to toggle dropdown
+    $notifTrigger.on('click', function(e) {
+        e.stopPropagation();
+        const isOpen = $notifDropdown.hasClass('open');
+        
+        // Close user dropdown if open
+        $('#userDropdown').removeClass('open');
+        $('#userTrigger').removeClass('open');
+
+        if (!isOpen) {
+            $notifDropdown.addClass('open');
+            fetchRecentNotifications();
+        } else {
+            $notifDropdown.removeClass('open');
+        }
+    });
+
+    // Close dropdown when clicking outside
+    $(document).on('click', function(e) {
+        if ($notifDropdown.hasClass('open') && !$notifTrigger.closest('div').find(e.target).length) {
+            $notifDropdown.removeClass('open');
+        }
+    });
+
+    // 3. Fetch recent notifications
+    function fetchRecentNotifications() {
+        $notifDropdownBody.html(`
+            <div class="nd-no-data">
+                <div class="spinner-border spinner-border-sm text-cyan" role="status" style="width: 1rem; height: 1rem; border-width: 0.15em;"></div>
+                <div style="margin-top: 8px; font-size: 11.5px; font-family: var(--mono);">Memuat...</div>
+            </div>
+        `);
+
+        $.ajax({
+            url: '/notifications/recent',
+            method: 'GET',
+            success: function(res) {
+                if (res.success) {
+                    updateNotificationDot(res.unread_count);
+                    renderNotifications(res.notifications);
+                }
+            },
+            error: function() {
+                $notifDropdownBody.html(`
+                    <div class="nd-no-data">
+                        <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                        <div>Gagal memuat notifikasi</div>
+                    </div>
+                `);
+            }
+        });
+    }
+
+    // 4. Render notification items
+    function renderNotifications(notifications) {
+        if (notifications.length === 0) {
+            $notifDropdownBody.html(`
+                <div class="nd-no-data">
+                    <i class="bi bi-bell-slash text-muted"></i>
+                    <div>Tidak ada notifikasi baru</div>
+                </div>
+            `);
+            return;
+        }
+
+        let html = '';
+        notifications.forEach(notif => {
+            html += `
+                <div class="nd-item unread" data-id="${notif.id}" data-url="${notif.url}">
+                    <div class="nd-item-ico">
+                        <i class="${notif.icon}"></i>
+                    </div>
+                    <div class="nd-item-content">
+                        <div class="nd-item-msg">${notif.message}</div>
+                        <div class="nd-item-time">${notif.time}</div>
+                    </div>
+                </div>
+            `;
+        });
+        $notifDropdownBody.html(html);
+    }
+
+    // 5. Click on individual notification item
+    $notifDropdownBody.on('click', '.nd-item', function(e) {
+        e.preventDefault();
+        const $item = $(this);
+        const id = $item.data('id');
+        const url = $item.data('url');
+
+        $.ajax({
+            url: `/notifications/${id}/mark-read`,
+            method: 'POST',
+            success: function() {
+                window.location.href = url;
+            },
+            error: function() {
+                // Fail-safe redirect if network fails
+                window.location.href = url;
+            }
+        });
+    });
+
+    // 6. Mark all as read
+    $notifMarkAll.on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+
+        $.ajax({
+            url: '/notifications/mark-all',
+            method: 'POST',
+            success: function(res) {
+                if (res.success) {
+                    $notifDot.addClass('d-none');
+                    fetchRecentNotifications();
+                    if (typeof showToast === 'function') {
+                        showToast('success', 'Semua notifikasi ditandai dibaca.');
+                    }
+                }
+            }
+        });
+    });
+});
+
+
 /* ── FAB scroll to top ── */
 var fab = document.getElementById("fab");
 var scrollTicking = false;

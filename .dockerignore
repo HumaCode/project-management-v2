@@ -7,7 +7,8 @@
 node_modules
 vendor
 storage/*.key
-storage/logs/*.log
+storage/logs/*
+storage/app/*
 storage/framework/sessions/*
 storage/framework/views/*
 storage/framework/cache/*

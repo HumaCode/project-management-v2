@@ -10,6 +10,7 @@ use App\Http\Resources\RoleManagement\UserResource;
 use App\Interface\Team\TeamServiceInterface;
 use App\Helpers\ResponseHelper;
 use App\Models\User;
+use App\Models\Team;
 use Illuminate\Http\Request;
 
 use Illuminate\Routing\Controllers\HasMiddleware;
@@ -55,9 +56,9 @@ class TeamController extends Controller implements HasMiddleware
 
             return ResponseHelper::success('Berhasil mengambil data tim.', 
                 TeamResource::collection($teams)
-                    ->additional(['stats' => $stats])
-                    ->response()
-                    ->getData(true)
+                     ->additional(['stats' => $stats])
+                     ->response()
+                     ->getData(true)
             );
         } catch (\Exception $e) {
             return ResponseHelper::error('Gagal mengambil data tim: ' . $e->getMessage(), 500);
@@ -74,30 +75,30 @@ class TeamController extends Controller implements HasMiddleware
         }
     }
 
-    public function edit(string $id)
+    public function edit(Team $team)
     {
         try {
-            $team = $this->teamService->getTeamDetail($id);
-            return ResponseHelper::success('Data tim ditemukan.', new TeamResource($team));
+            $teamDetail = $this->teamService->getTeamDetail($team->id);
+            return ResponseHelper::success('Data tim ditemukan.', new TeamResource($teamDetail));
         } catch (\Exception $e) {
             return ResponseHelper::error('Data tim tidak ditemukan.', 404);
         }
     }
 
-    public function update(UpdateTeamRequest $request, string $id)
+    public function update(UpdateTeamRequest $request, Team $team)
     {
         try {
-            $team = $this->teamService->updateTeam($id, $request->validated());
-            return ResponseHelper::success('Tim berhasil diperbarui.', new TeamResource($team));
+            $updatedTeam = $this->teamService->updateTeam($team->id, $request->validated());
+            return ResponseHelper::success('Tim berhasil diperbarui.', new TeamResource($updatedTeam));
         } catch (\Exception $e) {
             return ResponseHelper::error('Gagal memperbarui tim: ' . $e->getMessage(), 500);
         }
     }
 
-    public function destroy(string $id)
+    public function destroy(Team $team)
     {
         try {
-            $this->teamService->deleteTeam($id);
+            $this->teamService->deleteTeam($team->id);
             return ResponseHelper::success('Tim berhasil dihapus.');
         } catch (\Exception $e) {
             return ResponseHelper::error('Gagal menghapus tim: ' . $e->getMessage(), 500);

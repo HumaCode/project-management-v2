@@ -285,6 +285,21 @@
         - Substituted resource-heavy `pluck('id')` queries inside the Dashboard's active project and activity scopes with highly efficient Eloquent database subqueries, saving PHP application memory.
     - [x] **Query Safety & Bugfixes**:
         - Hardened the `Activity` query in `DashboardRepository::getRecentActivities` by enforcing exact `subject_type` matching for Diskusi items, preventing unintended row exposure.
+    - [x] **Project Management (Phase 12: Real-Time Notifications & Hardening)**:
+        - [x] **Interactive Topbar Notification Center**:
+            - Replaced the static bell icon with a premium, glowing cyberpunk glassmorphic dropdown list.
+            - Integrated AJAX polling (30s interval) for asynchronous counts, dynamic alert lists, and click-outside dismissal in `global-js.js` and `global.css`.
+            - Created `NotificationController` with robust AJAX endpoints to mark notifications single/all as read.
+        - [x] **ULID Notification Schema Resolution**:
+            - Pinpointed and resolved a critical migration mismatch in the `notifications` table where string-based user ULIDs caused MySQL data truncation warnings/errors.
+            - Upgraded `$table->morphs('notifiable')` to `$table->ulidMorphs('notifiable')` for correct index size, and successfully rebuilt with a clean `migrate:fresh --seed`.
+            - Integrated the `'database'` channel into `AccountCompletionNotification` to persistently store and broadcast admin onboarding actions.
+        - [x] **Sidebar Highlight Sync (Alias Resolution)**:
+            - Added route redirection alias handling for "Manajemen Tim" in `sidebar.blade.php`.
+            - Ensures the sidebar item remains fully active and highlighted when accessing `/teams`, resolving the mismatch from the database seeder (`/tim`).
+        - [x] **WAF Security Hardening & False-Positive Fix**:
+            - Refined the unoptimized SQLi matching regex inside the `SecurityMonitor` middleware.
+            - Eradicated false-positive request blocks on form fields containing hexadecimal color codes (`#`), markdown dividers (`--`), or standard English sentences.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

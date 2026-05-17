@@ -13,10 +13,27 @@
         <div class="tb-search-results" id="globalSearchResults"></div>
     </div>
     <div class="tb-right">
-        <button class="btn-bell">
-            <i class="bi bi-bell-fill"></i>
-            <span class="bell-dot"></span>
-        </button>
+        <div style="position:relative">
+            <button class="btn-bell" id="notifTrigger" title="Notifikasi">
+                <i class="bi bi-bell-fill"></i>
+                <span class="bell-dot d-none" id="notifDot"></span>
+            </button>
+            <div class="notif-dropdown" id="notifDropdown">
+                <div class="nd-header">
+                    <span class="nd-title">Notifikasi</span>
+                    <button class="nd-mark-all" id="notifMarkAll">Tandai semua dibaca</button>
+                </div>
+                <div class="nd-body" id="notifDropdownBody">
+                    <div class="nd-no-data">
+                        <i class="bi bi-bell-slash"></i>
+                        Tidak ada notifikasi baru
+                    </div>
+                </div>
+                <div class="nd-footer">
+                    <a href="{{ route('profil.index') }}?pane=notifikasi">Pengaturan Preferensi</a>
+                </div>
+            </div>
+        </div>
         <div style="position:relative">
             <div class="user-trigger" id="userTrigger">
                 <div class="ut-av">{{ user('initial') }}</div>

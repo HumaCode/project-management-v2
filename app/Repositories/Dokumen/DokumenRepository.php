@@ -15,7 +15,7 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
 
     public function getPaginated($search, $kategori, $project_id, $perPage, $type = null)
     {
-        $query = $this->model->newQuery()->with(['project', 'uploader']);
+        $query = $this->model->newQuery()->with(['project', 'uploader', 'media']);
 
         $user = auth()->user();
         if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {

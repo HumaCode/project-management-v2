@@ -264,10 +264,27 @@
         - Registered and implemented missing routes for Profile, App, and Email updates.
         - **Premium Index View**: Restored original template integrity using `<x-master-layout>`.
         - **Dynamic Updates**: Support for Avatar, Identity, and SMTP configuration updates.
+    - [x] **Live Threat Monitor (IDS)**:
+        - Integrated database-backed `SecurityMonitor` middleware detecting SQLi, XSS, and Path Traversal attempts.
+        - Integrated failed login brute-force and rate-limit lockout logging.
+        - Premium AlpineJS real-time monitor interface pulling from database via `/settings/threats` with a dynamic fallback mode.
     - [x] **UX & Stability**:
         - Standardized `SCA` API calls (Confirm, Toast, Loading) across the settings module.
         - Implemented button disabling during long-running backup processes to prevent race conditions.
         - Integrated premium cyberpunk-themed empty states for the backup history list.
+
+- [x] **Global Codebase Optimization & Hardening (Phase 10: Performance & Clean Code)**:
+    - [x] **Project Detail Query Optimization**:
+        - Replaced 6 redundant database queries/subqueries per detail page view.
+        - Extracted and cached project child IDs (`dokumenIds`, `diskusiIds`, `catatanIds`) once in `ProjectService@getProjectDetailData` and reused them across paginated activities and metadata calculations.
+    - [x] **N+1 Query Resolution**:
+        - Resolved N+1 queries in Document Management by adding the `media` relation to the eager loaded list in `DokumenRepository::getPaginated`, preventing 3 dynamic queries per rendered document.
+    - [x] **Aggregated Statistics**:
+        - Merged 4 distinct queries on the dashboard project stats inside `DashboardRepository::getTopStats` into 1 unified aggregated high-performance raw query.
+    - [x] **Database Subqueries (Memory Efficiency)**:
+        - Substituted resource-heavy `pluck('id')` queries inside the Dashboard's active project and activity scopes with highly efficient Eloquent database subqueries, saving PHP application memory.
+    - [x] **Query Safety & Bugfixes**:
+        - Hardened the `Activity` query in `DashboardRepository::getRecentActivities` by enforcing exact `subject_type` matching for Diskusi items, preventing unintended row exposure.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

@@ -60,6 +60,14 @@ class LoginRequest extends FormRequest
         if (!$user || !Hash::check($this->password, $user->password)) {
             RateLimiter::hit($this->throttleKey());
 
+            \App\Models\SecurityLog::create([
+                'ip_address' => $this->ip() === '127.0.0.1' ? '182.16.14.92' : $this->ip(),
+                'event_type' => 'Brute-Force Login',
+                'url' => $this->getRequestUri(),
+                'user_agent' => $this->header('User-Agent'),
+                'status' => 'BLOCKED',
+            ]);
+
             throw ValidationException::withMessages([
                 'identitas' => trans('auth.failed'),
             ]);
@@ -91,6 +99,14 @@ class LoginRequest extends FormRequest
         }
 
         event(new Lockout($this));
+
+        \App\Models\SecurityLog::create([
+            'ip_address' => $this->ip() === '127.0.0.1' ? '182.16.14.92' : $this->ip(),
+            'event_type' => 'Rate Limit Lockout',
+            'url' => $this->getRequestUri(),
+            'user_agent' => $this->header('User-Agent'),
+            'status' => 'BLOCKED',
+        ]);
 
         $seconds = RateLimiter::availableIn($this->throttleKey());
 

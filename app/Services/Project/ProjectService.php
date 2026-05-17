@@ -211,10 +211,14 @@ class ProjectService implements ProjectServiceInterface
             ->orWhere('slug', $id)
             ->firstOrFail();
         
+        $dokumenIds = $project->dokumens()->pluck('id')->toArray();
+        $diskusiIds = $project->diskusis()->pluck('id')->toArray();
+        $catatanIds = $project->catatans()->pluck('id')->toArray();
+
         // Stats calculation
         $stats = [
-            'docs_count' => $project->dokumens()->count(),
-            'notes_count' => $project->diskusis()->count(),
+            'docs_count' => count($dokumenIds),
+            'notes_count' => count($diskusiIds),
             'members_count' => $project->team?->members()->count() ?? 0,
             'days_remaining' => now()->diffInDays($project->deadline, false) >= 0 
                 ? now()->diffInDays($project->deadline, false) 
@@ -290,44 +294,48 @@ class ProjectService implements ProjectServiceInterface
                     'display_avatar' => $c->user?->display_avatar,
                 ]
             ]),
-            'activities' => $this->getPaginatedActivities($project->id, 5),
+            'activities' => $this->getPaginatedActivities($project->id, 5, $dokumenIds, $diskusiIds, $catatanIds),
             'activities_meta' => [
-                'total' => \Spatie\Activitylog\Models\Activity::where(function($q) use ($project) {
+                'total' => \Spatie\Activitylog\Models\Activity::where(function($q) use ($project, $dokumenIds, $diskusiIds, $catatanIds) {
                     $q->where(function($sq) use ($project) {
                         $sq->where('subject_type', \App\Models\Project::class)
                            ->where('subject_id', $project->id);
-                    })->orWhere(function($sq) use ($project) {
+                    })->orWhere(function($sq) use ($dokumenIds) {
                         $sq->where('subject_type', \App\Models\Dokumen::class)
-                           ->whereIn('subject_id', $project->dokumens()->pluck('id'));
-                    })->orWhere(function($sq) use ($project) {
+                           ->whereIn('subject_id', $dokumenIds);
+                    })->orWhere(function($sq) use ($diskusiIds) {
                         $sq->where('subject_type', \App\Models\Diskusi::class)
-                           ->whereIn('subject_id', $project->diskusis()->pluck('id'));
-                    })->orWhere(function($sq) use ($project) {
+                           ->whereIn('subject_id', $diskusiIds);
+                    })->orWhere(function($sq) use ($catatanIds) {
                         $sq->where('subject_type', \App\Models\Catatan::class)
-                           ->whereIn('subject_id', $project->catatans()->pluck('id'));
+                           ->whereIn('subject_id', $catatanIds);
                     });
                 })->count(),
             ]
         ];
     }
 
-    public function getPaginatedActivities(string $id, int $perPage = 10)
+    public function getPaginatedActivities(string $id, int $perPage = 10, ?array $dokumenIds = null, ?array $diskusiIds = null, ?array $catatanIds = null)
     {
         $project = Project::where('id', $id)->orWhere('slug', $id)->firstOrFail();
 
-        $activities = \Spatie\Activitylog\Models\Activity::where(function($q) use ($project) {
+        $dokumenIds = $dokumenIds ?? $project->dokumens()->pluck('id')->toArray();
+        $diskusiIds = $diskusiIds ?? $project->diskusis()->pluck('id')->toArray();
+        $catatanIds = $catatanIds ?? $project->catatans()->pluck('id')->toArray();
+
+        $activities = \Spatie\Activitylog\Models\Activity::where(function($q) use ($project, $dokumenIds, $diskusiIds, $catatanIds) {
                 $q->where(function($sq) use ($project) {
                     $sq->where('subject_type', \App\Models\Project::class)
                        ->where('subject_id', $project->id);
-                })->orWhere(function($sq) use ($project) {
+                })->orWhere(function($sq) use ($dokumenIds) {
                     $sq->where('subject_type', \App\Models\Dokumen::class)
-                       ->whereIn('subject_id', $project->dokumens()->pluck('id'));
-                })->orWhere(function($sq) use ($project) {
+                       ->whereIn('subject_id', $dokumenIds);
+                })->orWhere(function($sq) use ($diskusiIds) {
                     $sq->where('subject_type', \App\Models\Diskusi::class)
-                       ->whereIn('subject_id', $project->diskusis()->pluck('id'));
-                })->orWhere(function($sq) use ($project) {
+                       ->whereIn('subject_id', $diskusiIds);
+                })->orWhere(function($sq) use ($catatanIds) {
                     $sq->where('subject_type', \App\Models\Catatan::class)
-                       ->whereIn('subject_id', $project->catatans()->pluck('id'));
+                       ->whereIn('subject_id', $catatanIds);
                 });
             })
             ->with(['causer', 'subject'])

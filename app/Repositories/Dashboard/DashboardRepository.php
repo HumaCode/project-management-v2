@@ -30,17 +30,25 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         $now = now();
         $threeDaysFromNow = now()->addDays(3);
+        $user = auth()->user();
 
         $projectQuery = $this->applyAccessScope(Project::query());
-        $projectIds = (clone $projectQuery)->pluck('id');
+
+        // Optimize project counts in one single roundtrip
+        $counts = (clone $projectQuery)->selectRaw("
+            COUNT(*) as total,
+            SUM(CASE WHEN status = 'in_progress' THEN 1 ELSE 0 END) as in_progress_count,
+            SUM(CASE WHEN status != 'done' AND deadline BETWEEN ? AND ? THEN 1 ELSE 0 END) as upcoming_count
+        ", [$now->toDateTimeString(), $threeDaysFromNow->toDateTimeString()])->first();
+
+        // Optimize document count using a database subquery
+        $totalDocuments = Dokumen::whereIn('project_id', (clone $projectQuery)->select('id'))->count();
 
         return [
-            'total_projects' => (clone $projectQuery)->count(),
-            'total_in_progress' => (clone $projectQuery)->where('status', 'in_progress')->count(),
-            'total_documents' => Dokumen::whereIn('project_id', $projectIds)->count(),
-            'upcoming_deadlines_count' => (clone $projectQuery)->where('status', '!=', 'done')
-                ->whereBetween('deadline', [$now, $threeDaysFromNow])
-                ->count(),
+            'total_projects' => (int) ($counts->total ?? 0),
+            'total_in_progress' => (int) ($counts->in_progress_count ?? 0),
+            'total_documents' => $totalDocuments,
+            'upcoming_deadlines_count' => (int) ($counts->upcoming_count ?? 0),
         ];
     }
 
@@ -116,26 +124,27 @@ class DashboardRepository implements DashboardRepositoryInterface
         $query = Activity::with(['causer', 'subject'])->latest();
 
         if (!$user->hasRole(['admin', 'dev'])) {
-            $projectIds = $this->applyAccessScope(Project::query())->pluck('id');
+            $projectQuery = $this->applyAccessScope(Project::query())->select('id');
             
-            $query->where(function($q) use ($projectIds) {
+            $query->where(function($q) use ($projectQuery) {
                 // Aktivitas pada project itu sendiri
-                $q->where(function($sq) use ($projectIds) {
+                $q->where(function($sq) use ($projectQuery) {
                     $sq->where('subject_type', Project::class)
-                       ->whereIn('subject_id', $projectIds);
+                       ->whereIn('subject_id', $projectQuery);
                 })
                 // Aktivitas pada dokumen di project tersebut
-                ->orWhere(function($sq) use ($projectIds) {
+                ->orWhere(function($sq) use ($projectQuery) {
                     $sq->where('subject_type', Dokumen::class)
-                       ->whereIn('subject_id', function($ssq) use ($projectIds) {
-                           $ssq->select('id')->from('dokumens')->whereIn('project_id', $projectIds);
+                       ->whereIn('subject_id', function($ssq) use ($projectQuery) {
+                           $ssq->select('id')->from('dokumens')->whereIn('project_id', $projectQuery);
                        });
                 })
-                // Aktivitas diskusi (jika ada model Diskusi/Catatan)
-                ->orWhere(function($sq) use ($projectIds) {
-                    $sq->whereIn('subject_id', function($ssq) use ($projectIds) {
-                        $ssq->select('id')->from('diskusis')->whereIn('project_id', $projectIds);
-                    });
+                // Aktivitas diskusi
+                ->orWhere(function($sq) use ($projectQuery) {
+                    $sq->where('subject_type', Diskusi::class)
+                       ->whereIn('subject_id', function($ssq) use ($projectQuery) {
+                           $ssq->select('id')->from('diskusis')->whereIn('project_id', $projectQuery);
+                       });
                 });
             });
         }

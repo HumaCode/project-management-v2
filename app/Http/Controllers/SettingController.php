@@ -520,4 +520,24 @@ class SettingController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    /**
+     * Get latest threat logs.
+     */
+    public function getThreatLogs(Request $request): JsonResponse
+    {
+        $limit = min((int)$request->input('limit', 5), 50);
+        $logs = \App\Models\SecurityLog::latest()->take($limit)->get()->map(function ($log) {
+            return [
+                'id' => $log->id,
+                'time' => $log->created_at->timezone('Asia/Jakarta')->format('H:i:s'),
+                'ip' => $log->ip_address,
+                'type' => $log->event_type,
+                'url' => $log->url,
+                'status' => $log->status,
+            ];
+        });
+
+        return response()->json($logs);
+    }
 }

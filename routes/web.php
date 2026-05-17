@@ -143,6 +143,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('settings/activities/export', [\App\Http\Controllers\SettingController::class, 'exportActivities'])->name('settings.activities.export');
             Route::get('settings/backups/download/{id}', [\App\Http\Controllers\SettingController::class, 'downloadBackup'])->name('settings.download-backup');
             Route::delete('settings/backups/delete/{id}', [\App\Http\Controllers\SettingController::class, 'deleteBackup'])->name('settings.delete-backup');
+            Route::get('settings/threats', [\App\Http\Controllers\SettingController::class, 'getThreatLogs'])->name('settings.threat-logs');
             
             // Global Search
             Route::get('/global-search', [\App\Http\Controllers\GlobalSearchController::class, 'search'])->name('global.search');

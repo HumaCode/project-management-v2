@@ -399,6 +399,89 @@
                         </button>
                     </div>
                 </template>
+                
+                <!-- DFD BUILDER -->
+                <template x-if="type === 'dfd'">
+                    <div>
+                        <div class="mb-3">
+                            <label class="form-label text-white fw-semibold" style="font-size: 13px;">Arah Aliran Data</label>
+                            <select class="form-select form-select-sm" x-model="diagramData.direction" @change="generateMermaid" style="background-color: #1e293b; color: white; border-color: #334155;">
+                                <option value="TD" style="background-color: #1e293b; color: white;">Atas ke Bawah (Top-Down)</option>
+                                <option value="LR" style="background-color: #1e293b; color: white;">Kiri ke Kanan (Left-Right)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Komponen DFD</label>
+                        </div>
+                        
+                        <template x-for="(node, index) in diagramData.nodes" :key="index">
+                            <div class="node-card">
+                                <button type="button" class="btn btn-outline-danger btn-remove" @click="removeNode(index)"><i class="bi bi-trash"></i></button>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-4">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">ID (Unik)</label>
+                                        <input type="text" class="form-control form-control-sm" x-model="node.id" @input.debounce.500ms="generateMermaid" placeholder="A, B, dll">
+                                    </div>
+                                    <div class="col-8">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">Teks (Label)</label>
+                                        <input type="text" class="form-control form-control-sm" x-model="node.label" @input.debounce.500ms="generateMermaid" placeholder="Teks komponen">
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-light mb-1" style="font-size: 11px;">Jenis Komponen (Standar DFD)</label>
+                                    <select class="form-select form-select-sm" x-model="node.shape" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                        <option value="square" style="background-color: #1e293b; color: white;">Entitas Eksternal (Kotak)</option>
+                                        <option value="circle" style="background-color: #1e293b; color: white;">Proses (Lingkaran)</option>
+                                        <option value="database" style="background-color: #1e293b; color: white;">Data Store (Tabung)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <button type="button" class="btn btn-dashed mb-4 mt-1" @click="addNode">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Komponen
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Aliran Data (Garis)</label>
+                        </div>
+                        
+                        <template x-for="(link, index) in diagramData.links" :key="'l'+index">
+                            <div class="node-card">
+                                <button type="button" class="btn btn-outline-danger btn-remove" @click="removeLink(index)"><i class="bi bi-trash"></i></button>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">Dari</label>
+                                        <select class="form-select form-select-sm" x-model="link.from" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                            <template x-for="n in diagramData.nodes" :key="n.id">
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.from == n.id" style="background-color: #1e293b; color: white;"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">Ke</label>
+                                        <select class="form-select form-select-sm" x-model="link.to" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                            <template x-for="n in diagramData.nodes" :key="n.id">
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.to == n.id" style="background-color: #1e293b; color: white;"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div>
+                                    <label class="form-label text-light mb-1" style="font-size: 11px;">Keterangan Data</label>
+                                    <input type="text" class="form-control form-control-sm" x-model="link.text" @input.debounce.500ms="generateMermaid" placeholder="Info Login, dll">
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <button type="button" class="btn btn-dashed mb-2 mt-1" @click="addLink">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Aliran Data
+                        </button>
+                    </div>
+                </template>
 
                 <!-- Advanced Syntax Mode -->
                 <div class="mt-4 pt-3 border-top border-secondary">
@@ -509,6 +592,17 @@
                         this.diagramData.relationships = [
                             { from: "USERS", to: "POSTS", type: "||--o{", label: "has" }
                         ];
+                    } else if (this.type === 'dfd' && this.diagramData.nodes.length === 0) {
+                        this.diagramData.nodes.push(
+                            { id: 'User', label: 'Pelanggan', shape: 'square' },
+                            { id: 'Proses1', label: 'Verifikasi Order', shape: 'circle' },
+                            { id: 'DB1', label: 'Data Pesanan', shape: 'database' }
+                        );
+                        this.diagramData.links.push(
+                            { from: 'User', to: 'Proses1', text: 'Detail Order' },
+                            { from: 'Proses1', to: 'DB1', text: 'Simpan' }
+                        );
+                        this.diagramData.direction = 'LR';
                     }
                     
                     if (savedSyntax) {
@@ -615,7 +709,7 @@
 
                 // Generate Syntax
                 generateMermaid() {
-                    if (this.type === 'flowchart') {
+                    if (this.type === 'flowchart' || this.type === 'dfd') {
                         let code = `%%{init: {'flowchart': {'curve': 'basis'}}}%%\nflowchart ${this.diagramData.direction}\n`;
                         
                         // Define Colors (Premium Look)

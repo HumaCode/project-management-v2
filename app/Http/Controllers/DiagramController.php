@@ -12,13 +12,32 @@ class DiagramController extends Controller
 {
     public function index()
     {
-        $projects = Project::orderBy('name')->get();
+        $user = auth()->user();
+        $projectsQuery = Project::orderBy('name');
+        
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $projectsQuery->whereHas('pics', function($q) use ($user) {
+                $q->where('users.id', $user->id);
+            });
+        }
+        
+        $projects = $projectsQuery->get();
         return view('pages.diagrams.index', compact('projects'));
     }
 
     public function getAllPaginated(Request $request)
     {
+        $user = auth()->user();
         $query = Diagram::with(['project', 'creator']);
+
+        // Limit visibility based on role
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $query->whereHas('project', function($q) use ($user) {
+                $q->whereHas('pics', function($q2) use ($user) {
+                    $q2->where('users.id', $user->id);
+                });
+            });
+        }
 
         if ($request->has('search') && $request->search != '') {
             $search = $request->search;
@@ -52,6 +71,17 @@ class DiagramController extends Controller
             'type' => 'required|in:flowchart,erd,dfd',
         ]);
 
+        $user = auth()->user();
+        if (!$user->hasRole(['dev', 'admin'])) {
+            $project = Project::findOrFail($request->project_id);
+            if (!$project->pics()->where('users.id', $user->id)->exists()) {
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Anda tidak memiliki akses ke proyek ini'
+                ], 403);
+            }
+        }
+
         try {
             DB::beginTransaction();
             $diagram = Diagram::create([
@@ -81,6 +111,8 @@ class DiagramController extends Controller
     {
         try {
             $diagram = Diagram::findOrFail($id);
+            $this->authorize('delete', $diagram);
+            
             $diagram->delete();
 
             return response()->json([
@@ -98,6 +130,8 @@ class DiagramController extends Controller
     public function builder($id)
     {
         $diagram = Diagram::findOrFail($id);
+        $this->authorize('view', $diagram);
+        
         return view('pages.diagrams.builder', compact('diagram'));
     }
 
@@ -110,6 +144,8 @@ class DiagramController extends Controller
 
         try {
             $diagram = Diagram::findOrFail($id);
+            $this->authorize('update', $diagram);
+            
             $diagram->update([
                 'content' => $request->content,
                 'mermaid_syntax' => $request->mermaid_syntax,

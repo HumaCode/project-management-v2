@@ -109,6 +109,9 @@
                 <div class="input-group">
                     <span class="input-group-text border-end-0 bg-transparent"><i class="bi bi-search text-muted"></i></span>
                     <input type="text" class="form-control border-start-0 ps-0 bg-transparent" placeholder="Cari diagram..." x-model="filter.search" @input.debounce.500ms="loadData()">
+                    <button class="btn btn-danger px-3 border-0" type="button" @click="resetFilter" title="Reset Filter">
+                        <i class="bi bi-x-lg"></i>
+                    </button>
                 </div>
             </div>
         </div>
@@ -179,8 +182,8 @@
             <template x-if="!isLoading && diagrams.length === 0">
                 <div class="col-12 text-center py-5">
                     <img src="{{ asset('assets/auth/backend/images/illustration/empty.svg') }}" alt="Empty" style="max-width:200px; opacity:0.6" onerror="this.style.display='none'">
-                    <h5 class="mt-4 text-muted">Tidak ada diagram ditemukan</h5>
-                    <p class="text-muted">Coba ubah filter pencarian Anda atau buat diagram baru.</p>
+                    <h5 class="mt-4 text-white">Tidak ada diagram ditemukan</h5>
+                    <p class="text-light">Coba ubah filter pencarian Anda atau buat diagram baru.</p>
                 </div>
             </template>
         </div>
@@ -261,6 +264,13 @@
                     project_id: '',
                     name: '',
                     type: 'flowchart'
+                },
+                
+                resetFilter() {
+                    this.filter = { project_id: '', type: '', search: '' };
+                    $(this.$refs.selectProject).val('').trigger('change.select2');
+                    $(this.$refs.selectType).val('').trigger('change.select2');
+                    this.loadData();
                 },
                 
                 init() {

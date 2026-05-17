@@ -182,7 +182,10 @@
     - [x] **State Management**: Implemented nested dynamic attributes (`entities`, `attributes`, `relationships`) within Alpine.js.
     - [x] **UI/UX Refinements**: Built a custom table/column generation interface with explicit PK/FK checkboxes.
     - [x] **Rendering Optimizations**: Segregated the ERD algorithm to default back to orthogonal lines with slightly rounded corners instead of global Bezier curves.
-- [ ] **System Diagram Module (Phase 3: DFD Builder)**: Implementasi panel spesifik untuk desain aliran data (Data Flow Diagram).
+- [x] **System Diagram Module (Phase 3: DFD Builder)**: 
+    - [x] **Standard Notation UI**: Limited component shapes strictly to External Entity (Square), Process (Circle), and Data Store (Database) in accordance with the Yourdon & DeMarco notation standards.
+    - [x] **State Handling**: Enabled default starter template specifically configured for DFD structures.
+    - [x] **Tenant Security Layer**: Implemented strict Multi-Tenant filtering in `DiagramController` and established `DiagramPolicy` to restrict visibility strictly to project members (while retaining full access for `dev` and `admin` roles).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).

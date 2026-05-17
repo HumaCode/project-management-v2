@@ -222,7 +222,7 @@
     </div>
     
     <!-- ══════════════ LIVE THREAT MONITOR ══════════════ -->
-    <div class="mt-4" data-aos="fade-up" data-aos-delay="200" x-data="threatMonitor()">
+    <div id="liveThreatMonitor" class="mt-4" data-aos="fade-up" data-aos-delay="200" x-data="threatMonitor()">
         <div class="sec-card" style="border-color: rgba(239, 68, 68, 0.3); background: linear-gradient(180deg, rgba(15, 23, 42, 0.95), rgba(15, 23, 42, 0.98)); box-shadow: 0 4px 20px rgba(239, 68, 68, 0.05), inset 0 1px 0 rgba(239, 68, 68, 0.1);">
             <div class="sec-card-hd" style="border-bottom: 1px solid rgba(239, 68, 68, 0.15);">
                 <div class="sec-card-title d-flex align-items-center gap-2" style="color: #ef4444;">

@@ -25,7 +25,13 @@
                         </div>
                         
                         <div class="col-12 mt-4">
-                            <div class="m-section">Pilih Anggota Tim</div>
+                            <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--bd); padding-bottom: 8px; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                                <div class="m-section" style="border: none; padding: 0; margin: 0;">Pilih Anggota Tim</div>
+                                <div class="modal-search-wrap" style="position: relative; width: 220px;">
+                                    <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); opacity: 0.7;"></i>
+                                    <input type="text" id="memberSearchInput" class="fmi" style="height: 28px; font-size: 11px; padding-left: 28px; border-radius: 6px; background: rgba(255,255,255,0.03);" placeholder="Cari nama anggota...">
+                                </div>
+                            </div>
                             <div class="row g-2" id="userSelectionWrap" style="max-height: 250px; overflow-y: auto; padding: 5px; margin-top: 5px;">
                                 <!-- User list loaded via AJAX -->
                             </div>

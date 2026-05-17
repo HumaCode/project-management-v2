@@ -6,10 +6,19 @@ use App\Models\Konfigurasi\Menu;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Spatie\Permission\Models\Permission as ModelsPermission;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Permission extends ModelsPermission
 {
-    use HasUlids;
+    use HasUlids, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('permission');
+    }
 
     protected $fillable = ['name', 'guard_name'];
 

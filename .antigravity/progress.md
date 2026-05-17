@@ -300,6 +300,18 @@
         - [x] **WAF Security Hardening & False-Positive Fix**:
             - Refined the unoptimized SQLi matching regex inside the `SecurityMonitor` middleware.
             - Eradicated false-positive request blocks on form fields containing hexadecimal color codes (`#`), markdown dividers (`--`), or standard English sentences.
+        - [x] **Dual Theme System (Dark & Light Modes)**:
+            - Implemented a complete, premium, frosted-glass Light Mode visual theme that perfectly complements the core dark cyberpunk design.
+            - Integrated an inline theme-loader in the `<head>` of `master.blade.php` to fetch stored preferences from `localStorage`, ensuring zero flickering during page loads.
+            - Crafted an interactive, rotating `.btn-theme-toggle` button in `topbar.blade.php` with a gorgeous 360-degree spin micro-animation.
+            - Configured unified Light Mode styling overrides in `global.css` for form fields, Select2 dropdowns, dynamic tables, cards, modals, and the notification dropdown.
+        - [x] **Profile, Security, & System Polish (Phase 13: Dynamic Profiling, Active Sessions & UX Hardening)**:
+            - [x] **Dynamic Profile Header Stats**: Refactored static placeholders (24 Projects, 186 Completed Tasks, 42 Documents, 8 Teams) to draw dynamically from real-time database queries matching exact user membership criteria.
+            - [x] **Danger Zone Single-Step Dialogs**: Replaced complex password-prompt modals with unified `SCA.dialog` promises for account deactivation and deletion. Added safety constraint setting `email_verified_at = null` and `is_active = 0` on voluntary suspension.
+            - [x] **Dynamic Active Sessions Control**: Enabled live listing and revocation of active device login sessions using AJAX and the premium confirmation dialog system.
+            - [x] **jQuery Initialization Safeguards**: Resolved a global `$` undefined race condition across profile components by encapsulating inline scripts in `DOMContentLoaded` listeners.
+            - [x] **Team Modal Member Search Input**: Integrated a sleek real-time search box in the Team creation/modification modal. Employs instant client-side DOM filtering (`.show()` / `.hide()`) which fully preserves checkbox states and role inputs of selected members even when hidden.
+            - [x] **Live Threat Monitor Toggle Polish**: Configured dynamic layout handling in the System Settings page to automatically hide (`fadeOut`) the Threat Monitor block when entering settings sub-panes (like Profil Sistem) and reveal it (`fadeIn`) when navigating back, maintaining a clean visual flow.
 
 ## 📝 Notes & Maintenance
 - **Development Rituals (Wajib)**:

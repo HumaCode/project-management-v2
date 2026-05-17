@@ -13,7 +13,7 @@
 - 103 Actions
 - 75 Services
 - 20 Validation requests
-- 27 Models
+- 14 Models
 - 4 Events
 - 1 Commands
 - 2 Channels
@@ -22,21 +22,21 @@
 ## Routes (top 15)
 | Method | URI | Controller |
 |--------|-----|-----------|
-| POST | `/login/otp/send` | POST /login/otp/send |
-| POST | `/login/otp/verify` | POST /login/otp/verify |
-| GET | `/auth/google` | GET /auth/google |
+| DELETE | `/catatan/{id}` | DELETE /catatan/{id} |
+| DELETE | `/dokumen/{id}` | DELETE /dokumen/{id} |
+| DELETE | `/kategori-dokumen/{kategoriDokuman}` | DELETE /kategori-dokumen/{kategoriDokuman} |
+| DELETE | `/permissions/{permission}` | DELETE /permissions/{permission} |
+| DELETE | `/projects/diskusi/{id}` | DELETE /projects/diskusi/{id} |
+| DELETE | `/projects/{project}` | DELETE /projects/{project} |
+| DELETE | `/roles/{role}` | DELETE /roles/{role} |
+| DELETE | `/teams/{team}` | DELETE /teams/{team} |
+| DELETE | `/users/{user}` | DELETE /users/{user} |
+| GET | `/auth/auto-login/{admin_id}` | GET /auth/auto-login/{admin_id} |
 | GET | `/auth/google/callback` | GET /auth/google/callback |
-| GET | `/register` | GET /register |
-| POST | `/register` | POST /register |
-| GET | `/login` | GET /login |
-| POST | `/login` | POST /login |
-| GET | `/forgot-password` | GET /forgot-password |
-| POST | `/forgot-password` | POST /forgot-password |
-| GET | `/reset-password/{token}` | GET /reset-password/{token} |
-| POST | `/reset-password` | POST /reset-password |
-| GET | `/verify-email` | GET /verify-email |
-| GET | `/verify-email/{id}/{hash}` | GET /verify-email/{id}/{hash} |
-| POST | `/email/verification-notification` | POST /email/verification-notification |
+| GET | `/auth/google` | GET /auth/google |
+| GET | `/catatan/{id}` | GET /catatan/{id} |
+| GET | `/catatan/pagination` | GET /catatan/pagination |
+| GET | `/catatan` | GET /catatan |
 
 ## Complexity Hotspots
 > Methods with high cyclomatic complexity — review before modifying.
@@ -48,26 +48,26 @@
 | ProjectController@showMedia | 4 | 20 |
 | CatatanController@store | 4 | 19 |
 | VerifyEmailController@__invoke | 3 | 12 |
-| CatatanController@update | 3 | 16 |
-| ProjectService@storeDiskusi | 3 | 23 |
 | DokumenService@createDokumen | 3 | 18 |
-| OtpLoginController@sendOtp | 2 | 24 |
-| OtpLoginController@verifyOtp | 2 | 28 |
+| ProjectService@storeDiskusi | 3 | 23 |
+| CatatanController@update | 3 | 16 |
+| CatatanController@destroy | 2 | 12 |
+| DokumenController@destroy | 2 | 18 |
 
 ## Code Smells
 - 🧱 **Fat Method** `GoogleController@handleGoogleCallback`
+- 🧱 **Fat Method** `CatatanController@index`
+- 🧱 **Fat Method** `ProjectController@getAllPaginated`
+- 🧱 **Fat Method** `ProjectService@getPaginatedProjects`
+- 🧱 **Fat Method** `ProjectService@getPaginatedActivities`
+- 🧱 **Fat Method** `ProjectService@getProjectDetailData`
+- 🧱 **Fat Method** `ProjectService@getIndexData`
+- 🧱 **Fat Method** `InactiveUserController@update`
+- 🧱 **Fat Method** `LoginRequest@authenticate`
 - 🧱 **Fat Method** `RegisteredUserController@store`
 - 🧱 **Fat Method** `NewPasswordController@store`
-- 🧱 **Fat Method** `InactiveUserController@update`
-- 🧱 **Fat Method** `ProjectController@getAllPaginated`
-- 🧱 **Fat Method** `CatatanController@index`
-- 🧱 **Fat Method** `LoginRequest@authenticate`
-- 🧱 **Fat Method** `ProjectService@getIndexData`
-- 🧱 **Fat Method** `ProjectService@getPaginatedProjects`
-- 🧱 **Fat Method** `ProjectService@getProjectDetailData`
-- 🧱 **Fat Method** `ProjectService@getPaginatedActivities`
-- 🏗️  **Fat Class** `UserController`
 - 🏗️  **Fat Class** `ProjectController`
+- 🏗️  **Fat Class** `UserController`
 
 ## Backend Packages
 | Package | Version | Dev |
@@ -90,6 +90,7 @@
 | `pestphp/pest` | ^4.4 | ✓ |
 | `pestphp/pest-plugin-laravel` | ^4.1 | ✓ |
 | `spatie/laravel-activitylog` | ^5.0 |  |
+| `spatie/laravel-backup` | ^10.2 |  |
 | `spatie/laravel-medialibrary` | ^11.21 |  |
 | `spatie/laravel-permission` | ^7.2 |  |
 

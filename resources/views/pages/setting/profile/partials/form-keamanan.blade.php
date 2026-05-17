@@ -59,82 +59,110 @@
             </div>
         </div>
         <div class="col-12 col-lg-5">
-            <!-- Keamanan akun -->
+            <!-- Informasi Login & Sesi -->
             <div class="pcard" data-aos="fade-up" data-aos-delay="40">
                 <div class="pc-hd">
                     <div class="pc-hd-left">
                         <div class="pc-hd-ico pci-g"><i class="bi bi-shield-fill-check"></i></div>
                         <div>
-                            <div class="pc-hd-title">Status Keamanan</div>
-                            <div class="pc-hd-sub">Konfigurasi keamanan akun</div>
+                            <div class="pc-hd-title">Informasi Login & Sesi</div>
+                            <div class="pc-hd-sub">Deteksi koneksi aktif saat ini</div>
                         </div>
                     </div>
                 </div>
+                
+                @php
+                    $userAgent = request()->header('User-Agent');
+                    
+                    // Parse Browser
+                    $browser = 'Browser Tidak Dikenal';
+                    if (preg_match('/Chrome/i', $userAgent)) {
+                        $browser = 'Google Chrome';
+                    } elseif (preg_match('/Safari/i', $userAgent) && !preg_match('/Chrome/i', $userAgent)) {
+                        $browser = 'Apple Safari';
+                    } elseif (preg_match('/Firefox/i', $userAgent)) {
+                        $browser = 'Mozilla Firefox';
+                    } elseif (preg_match('/Edge/i', $userAgent)) {
+                        $browser = 'Microsoft Edge';
+                    } elseif (preg_match('/Opera/i', $userAgent) || preg_match('/OPR/i', $userAgent)) {
+                        $browser = 'Opera';
+                    }
+                    
+                    // Parse OS / Platform
+                    $platform = 'Sistem Operasi Tidak Dikenal';
+                    if (preg_match('/Windows/i', $userAgent)) {
+                        $platform = 'Windows OS';
+                    } elseif (preg_match('/Macintosh|Mac OS X/i', $userAgent)) {
+                        $platform = 'macOS';
+                    } elseif (preg_match('/Linux/i', $userAgent)) {
+                        $platform = 'Linux';
+                    } elseif (preg_match('/iPhone|iPad/i', $userAgent)) {
+                        $platform = 'iOS Device';
+                    } elseif (preg_match('/Android/i', $userAgent)) {
+                        $platform = 'Android';
+                    }
+                @endphp
+
                 <div>
                     <div class="sec-item">
                         <div class="sec-left">
-                            <div class="sec-ico pci-g"><i class="bi bi-shield-lock-fill"></i></div>
+                            <div class="sec-ico pci-g"><i class="bi bi-router-fill"></i></div>
                             <div>
-                                <div class="sec-title">Two-Factor Auth</div>
-                                <div class="sec-desc">Lapisan keamanan tambahan via TOTP</div>
-                            </div>
-                        </div>
-                        <div class="sec-right" style="display:flex;align-items:center;gap:10px">
-                            <span class="sec-badge sb-off">Nonaktif</span>
-                            <label class="sw-wrap sw-g"><input type="checkbox" /><span class="sw-track"></span></label>
-                        </div>
-                    </div>
-                    <div class="sec-item">
-                        <div class="sec-left">
-                            <div class="sec-ico pci-c"><i class="bi bi-envelope-check-fill"></i></div>
-                            <div>
-                                <div class="sec-title">Verifikasi Email</div>
-                                <div class="sec-desc">budi@pmssystem.id</div>
-                            </div>
-                        </div>
-                        <div class="sec-right"><span class="sec-badge sb-on">Terverifikasi</span></div>
-                    </div>
-                    <div class="sec-item">
-                        <div class="sec-left">
-                            <div class="sec-ico pci-a"><i class="bi bi-bell-slash-fill"></i></div>
-                            <div>
-                                <div class="sec-title">Alert Login Baru</div>
-                                <div class="sec-desc">Email jika login dari perangkat baru</div>
+                                <div class="sec-title">Alamat IP</div>
+                                <div class="sec-desc">{{ request()->ip() }}</div>
                             </div>
                         </div>
                         <div class="sec-right">
-                            <label class="sw-wrap"><input type="checkbox" checked /><span
-                                    class="sw-track"></span></label>
+                            <span class="sec-badge sb-on">Sesi Ini</span>
                         </div>
                     </div>
                     <div class="sec-item">
                         <div class="sec-left">
-                            <div class="sec-ico pci-p"><i class="bi bi-clock-history"></i></div>
+                            <div class="sec-ico pci-c"><i class="bi bi-compass-fill"></i></div>
                             <div>
-                                <div class="sec-title">Session Timeout</div>
-                                <div class="sec-desc">Auto-logout setelah tidak aktif</div>
+                                <div class="sec-title">Browser</div>
+                                <div class="sec-desc">{{ $browser }}</div>
                             </div>
                         </div>
                         <div class="sec-right">
-                            <select class="fmsel"
-                                style="width:auto;height:34px;font-size:12px;padding:0 28px 0 10px">
-                                <option>30 menit</option>
-                                <option selected>1 jam</option>
-                                <option>4 jam</option>
-                                <option>8 jam</option>
-                            </select>
+                            <span class="sec-badge" style="background:rgba(0, 200, 255, 0.08);color:var(--cyan);border:1px solid rgba(0, 200, 255, 0.15)">Aktif</span>
+                        </div>
+                    </div>
+                    <div class="sec-item">
+                        <div class="sec-left">
+                            <div class="sec-ico pci-a"><i class="bi bi-laptop-fill"></i></div>
+                            <div>
+                                <div class="sec-title">Sistem Operasi</div>
+                                <div class="sec-desc">{{ $platform }}</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="sec-item">
+                        <div class="sec-left">
+                            <div class="sec-ico pci-p"><i class="bi bi-envelope-check-fill"></i></div>
+                            <div>
+                                <div class="sec-title">Verifikasi Akun</div>
+                                <div class="sec-desc" style="max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ auth()->user()->email }}</div>
+                            </div>
+                        </div>
+                        <div class="sec-right">
+                            @if(auth()->user()->email_verified_at)
+                                <span class="sec-badge sb-on">Terverifikasi</span>
+                            @else
+                                <span class="sec-badge sb-off">Belum Verifikasi</span>
+                            @endif
                         </div>
                     </div>
                     <div class="sec-item" style="border-bottom:none">
                         <div class="sec-left">
-                            <div class="sec-ico pci-r"><i class="bi bi-incognito"></i></div>
+                            <div class="sec-ico pci-r"><i class="bi bi-clock-history"></i></div>
                             <div>
-                                <div class="sec-title">Mode Privasi</div>
-                                <div class="sec-desc">Sembunyikan status online dari pengguna lain</div>
+                                <div class="sec-title">Waktu Akses</div>
+                                <div class="sec-desc">Hari ini, {{ now()->timezone('Asia/Jakarta')->format('H:i') }} WIB</div>
                             </div>
                         </div>
                         <div class="sec-right">
-                            <label class="sw-wrap"><input type="checkbox" /><span class="sw-track"></span></label>
+                            <span class="sec-badge" style="background:rgba(0, 229, 160, 0.08);color:var(--ok);border:1px solid rgba(0, 229, 160, 0.15)">Online</span>
                         </div>
                     </div>
                 </div>

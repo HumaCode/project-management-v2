@@ -312,6 +312,68 @@ $(document).ready(function() {
             }
         });
     });
+
+    // 7. Dark/Light Theme Toggle
+    const $themeToggle = $('#themeToggle');
+    const $themeIcon = $('#themeIcon');
+    const $themeToggleDropdown = $('#themeToggleDropdown');
+    const $themeDropdownIcon = $('#themeDropdownIcon');
+    const $themeDropdownText = $('#themeDropdownText');
+
+    // Initialize switcher icon state on load
+    function initThemeSwitcherIcon() {
+        const currentTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+        if (currentTheme === 'light') {
+            $themeIcon.removeClass('bi-moon-stars-fill').addClass('bi-sun-fill');
+            $themeToggle.attr('title', 'Aktifkan Mode Gelap');
+            
+            // Dropdown settings
+            $themeDropdownIcon.removeClass('bi-sun-fill').addClass('bi-moon-stars-fill');
+            $themeDropdownText.text('Mode Gelap');
+        } else {
+            $themeIcon.removeClass('bi-sun-fill').addClass('bi-moon-stars-fill');
+            $themeToggle.attr('title', 'Aktifkan Mode Terang');
+            
+            // Dropdown settings
+            $themeDropdownIcon.removeClass('bi-moon-stars-fill').addClass('bi-sun-fill');
+            $themeDropdownText.text('Mode Terang');
+        }
+    }
+    initThemeSwitcherIcon();
+
+    // Trigger primary theme toggle when dropdown option is clicked
+    $themeToggleDropdown.on('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        $themeToggle.trigger('click');
+    });
+
+    $themeToggle.on('click', function(e) {
+        e.preventDefault();
+        
+        // Prevent double clicking during animation
+        if ($themeToggle.hasClass('theme-transitioning')) return;
+
+        // Add transitioning class for scale & rotate spin
+        $themeToggle.addClass('theme-transitioning');
+
+        // Halfway through rotation (250ms), swap variables and icon
+        setTimeout(() => {
+            const oldTheme = document.documentElement.getAttribute('data-theme') || 'dark';
+            const newTheme = oldTheme === 'light' ? 'dark' : 'light';
+            
+            document.documentElement.setAttribute('data-theme', newTheme);
+            localStorage.setItem('theme', newTheme);
+
+            // Sync all theme switchers (both topbar button and dropdown option)
+            initThemeSwitcherIcon();
+        }, 250);
+
+        // Remove transitioned class when full animation completes (500ms)
+        setTimeout(() => {
+            $themeToggle.removeClass('theme-transitioning');
+        }, 500);
+    });
 });
 
 

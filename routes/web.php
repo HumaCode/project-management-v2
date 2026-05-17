@@ -66,6 +66,13 @@ Route::middleware(['auth'])->group(function () {
             Route::get('profil', [ProfileController::class, 'index'])->name('profil.index');
             Route::put('profil/{user}', [ProfileController::class, 'update'])->name('profil.update');
             Route::put('profil/{user}/ubah-password', [ProfileController::class, 'updatePassword'])->name('profil.update-password');
+            Route::get('profil/activities', [ProfileController::class, 'activities'])->name('profil.activities');
+            Route::get('profil/activities/export', [ProfileController::class, 'exportActivities'])->name('profil.activities.export');
+            Route::delete('profil/sessions/{id}', [ProfileController::class, 'revokeSession'])->name('profil.sessions.revoke');
+            Route::post('profil/sessions/revoke-others', [ProfileController::class, 'revokeOtherSessions'])->name('profil.sessions.revoke-others');
+            Route::post('profil/deactivate', [ProfileController::class, 'deactivate'])->name('profil.deactivate');
+            Route::get('profil/download-data', [ProfileController::class, 'downloadData'])->name('profil.download-data');
+            Route::post('profil/delete-account', [ProfileController::class, 'deleteAccount'])->name('profil.delete-account');
 
             // projects
             Route::redirect('project', 'projects');

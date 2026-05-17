@@ -5,10 +5,19 @@ namespace App\Models\Shield;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUlids;
 use Spatie\Permission\Models\Role as ModelsRole;
+use Spatie\Activitylog\Models\Concerns\LogsActivity;
+use Spatie\Activitylog\Support\LogOptions;
 
 class Role extends ModelsRole
 {
-    use HasUlids;
+    use HasUlids, LogsActivity;
+
+    public function getActivitylogOptions(): LogOptions
+    {
+        return LogOptions::defaults()
+            ->logFillable()
+            ->useLogName('role');
+    }
 
     protected $fillable = [
         'name',

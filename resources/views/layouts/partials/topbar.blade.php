@@ -13,6 +13,9 @@
         <div class="tb-search-results" id="globalSearchResults"></div>
     </div>
     <div class="tb-right">
+        <button class="btn-theme-toggle" id="themeToggle" title="Ubah Mode Layar">
+            <i class="bi bi-moon-stars-fill" id="themeIcon"></i>
+        </button>
         <div style="position:relative">
             <button class="btn-bell" id="notifTrigger" title="Notifikasi">
                 <i class="bi bi-bell-fill"></i>
@@ -61,7 +64,9 @@
                         <span
                             style="margin-left:auto;font-size:10px;background:rgba(255,77,109,.15);color:var(--err);padding:1px 6px;border-radius:8px;font-family:var(--mono)">3</span>
                     </div>
-                    <div class="dd-item"><i class="bi bi-moon-stars-fill"></i><span>Mode Gelap</span>
+                    <div class="dd-item" id="themeToggleDropdown" style="cursor:pointer">
+                        <i class="bi bi-moon-stars-fill" id="themeDropdownIcon"></i>
+                        <span id="themeDropdownText">Mode Terang</span>
                     </div>
                     <div class="dd-sep"></div>
                     <div class="dd-item danger" data-bs-toggle="modal" data-bs-target="#logoutModal">

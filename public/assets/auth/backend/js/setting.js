@@ -4,6 +4,7 @@ $(function () {
     // ══════════════════════════════════════════════
 
     window.showPane = function (id) {
+        $('#liveThreatMonitor').fadeOut(200);
         $('.cat-grid').fadeOut(200, function () {
             $('#' + id).addClass('active').fadeIn(300);
         });
@@ -14,6 +15,7 @@ $(function () {
         pane.fadeOut(200, function () {
             pane.removeClass('active');
             $('.cat-grid').fadeIn(300);
+            $('#liveThreatMonitor').fadeIn(300);
         });
     });
 

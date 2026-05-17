@@ -177,6 +177,7 @@
 
         const $wrap = $('#userSelectionWrap');
         $wrap.html('<div class="col-12 text-center py-3 opacity-50">Memuat anggota...</div>');
+        $('#memberSearchInput').val(''); // Reset input pencarian ketika memuat anggota
 
         $.ajax({
             url: window.urlUsers,
@@ -190,7 +191,7 @@
                         const bgColor = getAvatarColor(user.id);
                         
                         html += `
-                            <div class="col-12 col-md-6">
+                            <div class="col-12 col-md-6 user-selection-item" data-name="${user.name.toLowerCase()}" data-role="${user.role_name.toLowerCase()}">
                                 <div class="item-sel ${isChecked ? 'active' : ''}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:12px; transition:all 0.2s">
                                     <label style="display:flex; align-items:center; gap:10px; flex-grow:1; cursor:pointer; margin:0">
                                         <input type="checkbox" name="members[${user.id}][id]" value="${user.id}" ${isChecked} class="d-none user-check">
@@ -234,6 +235,19 @@
             $roleInput.prop('disabled', true);
             $checkIco.hide();
         }
+    });
+
+    $(document).on('input', '#memberSearchInput', function () {
+        const query = $(this).val().toLowerCase().trim();
+        $('.user-selection-item').each(function () {
+            const name = $(this).data('name') || '';
+            const role = $(this).data('role') || '';
+            if (name.includes(query) || role.includes(query)) {
+                $(this).show();
+            } else {
+                $(this).hide();
+            }
+        });
     });
 
     $('#btnAdd').on('click', function () {

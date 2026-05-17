@@ -180,10 +180,12 @@
             
             <!-- Empty State -->
             <template x-if="!isLoading && diagrams.length === 0">
-                <div class="col-12 text-center py-5">
-                    <img src="{{ asset('assets/auth/backend/images/illustration/empty.svg') }}" alt="Empty" style="max-width:200px; opacity:0.6" onerror="this.style.display='none'">
-                    <h5 class="mt-4 text-white">Tidak ada diagram ditemukan</h5>
-                    <p class="text-light">Coba ubah filter pencarian Anda atau buat diagram baru.</p>
+                <div class="col-12 text-center py-5" data-aos="fade-up">
+                    <div class="mb-4 d-inline-flex align-items-center justify-content-center" style="width: 80px; height: 80px; border-radius: 50%; background: rgba(0, 142, 179, 0.08); border: 1px solid rgba(0, 142, 179, 0.18); color: var(--cyan); font-size: 36px; animation: float 3s ease-in-out infinite;">
+                        <i class="bi bi-diagram-2"></i>
+                    </div>
+                    <h5 class="mt-2" style="color: var(--txt); font-weight: 700;">Tidak ada diagram ditemukan</h5>
+                    <p class="mb-0" style="color: var(--dim); font-size: 14px;">Coba ubah filter pencarian Anda atau buat diagram baru.</p>
                 </div>
             </template>
         </div>

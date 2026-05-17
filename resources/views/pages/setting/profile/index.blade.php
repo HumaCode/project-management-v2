@@ -431,19 +431,19 @@
         <!-- Quick stats bar -->
         <div class="hero-qstats">
             <div class="hqs-item c">
-                <div class="hqs-val">24</div>
+                <div class="hqs-val">{{ $stats['projects_count'] }}</div>
                 <div class="hqs-lbl">Proyek</div>
             </div>
             <div class="hqs-item g">
-                <div class="hqs-val">186</div>
+                <div class="hqs-val">{{ $stats['completed_tasks_count'] }}</div>
                 <div class="hqs-lbl">Task Selesai</div>
             </div>
             <div class="hqs-item a">
-                <div class="hqs-val">42</div>
+                <div class="hqs-val">{{ $stats['documents_count'] }}</div>
                 <div class="hqs-lbl">Dokumen</div>
             </div>
             <div class="hqs-item p">
-                <div class="hqs-val">8</div>
+                <div class="hqs-val">{{ $stats['teams_count'] }}</div>
                 <div class="hqs-lbl">Tim</div>
             </div>
         </div>
@@ -453,7 +453,6 @@
     <div class="prof-tabs" data-aos="fade-up" data-aos-delay="50">
         <div class="ptab active" data-pane="edit"><i class="bi bi-person-fill"></i><span>Edit Profil</span></div>
         <div class="ptab" data-pane="keamanan"><i class="bi bi-shield-lock-fill"></i><span>Keamanan</span></div>
-        <div class="ptab" data-pane="notifikasi"><i class="bi bi-bell-fill"></i><span>Notifikasi</span></div>
         <div class="ptab" data-pane="aktivitas"><i class="bi bi-clock-history"></i><span>Aktivitas</span></div>
         <div class="ptab" data-pane="sesi"><i class="bi bi-laptop"></i><span>Sesi Aktif</span></div>
         <div class="ptab" data-pane="bahaya"><i class="bi bi-exclamation-triangle-fill"></i><span>Zona Bahaya</span>
@@ -465,10 +464,6 @@
 
     <!-- ══════════════════════════════════════════════ PANE: KEAMANAN ══════════════════════════════════════════════ -->
     @include('pages.setting.profile.partials.form-keamanan')
-
-
-    <!-- ══════════════════════════════════════════════ PANE: NOTIFIKASI ══════════════════════════════════════════════ -->
-    @include('pages.setting.profile.partials.form-notifikasi')
 
 
     <!-- ══════════════════════════════════════════════ PANE: AKTIVITAS ══════════════════════════════════════════════ -->

@@ -168,6 +168,16 @@
     - [x] **Premium UI/UX**: Professional maintenance page with Glassmorphism and Neon Orange theme.
     - [x] **Real-time Countdown**: Integrated JavaScript-based countdown timer for estimated completion.
     - [x] **Admin Integration**: AJAX-driven toggle and Flatpickr datetime selection in the Admin Panel.
+- [x] **System Diagram Module (Phase 1: Flowchart Builder)**:
+    - [x] **Core Architecture**: Interactive Diagram Builder powered by **Mermaid.js** and **Alpine.js**.
+    - [x] **Form-to-Code Sync**: Real-time declarative binding mapping visual UI inputs (nodes, shapes, links) into strict `mermaid` syntax.
+    - [x] **Advanced Export**: High-resolution, transparent **SVG-to-PNG export** capability via `XMLSerializer` and Canvas API.
+    - [x] **Rendering Optimizations**: Custom `textShadow` halo implementations to fix default Mermaid label clipping and `curve: basis` for professional line arcs.
+    - [x] **Premium UI Sync**: 
+        - Embedded custom Select2 dark-theme overrides strictly scoped to diagram modals.
+        - Fluid absolute-positioned `backdrop-filter` loading overlay ensuring zero grid displacement during data fetches.
+        - Comprehensive inclusion of 9 mapped flowchart shapes colored via specific `classDef` rules matching the project's cyberpunk/glassmorphism aesthetic.
+- [ ] **System Diagram Module (Phase 2: ERD & DFD Builder)**: Implementasi panel spesifik untuk desain struktur tabel database (ERD) dan aliran data (DFD).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).

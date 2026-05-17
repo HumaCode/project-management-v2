@@ -116,6 +116,14 @@ Route::middleware(['auth'])->group(function () {
             Route::post('laporan/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('reports.generate');
             Route::delete('laporan/{id}', [\App\Http\Controllers\ReportController::class, 'destroy'])->name('reports.destroy');
             
+            // Diagrams
+            Route::get('diagrams', [\App\Http\Controllers\DiagramController::class, 'index'])->name('diagrams.index');
+            Route::get('diagrams/pagination', [\App\Http\Controllers\DiagramController::class, 'getAllPaginated'])->name('diagrams.pagination');
+            Route::post('diagrams', [\App\Http\Controllers\DiagramController::class, 'store'])->name('diagrams.store');
+            Route::get('diagrams/{id}/builder', [\App\Http\Controllers\DiagramController::class, 'builder'])->name('diagrams.builder');
+            Route::put('diagrams/{id}', [\App\Http\Controllers\DiagramController::class, 'update'])->name('diagrams.update');
+            Route::delete('diagrams/{id}', [\App\Http\Controllers\DiagramController::class, 'destroy'])->name('diagrams.destroy');
+            
             // Settings
             Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
             Route::post('settings/profile', [\App\Http\Controllers\SettingController::class, 'updateProfile'])->name('settings.update-profile');

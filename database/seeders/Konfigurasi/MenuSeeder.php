@@ -54,6 +54,13 @@ class MenuSeeder extends Seeder
                 'icon' => 'bi bi-file-earmark-pdf-fill',
                 'orders' => 4,
             ],
+            [
+                'name' => 'Diagram Sistem',
+                'url' => 'diagrams',
+                'category' => 'MASTER',
+                'icon' => 'bi bi-diagram-2-fill',
+                'orders' => 5,
+            ],
 
             // =============================
             // MANAGEMENT

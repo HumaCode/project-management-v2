@@ -177,7 +177,12 @@
         - Embedded custom Select2 dark-theme overrides strictly scoped to diagram modals.
         - Fluid absolute-positioned `backdrop-filter` loading overlay ensuring zero grid displacement during data fetches.
         - Comprehensive inclusion of 9 mapped flowchart shapes colored via specific `classDef` rules matching the project's cyberpunk/glassmorphism aesthetic.
-- [ ] **System Diagram Module (Phase 2: ERD & DFD Builder)**: Implementasi panel spesifik untuk desain struktur tabel database (ERD) dan aliran data (DFD).
+- [x] **System Diagram Module (Phase 2: ERD Builder)**: 
+    - [x] **Crow's Foot Architecture**: Developed a custom UI mapping directly to Mermaid's `erDiagram` syntax for modern database modeling.
+    - [x] **State Management**: Implemented nested dynamic attributes (`entities`, `attributes`, `relationships`) within Alpine.js.
+    - [x] **UI/UX Refinements**: Built a custom table/column generation interface with explicit PK/FK checkboxes.
+    - [x] **Rendering Optimizations**: Segregated the ERD algorithm to default back to orthogonal lines with slightly rounded corners instead of global Bezier curves.
+- [ ] **System Diagram Module (Phase 3: DFD Builder)**: Implementasi panel spesifik untuk desain aliran data (Data Flow Diagram).
 - [ ] **Unit Kerja Management**: Modul untuk mengelola struktur organisasi/unit kerja.
 - [ ] **Activity/Task Module**: Implementasi pembuatan aktivitas (berdasarkan history v1).
 - [ ] **Monthly Report**: Optimasi dan implementasi laporan bulanan (berdasarkan history v1).

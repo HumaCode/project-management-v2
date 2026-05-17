@@ -292,6 +292,113 @@
                         </button>
                     </div>
                 </template>
+                
+                <!-- ERD BUILDER -->
+                <template x-if="type === 'erd'">
+                    <div>
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Daftar Tabel (Entitas)</label>
+                            <button type="button" class="btn btn-outline-success btn-sm py-0 px-2" @click="addEntity" style="font-size: 12px;"><i class="bi bi-plus"></i> Tambah Tabel</button>
+                        </div>
+                        
+                        <template x-for="(entity, eIndex) in diagramData.entities" :key="'e'+eIndex">
+                            <div class="node-card mb-3" style="border-left-color: #10b981;">
+                                <button type="button" class="btn btn-outline-danger btn-remove" @click="removeEntity(eIndex)"><i class="bi bi-trash"></i></button>
+                                
+                                <div class="mb-2">
+                                    <label class="form-label text-light mb-1" style="font-size: 11px;">Nama Tabel (Tanpa Spasi)</label>
+                                    <input type="text" class="form-control form-control-sm" x-model="entity.name" @input.debounce.500ms="generateMermaid" placeholder="Contoh: USERS">
+                                </div>
+                                
+                                <div class="mt-3 mb-1 d-flex justify-content-between align-items-center">
+                                    <label class="form-label text-light mb-0" style="font-size: 11px;">Kolom / Atribut</label>
+                                    <button type="button" class="btn btn-link text-info p-0" @click="addAttribute(eIndex)" style="font-size: 11px; text-decoration: none;"><i class="bi bi-plus-circle"></i> Tambah Kolom</button>
+                                </div>
+                                
+                                <div class="border rounded p-2" style="border-color: #334155 !important; background-color: #0f172a;">
+                                    <template x-for="(attr, aIndex) in entity.attributes" :key="'a'+aIndex">
+                                        <div class="row g-1 mb-2 align-items-center">
+                                            <div class="col-4">
+                                                <input type="text" class="form-control form-control-sm" x-model="attr.name" @input.debounce.500ms="generateMermaid" placeholder="Nama" style="font-size: 10px;">
+                                            </div>
+                                            <div class="col-4">
+                                                <input type="text" class="form-control form-control-sm" x-model="attr.type" @input.debounce.500ms="generateMermaid" placeholder="Tipe" style="font-size: 10px;">
+                                            </div>
+                                            <div class="col-3 d-flex justify-content-around">
+                                                <div class="form-check form-check-inline m-0" title="Primary Key">
+                                                    <input class="form-check-input" type="checkbox" x-model="attr.pk" @change="generateMermaid" style="transform: scale(0.8);">
+                                                    <label class="form-check-label text-warning" style="font-size: 10px;">PK</label>
+                                                </div>
+                                                <div class="form-check form-check-inline m-0" title="Foreign Key">
+                                                    <input class="form-check-input" type="checkbox" x-model="attr.fk" @change="generateMermaid" style="transform: scale(0.8);">
+                                                    <label class="form-check-label text-info" style="font-size: 10px;">FK</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-1 text-end">
+                                                <button type="button" class="btn btn-sm text-danger p-0" @click="removeAttribute(eIndex, aIndex)"><i class="bi bi-x"></i></button>
+                                            </div>
+                                        </div>
+                                    </template>
+                                    <div x-show="!entity.attributes || entity.attributes.length === 0" class="text-center text-muted" style="font-size: 10px;">Belum ada kolom</div>
+                                </div>
+                            </div>
+                        </template>
+
+                        <!-- Tambah Tabel di Bawah -->
+                        <button type="button" class="btn btn-dashed mb-4 mt-1" @click="addEntity">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Tabel
+                        </button>
+
+                        <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
+                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Relasi Antar Tabel</label>
+                            <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" @click="addRelationship" style="font-size: 12px;"><i class="bi bi-plus"></i> Tambah Relasi</button>
+                        </div>
+                        
+                        <template x-for="(rel, rIndex) in diagramData.relationships" :key="'r'+rIndex">
+                            <div class="node-card mb-2" style="border-left-color: #3b82f6;">
+                                <button type="button" class="btn btn-outline-danger btn-remove" @click="removeRelationship(rIndex)"><i class="bi bi-trash"></i></button>
+                                <div class="row g-2 mb-2">
+                                    <div class="col-6">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">Tabel 1</label>
+                                        <select class="form-select form-select-sm" x-model="rel.from" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                            <template x-for="e in diagramData.entities" :key="e.name">
+                                                <option :value="e.name" x-text="e.name" :selected="rel.from == e.name" style="background-color: #1e293b; color: white;"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                    <div class="col-6">
+                                        <label class="form-label text-light mb-1" style="font-size: 11px;">Tabel 2</label>
+                                        <select class="form-select form-select-sm" x-model="rel.to" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                            <template x-for="e in diagramData.entities" :key="e.name">
+                                                <option :value="e.name" x-text="e.name" :selected="rel.to == e.name" style="background-color: #1e293b; color: white;"></option>
+                                            </template>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="mb-2">
+                                    <label class="form-label text-light mb-1" style="font-size: 11px;">Tipe Relasi (Kardinalitas)</label>
+                                    <select class="form-select form-select-sm" x-model="rel.type" @change="generateMermaid" style="background-color: #1e293b; color: white;">
+                                        <option value="||--o{" style="background-color: #1e293b; color: white;">1 ke Banyak (1 to Many)</option>
+                                        <option value="||--||" style="background-color: #1e293b; color: white;">1 ke 1 (1 to 1)</option>
+                                        <option value="}o--o{" style="background-color: #1e293b; color: white;">Banyak ke Banyak (M to M)</option>
+                                        <option value="|o--o{" style="background-color: #1e293b; color: white;">0/1 ke Banyak (0/1 to M)</option>
+                                    </select>
+                                </div>
+                                <div class="mb-0">
+                                    <label class="form-label text-light mb-1" style="font-size: 11px;">Label Garis (Opsional)</label>
+                                    <input type="text" class="form-control form-control-sm" x-model="rel.label" @input.debounce.500ms="generateMermaid" placeholder="contoh: memiliki">
+                                </div>
+                            </div>
+                        </template>
+                        
+                        <!-- Tambah Relasi di Bawah -->
+                        <button type="button" class="btn btn-dashed mb-2 mt-1" @click="addRelationship">
+                            <i class="bi bi-plus-circle me-1"></i> Tambah Relasi
+                        </button>
+                    </div>
+                </template>
 
                 <!-- Advanced Syntax Mode -->
                 <div class="mt-4 pt-3 border-top border-secondary">
@@ -372,7 +479,7 @@
                     if (savedContent && typeof savedContent === 'object') {
                         this.diagramData = Object.assign(this.diagramData, savedContent);
                     } else if (this.type === 'flowchart' && this.diagramData.nodes.length === 0) {
-                        // Inisialisasi default jika kosong
+                        // Inisialisasi default flowchart jika kosong
                         this.diagramData.nodes.push(
                             { id: 'A', label: 'Mulai', shape: 'pill' },
                             { id: 'B', label: 'Proses 1', shape: 'round' }
@@ -380,6 +487,28 @@
                         this.diagramData.links.push(
                             { from: 'A', to: 'B', text: '' }
                         );
+                    } else if (this.type === 'erd' && !this.diagramData.entities) {
+                        // Inisialisasi default ERD jika kosong
+                        this.diagramData.entities = [
+                            {
+                                name: "USERS",
+                                attributes: [
+                                    { name: "id", type: "int", pk: true, fk: false },
+                                    { name: "name", type: "varchar", pk: false, fk: false }
+                                ]
+                            },
+                            {
+                                name: "POSTS",
+                                attributes: [
+                                    { name: "id", type: "int", pk: true, fk: false },
+                                    { name: "user_id", type: "int", pk: false, fk: true },
+                                    { name: "title", type: "varchar", pk: false, fk: false }
+                                ]
+                            }
+                        ];
+                        this.diagramData.relationships = [
+                            { from: "USERS", to: "POSTS", type: "||--o{", label: "has" }
+                        ];
                     }
                     
                     if (savedSyntax) {
@@ -391,7 +520,7 @@
                     // Inisialisasi mermaid
                     mermaid.initialize({
                         startOnLoad: false,
-                        theme: 'base',
+                        theme: 'dark',
                         themeVariables: {
                             fontFamily: 'Inter, sans-serif',
                             primaryColor: '#1e293b',
@@ -400,6 +529,8 @@
                             lineColor: '#64748b',
                             textColor: '#ffffff',
                             mainBkg: '#1e293b',
+                            secondaryColor: '#0f172a', // Background baris tabel ERD
+                            tertiaryColor: '#1e293b', // Background baris tabel ERD selang-seling
                             nodeBorder: '#3b82f6',
                             clusterBkg: '#1e293b',
                             clusterBorder: '#334155',
@@ -410,7 +541,6 @@
                         },
                         securityLevel: 'loose',
                         flowchart: { 
-                            curve: 'basis', // 'basis' untuk garis melengkung mulus (smooth)
                             nodeSpacing: 70,
                             rankSpacing: 70,
                             htmlLabels: true
@@ -446,10 +576,47 @@
                     this.generateMermaid();
                 },
 
+                // ERD Builders
+                addEntity() {
+                    const newName = 'TABLE_' + (this.diagramData.entities.length + 1);
+                    this.diagramData.entities.push({ name: newName, attributes: [{ name: "id", type: "int", pk: true, fk: false }] });
+                    this.generateMermaid();
+                },
+                
+                removeEntity(index) {
+                    const entity = this.diagramData.entities[index];
+                    this.diagramData.entities.splice(index, 1);
+                    // Hapus relasi terkait
+                    this.diagramData.relationships = this.diagramData.relationships.filter(r => r.from !== entity.name && r.to !== entity.name);
+                    this.generateMermaid();
+                },
+                
+                addAttribute(eIndex) {
+                    if(!this.diagramData.entities[eIndex].attributes) {
+                        this.diagramData.entities[eIndex].attributes = [];
+                    }
+                    this.diagramData.entities[eIndex].attributes.push({ name: "col_name", type: "varchar", pk: false, fk: false });
+                    this.generateMermaid();
+                },
+                
+                removeAttribute(eIndex, aIndex) {
+                    this.diagramData.entities[eIndex].attributes.splice(aIndex, 1);
+                    this.generateMermaid();
+                },
+                
+                addRelationship() {
+                    this.diagramData.relationships.push({ from: '', to: '', type: '||--o{', label: '' });
+                },
+                
+                removeRelationship(index) {
+                    this.diagramData.relationships.splice(index, 1);
+                    this.generateMermaid();
+                },
+
                 // Generate Syntax
                 generateMermaid() {
                     if (this.type === 'flowchart') {
-                        let code = `flowchart ${this.diagramData.direction}\n`;
+                        let code = `%%{init: {'flowchart': {'curve': 'basis'}}}%%\nflowchart ${this.diagramData.direction}\n`;
                         
                         // Define Colors (Premium Look)
                         code += `    classDef default fill:#1e293b,stroke:#00c8ff,stroke-width:2px,color:#fff,rx:8,ry:8;\n`;
@@ -495,6 +662,43 @@
                                     } else {
                                         code += `    ${l.from} --> ${l.to}\n`;
                                     }
+                                }
+                            });
+                        }
+                        
+                        this.mermaidSyntax = code;
+                        this.renderMermaid();
+                    } else if (this.type === 'erd') {
+                        let code = "erDiagram\n";
+                        
+                        // Render Entities
+                        if (this.diagramData.entities && this.diagramData.entities.length > 0) {
+                            this.diagramData.entities.forEach(e => {
+                                let eName = e.name ? e.name.replace(/\s+/g, '_') : 'UNTITLED';
+                                code += `    ${eName} {\n`;
+                                if (e.attributes && e.attributes.length > 0) {
+                                    e.attributes.forEach(a => {
+                                        let keys = [];
+                                        if (a.pk) keys.push("PK");
+                                        if (a.fk) keys.push("FK");
+                                        let keyStr = keys.length > 0 ? ` ${keys.join(",")}` : "";
+                                        
+                                        let attrType = a.type ? a.type.replace(/\s+/g, '_') : 'string';
+                                        let attrName = a.name ? a.name.replace(/\s+/g, '_') : 'column';
+                                        
+                                        code += `        ${attrType} ${attrName}${keyStr}\n`;
+                                    });
+                                }
+                                code += `    }\n`;
+                            });
+                        }
+                        
+                        // Render Relationships
+                        if (this.diagramData.relationships && this.diagramData.relationships.length > 0) {
+                            this.diagramData.relationships.forEach(r => {
+                                if (r.from && r.to && r.type) {
+                                    let label = r.label ? ` : "${r.label}"` : ' : ""';
+                                    code += `    ${r.from} ${r.type} ${r.to}${label}\n`;
                                 }
                             });
                         }

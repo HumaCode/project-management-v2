@@ -184,6 +184,15 @@
             method: 'GET',
             success(res) {
                 if (res.success) {
+                    // Sort: selected users on top, then sort alphabetically by name
+                    res.data.sort((a, b) => {
+                        const aChecked = selectedIds.includes(a.id);
+                        const bChecked = selectedIds.includes(b.id);
+                        if (aChecked && !bChecked) return -1;
+                        if (!aChecked && bChecked) return 1;
+                        return a.name.localeCompare(b.name);
+                    });
+
                     let html = '';
                     res.data.forEach(user => {
                         const isChecked = selectedIds.includes(user.id) ? 'checked' : '';

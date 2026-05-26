@@ -9,7 +9,19 @@ use App\Http\Controllers\Auth\InactiveUserController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
+    $totalProjects = \App\Models\Project::count();
+    $totalUsers = \App\Models\User::where('is_active', '1')->count();
+    $totalTeams = \App\Models\Team::count();
+    $totalDocuments = \App\Models\Dokumen::count();
+    $totalCompletedProjects = \App\Models\Project::where('status', 'done')->count();
+
+    return view('welcome', compact(
+        'totalProjects',
+        'totalUsers',
+        'totalTeams',
+        'totalDocuments',
+        'totalCompletedProjects'
+    ));
 });
 
 // Auto Login (Signed URL) - Harus di luar middleware auth agar bisa login otomatis

@@ -116,10 +116,10 @@
           <button class="btn-o" onclick="smoothTo('#cara-kerja')"><i class="bi bi-play-circle-fill"></i> Lihat Demo</button>
         </div>
         <div class="hero-stats">
-          <div class="hstat"><div class="hstat-v" data-count="500">0</div><div class="hstat-l">Proyek Selesai</div></div>
-          <div class="hstat"><div class="hstat-v" data-count="1200">0</div><div class="hstat-l">User Aktif</div></div>
+          <div class="hstat"><div class="hstat-v" data-count="{{ $totalCompletedProjects }}">0</div><div class="hstat-l">Proyek Selesai</div></div>
+          <div class="hstat"><div class="hstat-v" data-count="{{ $totalUsers }}">0</div><div class="hstat-l">User Aktif</div></div>
           <div class="hstat"><div class="hstat-v" data-count="99">0</div><div class="hstat-l">% Kepuasan</div></div>
-          <div class="hstat"><div class="hstat-v" data-count="48">0</div><div class="hstat-l">Integrasi</div></div>
+          <div class="hstat"><div class="hstat-v" data-count="{{ $totalDocuments }}">0</div><div class="hstat-l">Dokumen Proyek</div></div>
         </div>
       </div>
       <div class="col-xl-6 d-none d-xl-block">
@@ -151,8 +151,8 @@
             <div class="mkrow"><div class="mkav" style="background:linear-gradient(135deg,#5b21b6,#a78bfa)"></div><div class="mkb" style="background:linear-gradient(90deg,#5b21b6,#a78bfa);width:42%;animation:bl 3s 1.2s ease-in-out infinite"></div><span style="font-family:var(--mono);font-size:10px;color:#a78bfa;white-space:nowrap">42%</span></div>
             <!-- Mini stats -->
             <div class="mkstats">
-              <div class="mks"><div class="mks-v">24</div><div class="mks-l">Proyek</div></div>
-              <div class="mks"><div class="mks-v" style="color:var(--amber)">8</div><div class="mks-l">Tim</div></div>
+              <div class="mks"><div class="mks-v">{{ $totalProjects }}</div><div class="mks-l">Proyek</div></div>
+              <div class="mks"><div class="mks-v" style="color:var(--amber)">{{ $totalTeams }}</div><div class="mks-l">Tim</div></div>
               <div class="mks"><div class="mks-v" style="color:var(--green)">98%</div><div class="mks-l">On-time</div></div>
             </div>
             <!-- Chart bars -->
@@ -354,13 +354,13 @@
     <div class="row g-0">
       <div class="col-6 col-lg-3 reveal" style="transition-delay:.05s">
         <div class="stat-item">
-          <div class="snum" data-count="500">0</div>
+          <div class="snum" data-count="{{ $totalCompletedProjects }}">0</div>
           <div class="slbl">Proyek Selesai</div>
         </div>
       </div>
       <div class="col-6 col-lg-3 reveal" style="transition-delay:.12s">
         <div class="stat-item">
-          <div class="snum" data-count="1200">0</div>
+          <div class="snum" data-count="{{ $totalUsers }}">0</div>
           <div class="slbl">Pengguna Aktif</div>
         </div>
       </div>
@@ -372,8 +372,8 @@
       </div>
       <div class="col-6 col-lg-3 reveal" style="transition-delay:.28s">
         <div class="stat-item">
-          <div class="snum" data-count="48">0</div>
-          <div class="slbl">Integrasi Aktif</div>
+          <div class="snum" data-count="{{ $totalDocuments }}">0</div>
+          <div class="slbl">Dokumen Proyek</div>
         </div>
       </div>
     </div>

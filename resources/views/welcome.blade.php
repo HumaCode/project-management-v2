@@ -51,8 +51,8 @@
         <span><i class="bi bi-grid-3x3-gap-fill"></i> Dashboard</span>
       </button>
     @else
-      <div style="display:flex; gap:10px; align-items:center;">
-        <a href="{{ route('login') }}" class="nav-links" style="margin-left:0; color:var(--dim); font-weight:500; font-size:13.5px; padding: 7px 13px;" onmouseover="this.style.color='var(--txt)'" onmouseout="this.style.color='var(--dim)'">Masuk</a>
+      <div class="nav-auth-group">
+        <a href="{{ route('login') }}" class="nav-login-link">Masuk</a>
         @if (Route::has('register'))
           <button class="nav-cta" onclick="window.location.href='{{ route('register') }}'">
             <span>Daftar</span>

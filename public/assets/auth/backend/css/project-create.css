@@ -836,44 +836,53 @@ input[type=range].sl::-moz-range-thumb {
     background: var(--card) !important;
     backdrop-filter: blur(15px);
     border: 1px solid var(--bdh) !important;
-    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.6) !important;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.4) !important;
     border-radius: var(--r) !important;
+    color: var(--txt) !important;
 }
 
-.flatpickr-day.selected, 
-.flatpickr-day.startRange, 
-.flatpickr-day.endRange, 
-.flatpickr-day.selected.inRange, 
-.flatpickr-day.startRange.inRange, 
-.flatpickr-day.endRange.inRange, 
-.flatpickr-day.selected:focus, 
-.flatpickr-day.startRange:focus, 
-.flatpickr-day.endRange:focus, 
-.flatpickr-day.selected:hover, 
-.flatpickr-day.startRange:hover, 
-.flatpickr-day.endRange:hover, 
-.flatpickr-day.prevMonthDay.selected, 
-.flatpickr-day.nextMonthDay.selected {
-    background: linear-gradient(135deg, var(--blue), var(--cyan)) !important;
-    border-color: transparent !important;
-    font-weight: 700;
-}
-
-.flatpickr-day.today {
-    border-color: var(--cyan) !important;
-}
-
-.flatpickr-day:hover {
-    background: rgba(0, 200, 255, 0.12) !important;
-    color: var(--cyan) !important;
+.flatpickr-months {
+    background: transparent !important;
 }
 
 .flatpickr-months .flatpickr-month {
     color: var(--txt) !important;
 }
 
+.flatpickr-months .flatpickr-prev-month,
+.flatpickr-months .flatpickr-next-month {
+    color: var(--txt) !important;
+    fill: var(--txt) !important;
+}
+
+.flatpickr-months .flatpickr-prev-month svg,
+.flatpickr-months .flatpickr-next-month svg {
+    fill: currentColor !important;
+}
+
+.flatpickr-months .flatpickr-prev-month:hover svg,
+.flatpickr-months .flatpickr-next-month:hover svg {
+    fill: var(--cyan) !important;
+}
+
 .flatpickr-current-month .flatpickr-monthDropdown-months {
-    background: #071528 !important;
+    background: var(--card) !important;
+    color: var(--txt) !important;
+    border: none !important;
+}
+
+.flatpickr-current-month .flatpickr-monthDropdown-months option {
+    background: var(--bg) !important;
+    color: var(--txt) !important;
+}
+
+.flatpickr-current-month .numInputWrapper input {
+    background: transparent !important;
+    color: var(--txt) !important;
+}
+
+.flatpickr-current-month .numInputWrapper span {
+    border-color: rgba(255, 255, 255, 0.15) !important;
 }
 
 .flatpickr-weekdays {
@@ -890,14 +899,54 @@ span.flatpickr-weekday {
     color: var(--txt) !important;
 }
 
-.flatpickr-day.flatpickr-disabled, 
-.flatpickr-day.flatpickr-disabled:hover {
-    color: var(--muted) !important;
+.flatpickr-day.prevMonthDay,
+.flatpickr-day.nextMonthDay {
+    color: var(--dim) !important;
+    opacity: 0.5;
 }
 
-.flatpickr-months .flatpickr-prev-month:hover svg, 
-.flatpickr-months .flatpickr-next-month:hover svg {
-    fill: var(--cyan) !important;
+.flatpickr-day.flatpickr-disabled,
+.flatpickr-day.flatpickr-disabled:hover {
+    color: var(--muted) !important;
+    opacity: 0.3;
+}
+
+.flatpickr-day.today {
+    border-color: var(--cyan) !important;
+}
+
+.flatpickr-day.selected,
+.flatpickr-day.startRange,
+.flatpickr-day.endRange,
+.flatpickr-day.selected.inRange,
+.flatpickr-day.startRange.inRange,
+.flatpickr-day.endRange.inRange,
+.flatpickr-day.selected:focus,
+.flatpickr-day.startRange:focus,
+.flatpickr-day.endRange:focus,
+.flatpickr-day.selected:hover,
+.flatpickr-day.startRange:hover,
+.flatpickr-day.endRange:hover,
+.flatpickr-day.prevMonthDay.selected,
+.flatpickr-day.nextMonthDay.selected {
+    background: linear-gradient(135deg, var(--blue), var(--cyan)) !important;
+    border-color: transparent !important;
+    color: #ffffff !important;
+    font-weight: 700;
+}
+
+.flatpickr-day:hover {
+    background: rgba(0, 200, 255, 0.12) !important;
+    color: var(--cyan) !important;
+}
+
+/* Light Theme Specific Flatpickr Overrides */
+[data-theme="light"] .flatpickr-calendar {
+    box-shadow: 0 16px 48px rgba(15, 23, 42, 0.08) !important;
+}
+
+[data-theme="light"] .flatpickr-current-month .numInputWrapper span {
+    border-color: rgba(15, 23, 42, 0.15) !important;
 }
 
 /* Fix text visibility on Flatpickr Input */

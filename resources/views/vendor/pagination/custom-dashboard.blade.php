@@ -14,23 +14,41 @@
                 @endif
 
                 {{-- Pagination Elements --}}
-                @foreach ($elements as $element)
-                    {{-- "Three Dots" Separator --}}
-                    @if (is_string($element))
-                        <li class="page-item disabled" aria-disabled="true"><span class="page-link">{{ $element }}</span></li>
-                    @endif
+                @php
+                    $currentPage = $paginator->currentPage();
+                    $lastPage = $paginator->lastPage();
+                    $onEachSide = 1; // Number of pages to show on each side of the current page
+                    
+                    $showEllipsisStart = false;
+                    $showEllipsisEnd = false;
+                @endphp
 
-                    {{-- Array Of Links --}}
-                    @if (is_array($element))
-                        @foreach ($element as $page => $url)
-                            @if ($page == $paginator->currentPage())
-                                <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
-                            @else
-                                <li class="page-item"><a class="page-link" href="{{ $url }}">{{ $page }}</a></li>
-                            @endif
-                        @endforeach
+                @for ($page = 1; $page <= $lastPage; $page++)
+                    @php
+                        $shouldShow = false;
+                        if ($page === 1 || $page === $lastPage) {
+                            $shouldShow = true;
+                        } elseif (abs($page - $currentPage) <= $onEachSide) {
+                            $shouldShow = true;
+                        }
+                    @endphp
+
+                    @if ($shouldShow)
+                        @if ($page == $currentPage)
+                            <li class="page-item active" aria-current="page"><span class="page-link">{{ $page }}</span></li>
+                        @else
+                            <li class="page-item"><a class="page-link" href="{{ $paginator->url($page) }}">{{ $page }}</a></li>
+                        @endif
+                    @else
+                        @if ($page < $currentPage && !$showEllipsisStart)
+                            <li class="page-item disabled" aria-disabled="true"><span class="page-link">...</span></li>
+                            @php $showEllipsisStart = true; @endphp
+                        @elseif ($page > $currentPage && !$showEllipsisEnd)
+                            <li class="page-item disabled" aria-disabled="true"><span class="page-link">...</span></li>
+                            @php $showEllipsisEnd = true; @endphp
+                        @endif
                     @endif
-                @endforeach
+                @endfor
 
                 {{-- Next Page Link --}}
                 @if ($paginator->hasMorePages())

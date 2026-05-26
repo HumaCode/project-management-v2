@@ -895,47 +895,47 @@ span.flatpickr-weekday {
     font-size: 11px !important;
 }
 
-.flatpickr-day {
+.flatpickr-calendar .flatpickr-day {
     color: var(--txt) !important;
 }
 
-.flatpickr-day.prevMonthDay,
-.flatpickr-day.nextMonthDay {
+.flatpickr-calendar .flatpickr-day.prevMonthDay,
+.flatpickr-calendar .flatpickr-day.nextMonthDay {
     color: var(--dim) !important;
     opacity: 0.5;
 }
 
-.flatpickr-day.flatpickr-disabled,
-.flatpickr-day.flatpickr-disabled:hover {
+.flatpickr-calendar .flatpickr-day.flatpickr-disabled,
+.flatpickr-calendar .flatpickr-day.flatpickr-disabled:hover {
     color: var(--muted) !important;
     opacity: 0.3;
 }
 
-.flatpickr-day.today {
+.flatpickr-calendar .flatpickr-day.today {
     border-color: var(--cyan) !important;
 }
 
-.flatpickr-day.selected,
-.flatpickr-day.startRange,
-.flatpickr-day.endRange,
-.flatpickr-day.selected.inRange,
-.flatpickr-day.startRange.inRange,
-.flatpickr-day.endRange.inRange,
-.flatpickr-day.selected:focus,
-.flatpickr-day.startRange:focus,
-.flatpickr-day.endRange:focus,
-.flatpickr-day.selected:hover,
-.flatpickr-day.startRange:hover,
-.flatpickr-day.endRange:hover,
-.flatpickr-day.prevMonthDay.selected,
-.flatpickr-day.nextMonthDay.selected {
+.flatpickr-calendar .flatpickr-day.selected,
+.flatpickr-calendar .flatpickr-day.startRange,
+.flatpickr-calendar .flatpickr-day.endRange,
+.flatpickr-calendar .flatpickr-day.selected.inRange,
+.flatpickr-calendar .flatpickr-day.startRange.inRange,
+.flatpickr-calendar .flatpickr-day.endRange.inRange,
+.flatpickr-calendar .flatpickr-day.selected:focus,
+.flatpickr-calendar .flatpickr-day.startRange:focus,
+.flatpickr-calendar .flatpickr-day.endRange:focus,
+.flatpickr-calendar .flatpickr-day.selected:hover,
+.flatpickr-calendar .flatpickr-day.startRange:hover,
+.flatpickr-calendar .flatpickr-day.endRange:hover,
+.flatpickr-calendar .flatpickr-day.prevMonthDay.selected,
+.flatpickr-calendar .flatpickr-day.nextMonthDay.selected {
     background: linear-gradient(135deg, var(--blue), var(--cyan)) !important;
     border-color: transparent !important;
     color: #ffffff !important;
     font-weight: 700;
 }
 
-.flatpickr-day:hover {
+.flatpickr-calendar .flatpickr-day:hover {
     background: rgba(0, 200, 255, 0.12) !important;
     color: var(--cyan) !important;
 }

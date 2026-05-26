@@ -1144,27 +1144,30 @@ html {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: #ffffff !important;
 }
 
 .sb-user-info .urole {
     font-family: var(--mono);
     font-size: 10px;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.5) !important;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
-.sb-user-chevron {
+.sb-user-chevron,
+.sb-chev {
     font-size: 12px;
-    color: var(--muted);
+    color: rgba(255, 255, 255, 0.4) !important;
     flex-shrink: 0;
     transition:
         transform var(--dur) var(--ease),
         color var(--dur) var(--ease);
 }
 
-.sb-user:hover .sb-user-chevron {
-    color: var(--cyan);
+.sb-user:hover .sb-user-chevron,
+.sb-user:hover .sb-chev {
+    color: var(--cyan) !important;
     transform: translateX(2px);
 }
 

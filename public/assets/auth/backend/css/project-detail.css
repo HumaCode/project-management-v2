@@ -220,7 +220,10 @@
 .note-time {
     font-family: var(--mono);
     font-size: 10px;
-    color: var(--muted);
+    color: var(--dim);
+}
+.note-card.is-me .note-time {
+    color: rgba(255, 255, 255, 0.5);
 }
 .note-body {
     font-size: 13.5px;
@@ -240,7 +243,7 @@
     background: none;
     border: none;
     font-size: 11px;
-    color: var(--muted);
+    color: var(--dim);
     cursor: pointer;
     display: flex;
     align-items: center;
@@ -251,6 +254,12 @@
 }
 .note-btn:hover {
     color: var(--cyan);
+}
+.note-card.is-me .note-btn {
+    color: rgba(255, 255, 255, 0.6);
+}
+.note-card.is-me .note-btn:hover {
+    color: #fff;
 }
 
 .note-btn.btn-del-note:hover {
@@ -802,4 +811,68 @@ select.modal-inp {
 .pg-btn:disabled {
     opacity: 0.3;
     cursor: not-allowed;
+}
+
+/* Light Mode overrides for discussion chat bubbles */
+html[data-theme="light"] .note-card {
+    background: rgba(15, 23, 42, 0.03) !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+    box-shadow: 0 4px 15px rgba(15, 23, 42, 0.04) !important;
+}
+
+html[data-theme="light"] .note-card.is-me {
+    background: rgba(0, 200, 255, 0.08) !important;
+    border-color: rgba(0, 200, 255, 0.25) !important;
+}
+
+html[data-theme="light"] .note-card.is-me .note-author {
+    color: #008eb3 !important; /* Darker cyan for light mode readability */
+}
+
+html[data-theme="light"] .note-card.is-me .quote-author {
+    color: #008eb3 !important;
+}
+
+html[data-theme="light"] .note-quote {
+    background: rgba(15, 23, 42, 0.04) !important;
+    border-left-color: var(--cyan) !important;
+}
+
+html[data-theme="light"] .is-me .note-quote {
+    border-left-color: #008eb3 !important;
+}
+
+html[data-theme="light"] .note-quote .quote-text {
+    color: var(--dim) !important;
+}
+
+html[data-theme="light"] .add-note-wrap {
+    background: rgba(15, 23, 42, 0.02) !important;
+    border-top-color: var(--bd) !important;
+}
+
+html[data-theme="light"] .chat-box-wrap {
+    background: #ffffff !important;
+    border-color: var(--bd) !important;
+}
+
+html[data-theme="light"] .chat-box-wrap:focus-within {
+    border-color: var(--cyan) !important;
+    box-shadow: 0 0 12px rgba(0, 200, 255, 0.15) !important;
+}
+
+html[data-theme="light"] .chat-reply-wrap {
+    background: rgba(15, 23, 42, 0.02) !important;
+    border-bottom-color: rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .attach-file {
+    background: rgba(15, 23, 42, 0.04) !important;
+    border-color: rgba(15, 23, 42, 0.08) !important;
+    color: var(--txt) !important;
+}
+html[data-theme="light"] .attach-file:hover {
+    background: rgba(0, 200, 255, 0.08) !important;
+    border-color: var(--cyan) !important;
+    color: #008eb3 !important;
 }

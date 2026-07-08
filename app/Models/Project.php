@@ -38,6 +38,7 @@ class Project extends Model implements HasMedia
         'team_id',
         'color',
         'icon',
+        'source',
     ];
 
     protected $casts = [

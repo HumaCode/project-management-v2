@@ -17,4 +17,7 @@ test('new users can register', function () {
 
     $this->assertAuthenticated();
     $response->assertRedirect(route('inactive'));
+
+    $user = \App\Models\User::where('email', 'test@example.com')->first();
+    expect($user->hasRole('user'))->toBeTrue();
 });

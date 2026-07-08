@@ -117,8 +117,11 @@ const ReportBuilder = {
         if (!assets || assets.length === 0) {
             $grid.hide();
             $empty.html(`
-                <i class="bi bi-folder-x d-block mb-3" style="font-size: 40px; opacity: 0.3;"></i>
-                Tidak ada dokumen ditemukan di kategori ini.
+                <div class="empty-icon-wrap">
+                    <i class="bi bi-folder-x"></i>
+                </div>
+                <h5>Dokumen Tidak Ditemukan</h5>
+                <p>Tidak ada dokumen ditemukan di kategori ini untuk project yang dipilih.</p>
             `).show();
             return;
         }

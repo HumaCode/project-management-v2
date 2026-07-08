@@ -63,6 +63,14 @@ class RegisteredUserController extends Controller
             'is_active' => ($settings['admin_approval'] ?? '1') == '1' ? 0 : 1,
         ]);
 
+        // Assign default role 'user' (create it first if it doesn't exist to prevent errors in tests/empty db)
+        \App\Models\Shield\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web'], [
+            'slug' => 'user',
+            'type_role' => 'system',
+            'description' => 'Pengguna luar / pemohon aplikasi'
+        ]);
+        $user->assignRole('user');
+
         event(new Registered($user));
 
         Auth::login($user);

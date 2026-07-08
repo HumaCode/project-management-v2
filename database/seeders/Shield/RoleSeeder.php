@@ -32,6 +32,12 @@ class RoleSeeder extends Seeder
                 'type_role'   => 'system',
                 'description' => 'Anggota tim',
             ],
+            [
+                'name'        => 'user',
+                'slug'        => 'user',
+                'type_role'   => 'system',
+                'description' => 'Pengguna luar / pemohon aplikasi',
+            ],
         ];
 
         foreach ($roles as $role) {

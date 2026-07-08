@@ -17,6 +17,17 @@
   --nav-h:68px;
   --ease:cubic-bezier(.4,0,.2,1);
 }
+
+html[data-theme="light"] {
+  --bg:#f8fafc;--bg2:#ffffff;--bg3:#f1f5f9;
+  --cyan:#008eb3;--cyan2:#0284c7;--cyan3:rgba(0,142,179,.1);
+  --amber:#d97706;--amber2:rgba(217,119,6,.1);
+  --green:#059669;--green2:rgba(5,150,105,.1);
+  --red:#dc2626;--purple:#7c3aed;
+  --txt:#0f172a;--dim:#475569;--muted:#94a3b8;
+  --bd:rgba(0,142,179,.12);--bdh:rgba(0,142,179,.28);
+  --card:rgba(255,255,255,.85);--card2:rgba(255,255,255,.95);
+}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;scrollbar-width:thin;scrollbar-color:rgba(0,212,255,.18) transparent}
 html::-webkit-scrollbar{width:5px}
@@ -399,4 +410,151 @@ section{position:relative;z-index:2}
   .cform{padding:22px 18px}
   .ft-nl-row{flex-direction:column}
   .ft-nl-btn{width:100%}
+}
+
+/* ── Mobile Navbar Auth Buttons Visibility ── */
+@media (max-width: 991.98px) {
+  #navbar .nav-cta, #navbar .nav-auth-group {
+      display: inline-flex !important;
+  }
+}
+
+/* ── Premium Glow Button ── */
+.btn-interactive-glow {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px 36px;
+    font-size: 15.5px;
+    font-weight: 700;
+    color: #ffffff !important;
+    background: linear-gradient(135deg, var(--cyan2) 0%, var(--cyan) 100%);
+    border: none;
+    border-radius: 12px;
+    cursor: pointer;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 
+        0 4px 15px rgba(0, 212, 255, 0.3),
+        0 0 0 1px rgba(0, 212, 255, 0.15),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    text-decoration: none;
+    z-index: 1;
+}
+
+.btn-interactive-glow .btn-content {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    position: relative;
+    z-index: 3;
+}
+
+.btn-interactive-glow .btn-content i {
+    font-size: 19px;
+    transition: transform 0.3s ease;
+}
+
+/* Shimmer reflection effect */
+.btn-interactive-glow::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(255, 255, 255, 0.25),
+        transparent
+    );
+    transform: skewX(-20deg);
+    animation: shimmer 4s infinite ease-in-out;
+    z-index: 2;
+}
+
+@keyframes shimmer {
+    0% { left: -100%; }
+    30%, 100% { left: 150%; }
+}
+
+/* Glow ring effect */
+.btn-interactive-glow .glow-effect {
+    position: absolute;
+    inset: -2px;
+    border-radius: 14px;
+    background: linear-gradient(90deg, var(--cyan), var(--green), var(--purple), var(--cyan));
+    background-size: 300% 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+    animation: glow-move 4s linear infinite;
+}
+
+@keyframes glow-move {
+    0% { background-position: 0% 50%; }
+    100% { background-position: 300% 50%; }
+}
+
+/* Hover States */
+.btn-interactive-glow:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 10px 24px rgba(0, 212, 255, 0.4),
+        0 0 15px rgba(0, 212, 255, 0.2);
+}
+
+.btn-interactive-glow:hover .btn-content i {
+    transform: rotate(15deg) scale(1.15);
+}
+
+.btn-interactive-glow:hover .glow-effect {
+    opacity: 1;
+}
+
+.btn-interactive-glow:active {
+    transform: translateY(-1px) scale(1);
+}
+
+/* ── Light Mode Specific Overrides ── */
+html[data-theme="light"] #navbar {
+    background: rgba(248, 250, 252, 0.85) !important;
+    border-bottom: 1px solid rgba(0, 142, 179, 0.1);
+}
+html[data-theme="light"] #navbar.scrolled {
+    background: rgba(248, 250, 252, 0.94) !important;
+    box-shadow: 0 4px 30px rgba(15, 23, 42, 0.05) !important;
+}
+
+html[data-theme="light"] .logo-txt {
+    background: linear-gradient(135deg, #0f172a, var(--cyan)) !important;
+    -webkit-background-clip: text !important;
+    -webkit-text-fill-color: transparent !important;
+    background-clip: text !important;
+}
+
+html[data-theme="light"] .floatcard {
+    box-shadow: 0 8px 30px rgba(15, 23, 42, 0.06) !important;
+}
+
+html[data-theme="light"] .mockup {
+    box-shadow: 0 28px 80px rgba(15, 23, 42, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.8) !important;
+}
+
+html[data-theme="light"] .mks {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+html[data-theme="light"] .mkchart {
+    background: rgba(255, 255, 255, 0.6) !important;
+}
+
+html[data-theme="light"] #bgCanvas {
+    opacity: 0.15 !important;
+}
+
+html[data-theme="light"] #footer {
+    background: #f1f5f9 !important;
 }

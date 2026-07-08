@@ -12,20 +12,24 @@
             }
             .builder-sidebar {
                 width: 350px;
-                background: var(--card, #1e293b);
-                border: 1px solid var(--bd, #334155);
+                background: var(--card);
+                border: 1px solid var(--bd);
                 border-radius: 12px;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
+                transition: all 0.3s ease;
             }
             .builder-sidebar-header {
                 padding: 15px 20px;
-                border-bottom: 1px solid var(--bd, #334155);
+                border-bottom: 1px solid var(--bd);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                background: rgba(255, 255, 255, 0.02);
+                background: rgba(255, 255, 255, 0.01);
+            }
+            html[data-theme="light"] .builder-sidebar-header {
+                background: rgba(15, 23, 42, 0.01);
             }
             .builder-sidebar-body {
                 flex: 1;
@@ -34,36 +38,48 @@
             }
             .builder-canvas {
                 flex: 1;
-                background: var(--card, #1e293b);
-                border: 1px solid var(--bd, #334155);
+                background: var(--card);
+                border: 1px solid var(--bd);
                 border-radius: 12px;
                 display: flex;
                 flex-direction: column;
                 overflow: hidden;
                 position: relative;
+                transition: all 0.3s ease;
             }
             .canvas-header {
                 padding: 15px 20px;
-                border-bottom: 1px solid var(--bd, #334155);
+                border-bottom: 1px solid var(--bd);
                 display: flex;
                 justify-content: space-between;
                 align-items: center;
-                background: rgba(255, 255, 255, 0.02);
+                background: rgba(255, 255, 255, 0.01);
+            }
+            html[data-theme="light"] .canvas-header {
+                background: rgba(15, 23, 42, 0.01);
             }
             .canvas-body {
                 flex: 1;
                 overflow: auto;
-                background: #0f172a; /* Darker bg for canvas */
+                background: #0b0f19; /* Default premium dark bg */
                 display: grid;
                 place-items: center;
                 padding: 20px;
                 position: relative;
+                transition: background 0.3s ease;
+            }
+            html[data-theme="light"] .canvas-body {
+                background: #f4f6fa; /* Light canvas bg */
             }
             
             /* Dot Grid Background for Canvas */
             .canvas-bg {
-                background-image: radial-gradient(rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+                background-image: radial-gradient(rgba(255, 255, 255, 0.07) 1.2px, transparent 1.2px);
                 background-size: 20px 20px;
+                transition: background-image 0.3s ease;
+            }
+            html[data-theme="light"] .canvas-bg {
+                background-image: radial-gradient(rgba(15, 23, 42, 0.08) 1.2px, transparent 1.2px);
             }
 
             .mermaid-wrapper {
@@ -77,38 +93,73 @@
             }
 
             .node-card {
-                background: rgba(255, 255, 255, 0.03);
-                border: 1px solid var(--bd, #334155);
-                border-radius: 8px;
-                padding: 12px;
-                margin-bottom: 12px;
+                background: rgba(255, 255, 255, 0.015);
+                border: 1px solid var(--bd) !important;
+                border-radius: 10px;
+                padding: 16px;
+                margin-bottom: 16px;
                 position: relative;
+                transition: all 0.25s ease;
+            }
+            html[data-theme="light"] .node-card {
+                background: rgba(15, 23, 42, 0.015);
+            }
+            .node-card:hover {
+                border-color: var(--cyan) !important;
+                box-shadow: 0 4px 12px rgba(0, 200, 255, 0.05);
             }
             
             .node-card .btn-remove {
                 position: absolute;
-                top: 8px;
-                right: 8px;
+                top: 12px;
+                right: 12px;
                 padding: 2px 6px;
                 font-size: 12px;
+                border-radius: 6px;
             }
 
             /* Overrides for inputs in sidebar */
+            .builder-sidebar .form-label {
+                color: var(--txt) !important;
+                font-size: 11.5px !important;
+                font-weight: 700 !important;
+                margin-bottom: 6px !important;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                opacity: 0.85;
+            }
             .builder-sidebar .form-control, 
             .builder-sidebar .form-select {
-                background-color: rgba(255, 255, 255, 0.05);
-                border: 1px solid var(--bd, #334155);
-                color: #ffffff !important;
-                color-scheme: dark;
+                background-color: rgba(255, 255, 255, 0.02) !important;
+                border: 1px solid var(--bd) !important;
+                color: var(--txt) !important;
+                border-radius: 8px;
+                padding: 0.5rem 1rem;
+                font-size: 0.85rem;
+                transition: all 0.2s ease;
+            }
+            html[data-theme="light"] .builder-sidebar .form-control, 
+            html[data-theme="light"] .builder-sidebar .form-select {
+                background-color: #ffffff !important;
             }
             .builder-sidebar .form-select option {
-                background-color: #1e293b;
-                color: #ffffff;
+                background-color: var(--crd-bg, #1e293b);
+                color: var(--txt, #ffffff);
             }
             .builder-sidebar .form-control:focus, 
             .builder-sidebar .form-select:focus {
-                border-color: var(--cyan, #00c8ff);
-                box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1);
+                border-color: var(--cyan, #00c8ff) !important;
+                box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.1) !important;
+            }
+            
+            /* Attribute Container inside ERD Node Card */
+            .attribute-container {
+                border: 1px solid var(--bd) !important;
+                background-color: rgba(255, 255, 255, 0.01) !important;
+                border-radius: 8px;
+            }
+            html[data-theme="light"] .attribute-container {
+                background-color: rgba(15, 23, 42, 0.02) !important;
             }
 
             /* Zoom Controls */
@@ -116,11 +167,11 @@
                 position: absolute;
                 bottom: 20px;
                 right: 20px;
-                background: var(--card, #1e293b);
-                border: 1px solid var(--bd, #334155);
+                background: var(--crd-bg, #1e293b);
+                border: 1px solid var(--bd);
                 border-radius: 8px;
                 display: flex;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+                box-shadow: 0 4px 15px rgba(0,0,0,0.15);
                 z-index: 10;
             }
             .zoom-btn {
@@ -131,18 +182,20 @@
                 justify-content: center;
                 background: transparent;
                 border: none;
-                color: var(--white);
-                border-right: 1px solid var(--bd, #334155);
+                color: var(--txt) !important;
+                border-right: 1px solid var(--bd);
                 cursor: pointer;
+                transition: all 0.2s ease;
             }
             .zoom-btn:last-child { border-right: none; }
-            .zoom-btn:hover { background: rgba(255,255,255,0.05); color: var(--cyan); }
+            .zoom-btn:hover { background: rgba(255,255,255,0.05); color: var(--cyan) !important; }
+            html[data-theme="light"] .zoom-btn:hover { background: rgba(15, 23, 42, 0.04); }
             
             /* Dashed Add Button */
             .btn-dashed {
-                border: 1px dashed var(--bd, #334155);
+                border: 1px dashed var(--bd);
                 background: rgba(255, 255, 255, 0.02);
-                color: var(--muted, #94a3b8);
+                color: var(--dim, #94a3b8);
                 width: 100%;
                 padding: 10px;
                 border-radius: 8px;
@@ -150,10 +203,47 @@
                 font-size: 13px;
                 font-weight: 500;
             }
+            html[data-theme="light"] .btn-dashed {
+                background: rgba(15, 23, 42, 0.01);
+            }
             .btn-dashed:hover {
-                border-color: var(--cyan, #00c8ff);
-                color: var(--cyan, #00c8ff);
-                background: rgba(0, 200, 255, 0.05);
+                border-color: var(--cyan, #00c8ff) !important;
+                color: var(--cyan, #00c8ff) !important;
+                background: rgba(0, 200, 255, 0.05) !important;
+            }
+
+            /* Back button */
+            .btn-back {
+                border: 1px solid var(--bd) !important;
+                color: var(--txt) !important;
+                background: transparent !important;
+                border-radius: 8px;
+                padding: 6px 12px;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                transition: all 0.2s ease;
+            }
+            .btn-back:hover {
+                background: rgba(255, 255, 255, 0.05) !important;
+                border-color: var(--cyan) !important;
+                color: var(--cyan) !important;
+            }
+            html[data-theme="light"] .btn-back:hover {
+                background: rgba(15, 23, 42, 0.04) !important;
+            }
+
+            /* Textarea Syntax Editor */
+            .syntax-editor {
+                font-family: var(--mono, monospace) !important;
+                font-size: 12px !important;
+                background: #0b1120 !important;
+                border-color: var(--bd) !important;
+                color: #a78bfa !important;
+            }
+            html[data-theme="light"] .syntax-editor {
+                background: #f8fafc !important;
+                color: #6d28d9 !important;
             }
 
             /* Responsive */
@@ -175,7 +265,7 @@
     <!-- Header (Simple) -->
     <div class="pg-hd mb-3">
         <div class="pg-hd-left">
-            <a href="{{ route('diagrams.index') }}" class="btn btn-outline-secondary btn-sm me-2 text-white">
+            <a href="{{ route('diagrams.index') }}" class="btn btn-back me-2">
                 <i class="bi bi-arrow-left"></i>
             </a>
             <div>
@@ -192,9 +282,9 @@
     <div x-data="diagramBuilder()" class="builder-container" wire:ignore>
         
         <!-- Sidebar Form -->
-        <div class="builder-sidebar" data-bs-theme="dark">
+        <div class="builder-sidebar">
             <div class="builder-sidebar-header">
-                <h6 class="mb-0 fw-bold text-white"><i class="bi bi-sliders me-2"></i> Konfigurasi</h6>
+                <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-2"></i> Konfigurasi</h6>
                 <button type="button" class="btn btn-primary btn-sm" @click="saveDiagram" :disabled="isSaving">
                     <span x-show="!isSaving"><i class="bi bi-save me-1"></i> Simpan</span>
                     <span x-show="isSaving"><span class="spinner-border spinner-border-sm"></span></span>
@@ -206,15 +296,15 @@
                 <template x-if="type === 'flowchart'">
                     <div>
                         <div class="mb-3">
-                            <label class="form-label text-white fw-semibold" style="font-size: 13px;">Arah Diagram</label>
-                            <select class="form-select form-select-sm" x-model="diagramData.direction" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                <option value="TD" style="background-color: #1e293b; color: white;">Atas ke Bawah (Top-Down)</option>
-                                <option value="LR" style="background-color: #1e293b; color: white;">Kiri ke Kanan (Left-Right)</option>
+                            <label class="form-label">Arah Diagram</label>
+                            <select class="form-select form-select-sm" x-model="diagramData.direction" @change="generateMermaid">
+                                <option value="TD">Atas ke Bawah (Top-Down)</option>
+                                <option value="LR">Kiri ke Kanan (Left-Right)</option>
                             </select>
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mb-2 mt-4">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Daftar Node (Langkah)</label>
+                            <label class="form-label mb-0">Daftar Node (Langkah)</label>
                             <button type="button" class="btn btn-outline-primary btn-sm py-0 px-2" @click="addNode" style="font-size: 12px;"><i class="bi bi-plus"></i> Tambah</button>
                         </div>
                         
@@ -232,16 +322,16 @@
                                 </div>
                                 <div>
                                     <label class="form-label text-light mb-1" style="font-size: 11px;">Bentuk</label>
-                                    <select class="form-select form-select-sm" x-model="node.shape" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                        <option value="pill" style="background-color: #1e293b; color: white;">Pil (Mulai/Selesai)</option>
-                                        <option value="square" style="background-color: #1e293b; color: white;">Kotak Persegi (Proses)</option>
-                                        <option value="round" style="background-color: #1e293b; color: white;">Kotak Tumpul (Proses Alternatif)</option>
-                                        <option value="diamond" style="background-color: #1e293b; color: white;">Ketupat (Keputusan)</option>
-                                        <option value="parallelogram" style="background-color: #1e293b; color: white;">Jajar Genjang (Input / Output)</option>
-                                        <option value="database" style="background-color: #1e293b; color: white;">Tabung (Database / Penyimpanan)</option>
-                                        <option value="subroutine" style="background-color: #1e293b; color: white;">Kotak Garis Ganda (Sub-proses)</option>
-                                        <option value="hexagon" style="background-color: #1e293b; color: white;">Segi Enam (Persiapan)</option>
-                                        <option value="circle" style="background-color: #1e293b; color: white;">Lingkaran (Konektor)</option>
+                                    <select class="form-select form-select-sm" x-model="node.shape" @change="generateMermaid">
+                                        <option value="pill">Pil (Mulai/Selesai)</option>
+                                        <option value="square">Kotak Persegi (Proses)</option>
+                                        <option value="round">Kotak Tumpul (Proses Alternatif)</option>
+                                        <option value="diamond">Ketupat (Keputusan)</option>
+                                        <option value="parallelogram">Jajar Genjang (Input / Output)</option>
+                                        <option value="database">Tabung (Database / Penyimpanan)</option>
+                                        <option value="subroutine">Kotak Garis Ganda (Sub-proses)</option>
+                                        <option value="hexagon">Segi Enam (Persiapan)</option>
+                                        <option value="circle">Lingkaran (Konektor)</option>
                                     </select>
                                 </div>
                             </div>
@@ -253,7 +343,7 @@
                         </button>
 
                         <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Sambungan (Garis)</label>
+                            <label class="form-label mb-0">Sambungan (Garis)</label>
                         </div>
                         
                         <template x-for="(link, index) in diagramData.links" :key="index">
@@ -262,19 +352,19 @@
                                 <div class="row g-2 mb-2">
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Dari Node</label>
-                                        <select class="form-select form-select-sm" x-model="link.from" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="link.from" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="n in diagramData.nodes" :key="n.id">
-                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.from == n.id" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.from == n.id"></option>
                                             </template>
                                         </select>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Ke Node</label>
-                                        <select class="form-select form-select-sm" x-model="link.to" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="link.to" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="n in diagramData.nodes" :key="n.id">
-                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.to == n.id" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.to == n.id"></option>
                                             </template>
                                         </select>
                                     </div>
@@ -297,7 +387,7 @@
                 <template x-if="type === 'erd'">
                     <div>
                         <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Daftar Tabel (Entitas)</label>
+                            <label class="form-label mb-0">Daftar Tabel (Entitas)</label>
                             <button type="button" class="btn btn-outline-success btn-sm py-0 px-2" @click="addEntity" style="font-size: 12px;"><i class="bi bi-plus"></i> Tambah Tabel</button>
                         </div>
                         
@@ -315,7 +405,7 @@
                                     <button type="button" class="btn btn-link text-info p-0" @click="addAttribute(eIndex)" style="font-size: 11px; text-decoration: none;"><i class="bi bi-plus-circle"></i> Tambah Kolom</button>
                                 </div>
                                 
-                                <div class="border rounded p-2" style="border-color: #334155 !important; background-color: #0f172a;">
+                                <div class="attribute-container border rounded p-2 mb-2">
                                     <template x-for="(attr, aIndex) in entity.attributes" :key="'a'+aIndex">
                                         <div class="row g-1 mb-2 align-items-center">
                                             <div class="col-4">
@@ -350,7 +440,7 @@
                         </button>
 
                         <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Relasi Antar Tabel</label>
+                            <label class="form-label mb-0">Relasi Antar Tabel</label>
                             <button type="button" class="btn btn-outline-info btn-sm py-0 px-2" @click="addRelationship" style="font-size: 12px;"><i class="bi bi-plus"></i> Tambah Relasi</button>
                         </div>
                         
@@ -360,30 +450,30 @@
                                 <div class="row g-2 mb-2">
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Tabel 1</label>
-                                        <select class="form-select form-select-sm" x-model="rel.from" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="rel.from" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="e in diagramData.entities" :key="e.name">
-                                                <option :value="e.name" x-text="e.name" :selected="rel.from == e.name" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="e.name" x-text="e.name" :selected="rel.from == e.name"></option>
                                             </template>
                                         </select>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Tabel 2</label>
-                                        <select class="form-select form-select-sm" x-model="rel.to" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="rel.to" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="e in diagramData.entities" :key="e.name">
-                                                <option :value="e.name" x-text="e.name" :selected="rel.to == e.name" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="e.name" x-text="e.name" :selected="rel.to == e.name"></option>
                                             </template>
                                         </select>
                                     </div>
                                 </div>
                                 <div class="mb-2">
                                     <label class="form-label text-light mb-1" style="font-size: 11px;">Tipe Relasi (Kardinalitas)</label>
-                                    <select class="form-select form-select-sm" x-model="rel.type" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                        <option value="||--o{" style="background-color: #1e293b; color: white;">1 ke Banyak (1 to Many)</option>
-                                        <option value="||--||" style="background-color: #1e293b; color: white;">1 ke 1 (1 to 1)</option>
-                                        <option value="}o--o{" style="background-color: #1e293b; color: white;">Banyak ke Banyak (M to M)</option>
-                                        <option value="|o--o{" style="background-color: #1e293b; color: white;">0/1 ke Banyak (0/1 to M)</option>
+                                    <select class="form-select form-select-sm" x-model="rel.type" @change="generateMermaid">
+                                        <option value="||--o{">1 ke Banyak (1 to Many)</option>
+                                        <option value="||--||">1 ke 1 (1 to 1)</option>
+                                        <option value="}o--o{">Banyak ke Banyak (M to M)</option>
+                                        <option value="|o--o{">0/1 ke Banyak (0/1 to M)</option>
                                     </select>
                                 </div>
                                 <div class="mb-0">
@@ -404,15 +494,15 @@
                 <template x-if="type === 'dfd'">
                     <div>
                         <div class="mb-3">
-                            <label class="form-label text-white fw-semibold" style="font-size: 13px;">Arah Aliran Data</label>
-                            <select class="form-select form-select-sm" x-model="diagramData.direction" @change="generateMermaid" style="background-color: #1e293b; color: white; border-color: #334155;">
-                                <option value="TD" style="background-color: #1e293b; color: white;">Atas ke Bawah (Top-Down)</option>
-                                <option value="LR" style="background-color: #1e293b; color: white;">Kiri ke Kanan (Left-Right)</option>
+                            <label class="form-label">Arah Aliran Data</label>
+                            <select class="form-select form-select-sm" x-model="diagramData.direction" @change="generateMermaid">
+                                <option value="TD">Atas ke Bawah (Top-Down)</option>
+                                <option value="LR">Kiri ke Kanan (Left-Right)</option>
                             </select>
                         </div>
                         
                         <div class="d-flex justify-content-between align-items-center mb-2">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Komponen DFD</label>
+                            <label class="form-label mb-0">Komponen DFD</label>
                         </div>
                         
                         <template x-for="(node, index) in diagramData.nodes" :key="index">
@@ -430,10 +520,10 @@
                                 </div>
                                 <div>
                                     <label class="form-label text-light mb-1" style="font-size: 11px;">Jenis Komponen (Standar DFD)</label>
-                                    <select class="form-select form-select-sm" x-model="node.shape" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                        <option value="square" style="background-color: #1e293b; color: white;">Entitas Eksternal (Kotak)</option>
-                                        <option value="circle" style="background-color: #1e293b; color: white;">Proses (Lingkaran)</option>
-                                        <option value="database" style="background-color: #1e293b; color: white;">Data Store (Tabung)</option>
+                                    <select class="form-select form-select-sm" x-model="node.shape" @change="generateMermaid">
+                                        <option value="square">Entitas Eksternal (Kotak)</option>
+                                        <option value="circle">Proses (Lingkaran)</option>
+                                        <option value="database">Data Store (Tabung)</option>
                                     </select>
                                 </div>
                             </div>
@@ -444,7 +534,7 @@
                         </button>
 
                         <div class="d-flex justify-content-between align-items-center mb-2 mt-2">
-                            <label class="form-label text-white fw-semibold mb-0" style="font-size: 13px;">Aliran Data (Garis)</label>
+                            <label class="form-label mb-0">Aliran Data (Garis)</label>
                         </div>
                         
                         <template x-for="(link, index) in diagramData.links" :key="'l'+index">
@@ -453,19 +543,19 @@
                                 <div class="row g-2 mb-2">
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Dari</label>
-                                        <select class="form-select form-select-sm" x-model="link.from" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="link.from" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="n in diagramData.nodes" :key="n.id">
-                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.from == n.id" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.from == n.id"></option>
                                             </template>
                                         </select>
                                     </div>
                                     <div class="col-6">
                                         <label class="form-label text-light mb-1" style="font-size: 11px;">Ke</label>
-                                        <select class="form-select form-select-sm" x-model="link.to" @change="generateMermaid" style="background-color: #1e293b; color: white;">
-                                            <option value="" style="background-color: #1e293b; color: white;">Pilih...</option>
+                                        <select class="form-select form-select-sm" x-model="link.to" @change="generateMermaid">
+                                            <option value="">Pilih...</option>
                                             <template x-for="n in diagramData.nodes" :key="n.id">
-                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.to == n.id" style="background-color: #1e293b; color: white;"></option>
+                                                <option :value="n.id" x-text="n.id + ' - ' + n.label" :selected="link.to == n.id"></option>
                                             </template>
                                         </select>
                                     </div>
@@ -485,11 +575,11 @@
 
                 <!-- Advanced Syntax Mode -->
                 <div class="mt-4 pt-3 border-top border-secondary">
-                    <label class="form-label text-white fw-semibold" style="font-size: 13px;">
+                    <label class="form-label">
                         Kode Mermaid
                         <i class="bi bi-info-circle text-muted ms-1" title="Otomatis diisi dari pengaturan di atas. Anda juga bisa mengedit langsung."></i>
                     </label>
-                    <textarea class="form-control" rows="8" x-model="mermaidSyntax" @input.debounce.500ms="renderMermaid" style="font-family: monospace; font-size: 12px; background: #0b1120; border-color: #334155; color: #a78bfa !important;"></textarea>
+                    <textarea class="form-control syntax-editor" rows="8" x-model="mermaidSyntax" @input.debounce.500ms="renderMermaid"></textarea>
                 </div>
             </div>
         </div>
@@ -497,7 +587,7 @@
         <!-- Canvas Preview -->
         <div class="builder-canvas">
             <div class="canvas-header">
-                <h6 class="mb-0 fw-bold text-white"><i class="bi bi-eye me-2"></i> Pratinjau Diagram</h6>
+                <h6 class="mb-0 fw-bold"><i class="bi bi-eye me-2"></i> Pratinjau Diagram</h6>
                 <div>
                     <button class="btn btn-outline-info btn-sm px-3 border-0" @click="exportPNG" title="Download Gambar (PNG)">
                         <i class="bi bi-download me-1"></i> Ekspor PNG
@@ -611,27 +701,47 @@
                         this.generateMermaid();
                     }
                     
-                    // Inisialisasi mermaid
+                    this.initializeMermaid();
+
+                    // Observe theme change to re-render Mermaid with correct colors
+                    const observer = new MutationObserver((mutations) => {
+                        mutations.forEach((mutation) => {
+                            if (mutation.attributeName === 'data-theme') {
+                                this.initializeMermaid();
+                                this.generateMermaid();
+                            }
+                        });
+                    });
+                    observer.observe(document.documentElement, { attributes: true });
+                    
+                    setTimeout(() => {
+                        this.renderMermaid();
+                    }, 100);
+                },
+
+                initializeMermaid() {
+                    const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                    
                     mermaid.initialize({
                         startOnLoad: false,
-                        theme: 'dark',
+                        theme: isLight ? 'default' : 'dark',
                         themeVariables: {
                             fontFamily: 'Inter, sans-serif',
-                            primaryColor: '#1e293b',
-                            primaryBorderColor: '#3b82f6', // Biru terang untuk border
-                            primaryTextColor: '#ffffff',
-                            lineColor: '#64748b',
-                            textColor: '#ffffff',
-                            mainBkg: '#1e293b',
-                            secondaryColor: '#0f172a', // Background baris tabel ERD
-                            tertiaryColor: '#1e293b', // Background baris tabel ERD selang-seling
-                            nodeBorder: '#3b82f6',
-                            clusterBkg: '#1e293b',
-                            clusterBorder: '#334155',
-                            defaultLinkColor: '#94a3b8',
-                            labelBoxBkgColor: '#0f172a', // Background teks label sama dgn kanvas
-                            edgeLabelBackground: '#0f172a',
-                            labelBoxBorderColor: 'transparent', // Hilangkan border di label teks
+                            primaryColor: isLight ? '#ffffff' : '#1e293b',
+                            primaryBorderColor: isLight ? '#008eb3' : '#3b82f6',
+                            primaryTextColor: isLight ? '#0f172a' : '#ffffff',
+                            lineColor: isLight ? '#475569' : '#64748b',
+                            textColor: isLight ? '#0f172a' : '#ffffff',
+                            mainBkg: isLight ? '#ffffff' : '#1e293b',
+                            secondaryColor: isLight ? '#f8fafc' : '#0f172a',
+                            tertiaryColor: isLight ? '#ffffff' : '#1e293b',
+                            nodeBorder: isLight ? '#008eb3' : '#3b82f6',
+                            clusterBkg: isLight ? '#ffffff' : '#1e293b',
+                            clusterBorder: isLight ? '#cbd5e1' : '#334155',
+                            defaultLinkColor: isLight ? '#475569' : '#94a3b8',
+                            labelBoxBkgColor: isLight ? '#f4f6fa' : '#0f172a',
+                            edgeLabelBackground: isLight ? '#f4f6fa' : '#0f172a',
+                            labelBoxBorderColor: 'transparent',
                         },
                         securityLevel: 'loose',
                         flowchart: { 
@@ -640,10 +750,6 @@
                             htmlLabels: true
                         }
                     });
-                    
-                    setTimeout(() => {
-                        this.renderMermaid();
-                    }, 100);
                 },
 
                 // Flowchart Builders
@@ -712,16 +818,21 @@
                     if (this.type === 'flowchart' || this.type === 'dfd') {
                         let code = `%%{init: {'flowchart': {'curve': 'basis'}}}%%\nflowchart ${this.diagramData.direction}\n`;
                         
+                        const isLight = document.documentElement.getAttribute('data-theme') === 'light';
+                        const fillBg = isLight ? '#ffffff' : '#1e293b';
+                        const textCol = isLight ? '#0f172a' : '#fff';
+                        const strokeDef = isLight ? '#008eb3' : '#00c8ff';
+
                         // Define Colors (Premium Look)
-                        code += `    classDef default fill:#1e293b,stroke:#00c8ff,stroke-width:2px,color:#fff,rx:8,ry:8;\n`;
-                        code += `    classDef decision fill:#1e293b,stroke:#a855f7,stroke-width:2px,color:#fff;\n`; // Ungu untuk Keputusan
-                        code += `    classDef square fill:#1e293b,stroke:#f59e0b,stroke-width:2px,color:#fff;\n`; // Oranye untuk Proses
-                        code += `    classDef pill fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff;\n`; // Hijau untuk Mulai/Selesai
-                        code += `    classDef io fill:#1e293b,stroke:#ec4899,stroke-width:2px,color:#fff;\n`; // Pink untuk Input/Output
-                        code += `    classDef database fill:#1e293b,stroke:#eab308,stroke-width:2px,color:#fff;\n`; // Kuning untuk Database
-                        code += `    classDef subroutine fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;\n`; // Biru untuk Sub-proses
-                        code += `    classDef circle fill:#1e293b,stroke:#f43f5e,stroke-width:2px,color:#fff;\n`; // Merah Mawar untuk Konektor
-                        code += `    classDef hexagon fill:#1e293b,stroke:#14b8a6,stroke-width:2px,color:#fff;\n\n`; // Teal untuk Persiapan
+                        code += `    classDef default fill:${fillBg},stroke:${strokeDef},stroke-width:2px,color:${textCol},rx:8,ry:8;\n`;
+                        code += `    classDef decision fill:${fillBg},stroke:#8b5cf6,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef square fill:${fillBg},stroke:#f59e0b,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef pill fill:#10b981,stroke:#059669,stroke-width:2px,color:#fff;\n`;
+                        code += `    classDef io fill:${fillBg},stroke:#ec4899,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef database fill:${fillBg},stroke:#eab308,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef subroutine fill:${fillBg},stroke:#3b82f6,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef circle fill:${fillBg},stroke:#f43f5e,stroke-width:2px,color:${textCol};\n`;
+                        code += `    classDef hexagon fill:${fillBg},stroke:#14b8a6,stroke-width:2px,color:${textCol};\n\n`; // Teal untuk Persiapan
 
                         // Nodes
                         if (this.diagramData.nodes && this.diagramData.nodes.length > 0) {

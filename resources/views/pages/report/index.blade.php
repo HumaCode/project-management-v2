@@ -4,7 +4,7 @@
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/report.css') }}?v={{ time() }}">
         <style>
             /* Ultimate Force Select2 Dark Mode */
-            .select2-container--default .select2-selection--single {
+            html:not([data-theme="light"]) .select2-container--default .select2-selection--single {
                 background: rgba(255, 255, 255, 0.05) !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 height: 45px !important;
@@ -15,18 +15,18 @@
                 transition: all 0.3s ease !important;
             }
 
-            .select2-container--default .select2-selection--single .select2-selection__rendered {
+            html:not([data-theme="light"]) .select2-container--default .select2-selection--single .select2-selection__rendered {
                 color: rgba(255, 255, 255, 0.9) !important;
                 padding-left: 15px !important;
                 font-size: 14px !important;
             }
 
-            .select2-container--default .select2-selection--single .select2-selection__arrow {
+            html:not([data-theme="light"]) .select2-container--default .select2-selection--single .select2-selection__arrow {
                 height: 42px !important;
                 right: 10px !important;
             }
 
-            .select2-dropdown {
+            html:not([data-theme="light"]) .select2-dropdown {
                 background: #071528 !important;
                 border: 1px solid rgba(255, 255, 255, 0.1) !important;
                 backdrop-filter: blur(20px) !important;
@@ -35,63 +35,68 @@
                 box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5) !important;
             }
 
-            .select2-results__option {
+            html:not([data-theme="light"]) .select2-results__option {
                 color: rgba(255, 255, 255, 0.7) !important;
                 padding: 10px 15px !important;
             }
 
-            .select2-container--default .select2-results__option--highlighted[aria-selected] {
+            html:not([data-theme="light"]) .select2-container--default .select2-results__option--highlighted[aria-selected] {
                 background-color: var(--cyan) !important;
                 color: #000 !important;
             }
 
             /* Header Polish */
-            .pg-title {
+            html:not([data-theme="light"]) .pg-title {
                 color: #fff !important;
                 font-size: 22px !important;
             }
 
-            .pg-sub {
+            html:not([data-theme="light"]) .pg-sub {
                 color: rgba(255, 255, 255, 0.5) !important;
             }
 
-            .bc a {
+            html:not([data-theme="light"]) .bc a {
                 color: rgba(255, 255, 255, 0.5) !important;
                 text-decoration: none !important;
             }
 
-            .bc .sep {
+            html:not([data-theme="light"]) .bc .sep {
                 color: rgba(255, 255, 255, 0.3) !important;
             }
 
-            .bc .here {
+            html:not([data-theme="light"]) .bc .here {
                 color: var(--cyan) !important;
             }
 
             /* Filter Label */
+            html:not([data-theme="light"]) .flt-label {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            
             .flt-label {
                 font-size: 11px;
                 text-transform: uppercase;
                 letter-spacing: 1.5px;
-                color: rgba(255, 255, 255, 0.4);
                 font-weight: 600;
                 margin-bottom: 8px;
                 display: block;
             }
 
             /* Cover Builder Theming */
-            .bg-dark-deep { background: #050c16 !important; }
-            .cover-tools { background: #071528 !important; }
-            .tool-btn { 
+            html:not([data-theme="light"]) .bg-dark-deep { background: #050c16 !important; }
+            html:not([data-theme="light"]) .cover-tools { background: #071528 !important; }
+            html:not([data-theme="light"]) .tool-btn { 
                 background: rgba(255,255,255,0.03); 
                 border: 1px solid rgba(255,255,255,0.1); 
                 color: rgba(255,255,255,0.7);
+            }
+            .tool-btn {
                 padding: 12px 15px;
                 border-radius: 10px;
                 transition: all 0.3s ease;
                 font-size: 13px;
             }
-            .tool-btn:hover {
+            html:not([data-theme="light"]) .tool-btn:hover {
                 background: rgba(0, 200, 255, 0.1);
                 border-color: var(--cyan);
                 color: var(--cyan);
@@ -113,9 +118,84 @@
             @media (max-height: 800px) { .canvas-wrapper { transform: scale(0.65); } }
             @media (max-height: 700px) { .canvas-wrapper { transform: scale(0.55); } }
 
-            .modal-header, .modal-footer {
+            html:not([data-theme="light"]) #modalCover .modal-header, 
+            html:not([data-theme="light"]) #modalCover .modal-footer {
                 background: #071528;
                 border-color: rgba(255,255,255,0.05) !important;
+            }
+            html:not([data-theme="light"]) #modalCover .modal-content {
+                color: #ffffff !important;
+            }
+
+            /* Stunning Empty State Styles */
+            .pms-empty-state {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                padding: 40px 24px;
+                border: 1px dashed rgba(0, 200, 255, 0.2) !important;
+                border-radius: 16px;
+                background: rgba(255, 255, 255, 0.01) !important;
+                transition: all 0.3s ease;
+                min-height: 280px;
+                margin: 40px auto;
+                max-width: 320px;
+            }
+
+            html[data-theme="light"] .pms-empty-state {
+                border-color: rgba(0, 142, 179, 0.25) !important;
+                background: rgba(15, 23, 42, 0.01) !important;
+            }
+
+            .pms-empty-state:hover {
+                border-color: var(--cyan) !important;
+                box-shadow: 0 0 20px rgba(0, 200, 255, 0.08) !important;
+                background: rgba(0, 200, 255, 0.02) !important;
+            }
+
+            html[data-theme="light"] .pms-empty-state:hover {
+                box-shadow: 0 0 20px rgba(0, 142, 179, 0.05) !important;
+                background: rgba(0, 142, 179, 0.02) !important;
+            }
+
+            .empty-icon-wrap {
+                width: 64px;
+                height: 64px;
+                border-radius: 50%;
+                background: rgba(0, 200, 255, 0.1) !important;
+                color: var(--cyan) !important;
+                display: grid;
+                place-items: center;
+                font-size: 28px;
+                margin-bottom: 20px;
+                box-shadow: 0 0 15px rgba(0, 200, 255, 0.1) !important;
+                animation: float-empty 3s ease-in-out infinite;
+            }
+
+            html[data-theme="light"] .empty-icon-wrap {
+                background: rgba(0, 142, 179, 0.08) !important;
+                box-shadow: 0 0 15px rgba(0, 142, 179, 0.05) !important;
+            }
+
+            .pms-empty-state h5 {
+                font-size: 15px;
+                font-weight: 700;
+                margin-bottom: 8px;
+                color: var(--txt) !important;
+            }
+
+            .pms-empty-state p {
+                font-size: 12px;
+                color: var(--dim) !important;
+                line-height: 1.6;
+                margin: 0;
+            }
+
+            @keyframes float-empty {
+                0%, 100% { transform: translateY(0); }
+                50% { transform: translateY(-8px); }
             }
         </style>
     @endpush
@@ -181,9 +261,12 @@
                 </div>
                 <div class="rp-body custom-scroll">
                     <!-- Placeholder state -->
-                    <div id="assetEmpty" class="text-center py-5 text-muted">
-                        <i class="bi bi-arrow-up-circle d-block mb-3" style="font-size: 40px; opacity: 0.3;"></i>
-                        Pilih project terlebih dahulu
+                    <div id="assetEmpty" class="pms-empty-state">
+                        <div class="empty-icon-wrap">
+                            <i class="bi bi-folder2-open"></i>
+                        </div>
+                        <h5>Pilih Project Utama</h5>
+                        <p>Silakan tentukan project terlebih dahulu pada dropdown di atas untuk memuat koleksi dokumen.</p>
                     </div>
 
                     <div class="asset-grid" id="assetGrid" style="display: none;">
@@ -210,11 +293,12 @@
                 </div>
                 <div class="rp-body custom-scroll" id="canvasBody">
                     <!-- Empty State -->
-                    <div class="canvas-empty text-center py-5 text-muted">
-                        <div class="mb-3">
-                            <i class="bi bi-plus-square-dotted" style="font-size: 50px; opacity: 0.1;"></i>
+                    <div class="canvas-empty pms-empty-state">
+                        <div class="empty-icon-wrap">
+                            <i class="bi bi-file-earmark-plus"></i>
                         </div>
-                        <p>Belum ada dokumen yang dipilih.<br>Klik dokumen di panel kiri untuk menambahkan.</p>
+                        <h5>Belum Ada Dokumen</h5>
+                        <p>Klik dokumen di panel kiri untuk mulai menyusun laporan PDF Anda.</p>
                     </div>
 
                     <!-- Items will be added here -->
@@ -282,7 +366,7 @@
     <!-- Modal Cover Builder -->
     <div class="modal fade" id="modalCover" tabindex="-1" aria-hidden="true">
         <div class="modal-dialog modal-fullscreen">
-            <div class="modal-content bg-dark-deep text-white">
+            <div class="modal-content bg-dark-deep">
                 <div class="modal-header border-secondary">
                     <h5 class="modal-title"><i class="bi bi-palette-fill me-2"></i>Cover Builder (WYSIWYG)</h5>
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>

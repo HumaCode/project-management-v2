@@ -1,6 +1,6 @@
 <!-- Modal Form -->
 <div class="modal fade m-dark m-cyan" id="modalForm" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="m-hd">
                 <div class="m-hd-title">
@@ -29,7 +29,7 @@
                                 <div class="m-section" style="border: none; padding: 0; margin: 0;">Pilih Anggota Tim</div>
                                 <div class="modal-search-wrap" style="position: relative; width: 220px;">
                                     <i class="bi bi-search" style="position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; color: var(--muted); opacity: 0.7;"></i>
-                                    <input type="text" id="memberSearchInput" class="fmi" style="height: 28px; font-size: 11px; padding-left: 28px; border-radius: 6px; background: rgba(255,255,255,0.03);" placeholder="Cari nama anggota...">
+                                    <input type="text" id="memberSearchInput" class="fmi modal-search-input" placeholder="Cari nama anggota...">
                                 </div>
                             </div>
                             <div class="row g-2" id="userSelectionWrap" style="max-height: 250px; overflow-y: auto; padding: 5px; margin-top: 5px;">

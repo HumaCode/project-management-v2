@@ -86,6 +86,10 @@ Route::middleware(['auth'])->group(function () {
             Route::get('profil/download-data', [ProfileController::class, 'downloadData'])->name('profil.download-data');
             Route::post('profil/delete-account', [ProfileController::class, 'deleteAccount'])->name('profil.delete-account');
 
+            // Project Request
+            Route::get('permohonan-aplikasi', [\App\Http\Controllers\Project\ProjectRequestController::class, 'create'])->name('project-request.create');
+            Route::post('permohonan-aplikasi', [\App\Http\Controllers\Project\ProjectRequestController::class, 'store'])->name('project-request.store');
+
             // projects
             Route::redirect('project', 'projects');
             Route::get('projects/getAllPagination', [\App\Http\Controllers\Project\ProjectController::class, 'getAllPaginated'])->name('projects.allPagination');

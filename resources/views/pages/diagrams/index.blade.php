@@ -55,6 +55,355 @@
                 background-color: rgba(59, 130, 246, 0.2) !important;
                 color: #60a5fa !important;
             }
+
+            /* Premium Loader Styles */
+            .loader-overlay {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                align-items: center;
+                z-index: 100;
+                backdrop-filter: blur(8px);
+                -webkit-backdrop-filter: blur(8px);
+                border-radius: 12px;
+                background: rgba(5, 12, 22, 0.65) !important;
+                transition: all 0.3s ease;
+            }
+            
+            html[data-theme="light"] .loader-overlay {
+                background: rgba(244, 247, 252, 0.65) !important;
+            }
+
+            .loader-spinner-container {
+                position: relative;
+                width: 70px;
+                height: 70px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .premium-loader-ring {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                border: 3px solid transparent;
+                border-top-color: var(--cyan, #00c8ff) !important;
+                border-bottom-color: var(--cyan, #00c8ff) !important;
+                border-radius: 50%;
+                animation: premium-spin 1.5s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+                filter: drop-shadow(0 0 6px rgba(0, 200, 255, 0.3));
+            }
+
+            .premium-loader-ring-inner {
+                position: absolute;
+                width: 75%;
+                height: 75%;
+                border: 3px solid transparent;
+                border-left-color: rgba(0, 200, 255, 0.3) !important;
+                border-right-color: rgba(0, 200, 255, 0.3) !important;
+                border-radius: 50%;
+                animation: premium-spin-reverse 1.2s cubic-bezier(0.68, -0.55, 0.27, 1.55) infinite;
+            }
+
+            .premium-loader-icon {
+                font-size: 22px;
+                color: var(--cyan, #00c8ff) !important;
+                animation: pulse-icon 1.5s ease-in-out infinite;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 2;
+            }
+
+            .loader-text {
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 1.5px;
+                color: var(--cyan, #00c8ff) !important;
+                text-transform: uppercase;
+                animation: pulse-text 1.5s ease-in-out infinite;
+            }
+
+            @keyframes premium-spin {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(360deg); }
+            }
+
+            @keyframes premium-spin-reverse {
+                0% { transform: rotate(0deg); }
+                100% { transform: rotate(-360deg); }
+            }
+
+            @keyframes pulse-icon {
+                0%, 100% { transform: scale(1); opacity: 0.8; }
+                50% { transform: scale(1.15); opacity: 1; filter: drop-shadow(0 0 8px rgba(0, 200, 255, 0.5)); }
+            }
+
+            @keyframes pulse-text {
+                0%, 100% { opacity: 0.6; }
+                50% { opacity: 1; }
+            }
+
+            /* Stunning Premium Modal styling */
+            .diagram-modal {
+                background-color: var(--crd-bg) !important;
+                border: 1px solid var(--bd) !important;
+                border-radius: 18px !important;
+                box-shadow: 0 20px 50px rgba(0, 0, 0, 0.35) !important;
+                overflow: hidden;
+            }
+
+            .diagram-modal .modal-header {
+                border-bottom: 1px solid var(--bd) !important;
+                padding: 22px 28px !important;
+                background: rgba(255, 255, 255, 0.01) !important;
+            }
+
+            html[data-theme="light"] .diagram-modal .modal-header {
+                background: rgba(15, 23, 42, 0.01) !important;
+            }
+
+            .diagram-modal .modal-title {
+                color: var(--txt) !important;
+                font-size: 18px !important;
+                font-weight: 700 !important;
+                display: flex;
+                align-items: center;
+                gap: 12px;
+            }
+
+            .diagram-modal .modal-title i {
+                color: var(--cyan);
+                font-size: 20px;
+            }
+
+            .diagram-modal .modal-body {
+                padding: 28px !important;
+                color: var(--txt) !important;
+            }
+
+            .diagram-modal .form-label {
+                color: var(--txt) !important;
+                font-size: 11px !important;
+                font-weight: 700 !important;
+                letter-spacing: 0.5px;
+                text-transform: uppercase;
+                margin-bottom: 8px !important;
+            }
+
+            /* Adaptive Input fields */
+            .diagram-modal .form-control,
+            .diagram-modal .form-select {
+                background-color: rgba(255, 255, 255, 0.02) !important;
+                border: 1px solid var(--bd) !important;
+                color: var(--txt) !important;
+                border-radius: 10px !important;
+                padding: 0.65rem 1rem !important;
+                font-size: 0.9rem !important;
+                transition: all 0.3s ease !important;
+            }
+
+            html[data-theme="light"] .diagram-modal .form-control,
+            html[data-theme="light"] .diagram-modal .form-select {
+                background-color: #ffffff !important;
+            }
+
+            .diagram-modal .form-control::placeholder {
+                color: var(--dim) !important;
+                opacity: 0.5 !important;
+            }
+
+            .diagram-modal .form-control:focus,
+            .diagram-modal .form-select:focus {
+                border-color: var(--cyan) !important;
+                box-shadow: 0 0 0 3px rgba(0, 200, 255, 0.15) !important;
+                background-color: rgba(255, 255, 255, 0.04) !important;
+            }
+
+            html[data-theme="light"] .diagram-modal .form-control:focus,
+            html[data-theme="light"] .diagram-modal .form-select:focus {
+                background-color: #ffffff !important;
+            }
+
+            /* Dynamic Close Button */
+            html:not([data-theme="light"]) .diagram-modal .btn-close {
+                filter: invert(1) grayscale(100%) brightness(200%) !important;
+            }
+            html[data-theme="light"] .diagram-modal .btn-close {
+                filter: none !important;
+            }
+
+            /* Choice Cards styling inside Modal */
+            .type-card-label {
+                cursor: pointer;
+                display: block;
+                height: 100%;
+            }
+
+            .type-card {
+                background: rgba(255, 255, 255, 0.01);
+                border: 1px solid var(--bd) !important;
+                border-radius: 12px;
+                padding: 16px 10px;
+                text-align: center;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+                height: 100%;
+                position: relative;
+                overflow: hidden;
+            }
+
+            html[data-theme="light"] .type-card {
+                background: rgba(15, 23, 42, 0.01);
+            }
+
+            .type-icon-wrapper {
+                width: 42px;
+                height: 42px;
+                border-radius: 50%;
+                display: grid;
+                place-items: center;
+                font-size: 18px;
+                transition: all 0.3s ease;
+                background: rgba(255, 255, 255, 0.03);
+                color: var(--dim);
+            }
+
+            html[data-theme="light"] .type-icon-wrapper {
+                background: rgba(15, 23, 42, 0.03);
+            }
+
+            .type-name {
+                font-size: 12.5px;
+                font-weight: 700;
+                color: var(--txt);
+                transition: all 0.3s ease;
+            }
+
+            .type-desc {
+                font-size: 9.5px;
+                color: var(--dim);
+                line-height: 1.3;
+                transition: all 0.3s ease;
+            }
+
+            /* Hover states */
+            .type-card:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            }
+
+            /* Checkbox selected states */
+            input[type="radio"]:checked + .type-card {
+                transform: scale(1.02);
+            }
+
+            /* Flowchart Color Scheme (Blue) */
+            .type-flowchart-card:hover,
+            input[type="radio"][value="flowchart"]:checked + .type-flowchart-card {
+                border-color: #3b82f6 !important;
+            }
+            input[type="radio"][value="flowchart"]:checked + .type-flowchart-card {
+                background: rgba(59, 130, 246, 0.08) !important;
+                box-shadow: 0 0 15px rgba(59, 130, 246, 0.15) !important;
+            }
+            input[type="radio"][value="flowchart"]:checked + .type-flowchart-card .type-icon-wrapper {
+                background: #3b82f6;
+                color: #fff;
+            }
+            input[type="radio"][value="flowchart"]:checked + .type-flowchart-card .type-name {
+                color: #3b82f6;
+            }
+
+            /* ERD Color Scheme (Green) */
+            .type-erd-card:hover,
+            input[type="radio"][value="erd"]:checked + .type-erd-card {
+                border-color: #10b981 !important;
+            }
+            input[type="radio"][value="erd"]:checked + .type-erd-card {
+                background: rgba(16, 185, 129, 0.08) !important;
+                box-shadow: 0 0 15px rgba(16, 185, 129, 0.15) !important;
+            }
+            input[type="radio"][value="erd"]:checked + .type-erd-card .type-icon-wrapper {
+                background: #10b981;
+                color: #fff;
+            }
+            input[type="radio"][value="erd"]:checked + .type-erd-card .type-name {
+                color: #10b981;
+            }
+
+            /* DFD Color Scheme (Purple) */
+            .type-dfd-card:hover,
+            input[type="radio"][value="dfd"]:checked + .type-dfd-card {
+                border-color: #8b5cf6 !important;
+            }
+            input[type="radio"][value="dfd"]:checked + .type-dfd-card {
+                background: rgba(139, 92, 246, 0.08) !important;
+                box-shadow: 0 0 15px rgba(139, 92, 246, 0.15) !important;
+            }
+            input[type="radio"][value="dfd"]:checked + .type-dfd-card .type-icon-wrapper {
+                background: #8b5cf6;
+                color: #fff;
+            }
+            input[type="radio"][value="dfd"]:checked + .type-dfd-card .type-name {
+                color: #8b5cf6;
+            }
+
+            /* Footer styles */
+            .diagram-modal .modal-footer {
+                border-top: 1px dashed var(--bd) !important;
+                padding: 20px 28px !important;
+                background: rgba(255, 255, 255, 0.005) !important;
+            }
+
+            .diagram-modal .btn-cancel {
+                border: 1px solid var(--bd) !important;
+                color: var(--dim) !important;
+                background: transparent !important;
+                border-radius: 10px !important;
+                padding: 10px 20px !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                transition: all 0.2s ease !important;
+            }
+
+            .diagram-modal .btn-cancel:hover {
+                background: rgba(255, 255, 255, 0.05) !important;
+                color: var(--txt) !important;
+            }
+
+            html[data-theme="light"] .diagram-modal .btn-cancel:hover {
+                background: rgba(15, 23, 42, 0.04) !important;
+            }
+
+            .diagram-modal .btn-submit {
+                background: var(--cyan) !important;
+                border-color: var(--cyan) !important;
+                color: #ffffff !important;
+                border-radius: 10px !important;
+                padding: 10px 24px !important;
+                font-size: 13.5px !important;
+                font-weight: 700 !important;
+                transition: all 0.2s ease !important;
+            }
+
+            html:not([data-theme="light"]) .diagram-modal .btn-submit {
+                color: #000000 !important;
+            }
+
+            .diagram-modal .btn-submit:hover {
+                transform: translateY(-2px) !important;
+                box-shadow: 0 5px 15px rgba(0, 200, 255, 0.3) !important;
+            }
         </style>
     @endpush
 
@@ -120,10 +469,15 @@
         <div class="row g-4 mb-5 position-relative" style="min-height: 200px;">
             <!-- Loading State Overlay -->
             <template x-if="isLoading">
-                <div class="position-absolute top-0 start-0 w-100 h-100 d-flex justify-content-center align-items-center" style="z-index: 10; background: rgba(15, 23, 42, 0.5); backdrop-filter: blur(2px); border-radius: 12px;">
-                    <div class="spinner-border text-info" style="width: 3rem; height: 3rem;" role="status">
-                        <span class="visually-hidden">Loading...</span>
+                <div class="loader-overlay">
+                    <div class="loader-spinner-container">
+                        <div class="premium-loader-ring"></div>
+                        <div class="premium-loader-ring-inner"></div>
+                        <div class="premium-loader-icon">
+                            <i class="bi bi-diagram-2"></i>
+                        </div>
                     </div>
+                    <div class="loader-text mt-3">Memuat diagram...</div>
                 </div>
             </template>
 
@@ -194,14 +548,14 @@
         <div class="modal fade" id="modalCreate" tabindex="-1" aria-hidden="true" wire:ignore.self>
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content border-0 shadow diagram-modal">
-                    <div class="modal-header border-bottom border-secondary pb-3">
-                        <h5 class="modal-title fw-bold text-white">Buat Diagram Baru</h5>
-                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header">
+                        <h5 class="modal-title"><i class="bi bi-diagram-2-fill"></i>Buat Diagram Baru</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <form @submit.prevent="submitCreate">
                         <div class="modal-body" wire:ignore>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Pilih Proyek <span class="text-danger">*</span></label>
+                                <label class="form-label">Pilih Proyek <span class="text-danger">*</span></label>
                                 <select class="form-select" id="selectProjectModal" required>
                                     <option value="">-- Pilih Proyek --</option>
                                     @foreach($projects as $project)
@@ -210,36 +564,57 @@
                                 </select>
                             </div>
                             <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Nama Diagram <span class="text-danger">*</span></label>
-                                <input type="text" class="form-control bg-transparent text-white" x-model="form.name" placeholder="Misal: Flowchart Login" required>
+                                <label class="form-label">Nama Diagram <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" x-model="form.name" placeholder="Misal: Flowchart Login" required>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-semibold text-white">Tipe Diagram <span class="text-danger">*</span></label>
-                                <div class="row g-2">
+                            <div class="mb-4">
+                                <label class="form-label">Tipe Diagram <span class="text-danger">*</span></label>
+                                <div class="row g-3">
+                                    <!-- Flowchart Option -->
                                     <div class="col-4">
-                                        <input type="radio" class="btn-check" name="type_diag" id="type_flowchart" value="flowchart" x-model="form.type" checked>
-                                        <label class="btn btn-outline-primary w-100 p-2 d-flex flex-column align-items-center justify-content-center h-100" for="type_flowchart">
-                                            <i class="bi bi-diagram-3-fill fs-4 mb-1"></i> <span>Flowchart</span>
+                                        <label class="type-card-label w-100" for="type_flowchart">
+                                            <input type="radio" class="d-none" name="type_diag" id="type_flowchart" value="flowchart" x-model="form.type" checked>
+                                            <div class="type-card type-flowchart-card">
+                                                <div class="type-icon-wrapper">
+                                                    <i class="bi bi-diagram-3-fill"></i>
+                                                </div>
+                                                <div class="type-name">Flowchart</div>
+                                                <div class="type-desc">Alur Kerja & Logika</div>
+                                            </div>
                                         </label>
                                     </div>
+                                    <!-- ERD Option -->
                                     <div class="col-4">
-                                        <input type="radio" class="btn-check" name="type_diag" id="type_erd" value="erd" x-model="form.type">
-                                        <label class="btn btn-outline-success w-100 p-2 d-flex flex-column align-items-center justify-content-center h-100" for="type_erd">
-                                            <i class="bi bi-database-fill fs-4 mb-1"></i> <span>ERD</span>
+                                        <label class="type-card-label w-100" for="type_erd">
+                                            <input type="radio" class="d-none" name="type_diag" id="type_erd" value="erd" x-model="form.type">
+                                            <div class="type-card type-erd-card">
+                                                <div class="type-icon-wrapper">
+                                                    <i class="bi bi-database-fill"></i>
+                                                </div>
+                                                <div class="type-name">ERD</div>
+                                                <div class="type-desc">Skema & Relasi DB</div>
+                                            </div>
                                         </label>
                                     </div>
+                                    <!-- DFD Option -->
                                     <div class="col-4">
-                                        <input type="radio" class="btn-check" name="type_diag" id="type_dfd" value="dfd" x-model="form.type">
-                                        <label class="btn btn-outline-info w-100 p-2 d-flex flex-column align-items-center justify-content-center h-100" style="color:#a78bfa; border-color:#a78bfa" for="type_dfd">
-                                            <i class="bi bi-arrow-left-right fs-4 mb-1"></i> <span>DFD</span>
+                                        <label class="type-card-label w-100" for="type_dfd">
+                                            <input type="radio" class="d-none" name="type_diag" id="type_dfd" value="dfd" x-model="form.type">
+                                            <div class="type-card type-dfd-card">
+                                                <div class="type-icon-wrapper">
+                                                    <i class="bi bi-arrow-left-right"></i>
+                                                </div>
+                                                <div class="type-name">DFD</div>
+                                                <div class="type-desc">Aliran Data Sistem</div>
+                                            </div>
                                         </label>
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="modal-footer border-top border-secondary pt-3">
-                            <button type="button" class="btn btn-outline-secondary text-white" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary px-4" :disabled="isSubmitting">
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">Batal</button>
+                            <button type="submit" class="btn btn-submit" :disabled="isSubmitting">
                                 <span x-show="!isSubmitting">Buat & Lanjut</span>
                                 <span x-show="isSubmitting"><span class="spinner-border spinner-border-sm"></span> Loading...</span>
                             </button>

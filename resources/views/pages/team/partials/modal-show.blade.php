@@ -1,6 +1,6 @@
 <!-- Modal Detail -->
 <div class="modal fade m-dark m-cyan" id="modalDetail" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-md modal-dialog-centered">
+    <div class="modal-dialog modal-xl modal-dialog-centered">
         <div class="modal-content">
             <div class="m-hd">
                 <div class="m-hd-title">
@@ -23,7 +23,7 @@
                 <div class="m-section">Deskripsi Tim</div>
                 <p id="detDesc" class="text-dim mb-4" style="line-height:1.6; font-size:13.5px">-</p>
 
-                <div class="m-section d-flex justify-content-between align-items:center">
+                <div class="m-section d-flex justify-content-between align-items-center">
                     <span>Daftar Anggota</span>
                     <span id="detCount" class="badge bg-cyan-soft text-cyan" style="font-size:10px; padding:4px 8px">0 Orang</span>
                 </div>

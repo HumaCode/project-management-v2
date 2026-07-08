@@ -5,7 +5,7 @@
 .av-stack { display: flex; align-items: center; }
 .av-item {
     width: 32px; height: 32px; border-radius: 50%;
-    border: 2px solid #050e1d; background: var(--cyan);
+    border: 2px solid var(--bg) !important; background: var(--cyan);
     display: flex; align-items: center; justify-content: center;
     font-size: 11px; font-weight: bold; color: #fff;
     overflow: hidden; margin-left: -10px;
@@ -18,12 +18,150 @@
 .bg-cyan-soft { background: rgba(0, 200, 255, 0.1) !important; }
 .text-dim { color: var(--dim) !important; }
 
-/* Specific for Team Module */
+/* Avatar Stack More Adaptation */
+.av-item.more {
+    background: rgba(255, 255, 255, 0.05) !important;
+    color: var(--cyan) !important;
+}
+html[data-theme="light"] .av-item.more {
+    background: rgba(15, 23, 42, 0.05) !important;
+}
+
+/* User Selection Item inside Form Modal */
+.item-sel {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+.item-sel:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.1);
+}
+html[data-theme="light"] .item-sel {
+    background: rgba(15, 23, 42, 0.02);
+    border-color: rgba(15, 23, 42, 0.06);
+}
+html[data-theme="light"] .item-sel:hover {
+    background: rgba(15, 23, 42, 0.04);
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
 .item-sel.active {
     border-color: var(--cyan) !important;
     background: rgba(0, 200, 255, 0.08) !important;
 }
+html[data-theme="light"] .item-sel.active {
+    background: rgba(0, 142, 179, 0.08) !important;
+    border-color: var(--cyan) !important;
+}
 .item-sel.active .check-ico { display: block !important; }
+
+/* Modal Search Input */
+.modal-search-input {
+    height: 28px !important;
+    font-size: 11px !important;
+    padding-left: 28px !important;
+    border-radius: 6px !important;
+    background: rgba(0, 200, 255, 0.04) !important;
+}
+html[data-theme="light"] .modal-search-input {
+    background: #ffffff !important;
+}
+
+/* Modal cancel button styling override for light mode */
+html[data-theme="light"] .btn-mcancel {
+    background: rgba(15, 23, 42, 0.05) !important;
+    color: var(--dim) !important;
+    border-color: var(--bd) !important;
+}
+html[data-theme="light"] .btn-mcancel:hover {
+    background: rgba(15, 23, 42, 0.08) !important;
+    color: var(--txt) !important;
+    border-color: var(--bdh) !important;
+}
+
+/* Member list styling inside Detail Tim modal */
+.member-card {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    background: rgba(0, 200, 255, 0.04);
+    border: 1px solid rgba(0, 200, 255, 0.08);
+    border-radius: 12px;
+    transition: all 0.2s ease;
+}
+.member-card:hover {
+    background: rgba(0, 200, 255, 0.08);
+    border-color: rgba(0, 200, 255, 0.15);
+}
+html[data-theme="light"] .member-card {
+    background: rgba(0, 142, 179, 0.04);
+    border-color: rgba(0, 142, 179, 0.1);
+}
+html[data-theme="light"] .member-card:hover {
+    background: rgba(0, 142, 179, 0.08);
+    border-color: rgba(0, 142, 179, 0.18);
+}
+
+.member-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: bold;
+    color: #fff;
+    overflow: hidden;
+    border: 2px solid rgba(255, 255, 255, 0.1);
+    flex-shrink: 0;
+}
+.member-avatar img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+html[data-theme="light"] .member-avatar {
+    border-color: rgba(15, 23, 42, 0.1);
+}
+
+.member-info {
+    flex-grow: 1;
+    min-width: 0;
+}
+.member-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--txt);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.member-role {
+    font-size: 10px;
+    color: var(--muted);
+    font-family: var(--mono);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-team-role {
+    text-align: right;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    flex-shrink: 0;
+}
 
 .m-section {
     font-size: 11px;
@@ -35,4 +173,35 @@
     border-bottom: 1px solid rgba(0, 200, 255, 0.1);
     margin-bottom: 15px;
     margin-top: 20px;
+}
+
+/* Modal Close Button for Light Theme */
+html[data-theme="light"] .m-close {
+    background: rgba(15, 23, 42, 0.05) !important;
+    color: #475569 !important;
+}
+html[data-theme="light"] .m-close:hover {
+    background: rgba(255, 77, 109, 0.15) !important;
+    color: var(--err) !important;
+}
+
+/* Custom loading animation */
+.spinner-custom {
+    width: 32px;
+    height: 32px;
+    border: 3px solid rgba(0, 200, 255, 0.1);
+    border-radius: 50%;
+    border-top-color: var(--cyan);
+    animation: spin 0.8s linear infinite;
+}
+html[data-theme="light"] .spinner-custom {
+    border-color: rgba(0, 142, 179, 0.1);
+    border-top-color: var(--cyan);
+}
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+@keyframes pulse {
+    0%, 100% { transform: scale(1); opacity: 0.6; }
+    50% { transform: scale(1.15); opacity: 1; }
 }

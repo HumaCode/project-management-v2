@@ -176,7 +176,17 @@
         });
 
         const $wrap = $('#userSelectionWrap');
-        $wrap.html('<div class="col-12 text-center py-3 opacity-50">Memuat anggota...</div>');
+        $wrap.html(`
+            <div class="col-12 text-center py-4">
+                <div style="display:inline-flex; flex-direction:column; align-items:center; gap:12px">
+                    <div class="spinner-custom"></div>
+                    <div style="font-size: 13px; color: var(--txt); font-weight: 500; display: flex; align-items: center; gap: 8px;">
+                        <i class="bi bi-people-fill text-cyan" style="animation: pulse 1.5s infinite"></i>
+                        <span>Memuat anggota...</span>
+                    </div>
+                </div>
+            </div>
+        `);
         $('#memberSearchInput').val(''); // Reset input pencarian ketika memuat anggota
 
         $.ajax({
@@ -196,20 +206,19 @@
                     let html = '';
                     res.data.forEach(user => {
                         const isChecked = selectedIds.includes(user.id) ? 'checked' : '';
-                        const roleValue = rolesMap[user.id] || '';
+                        const roleValue = rolesMap[user.id] || 'anggota';
                         const bgColor = getAvatarColor(user.id);
-                        
                         html += `
                             <div class="col-12 col-md-6 user-selection-item" data-name="${user.name.toLowerCase()}" data-role="${user.role_name.toLowerCase()}">
-                                <div class="item-sel ${isChecked ? 'active' : ''}" style="display:flex; align-items:center; gap:10px; padding:8px 12px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.05); border-radius:12px; transition:all 0.2s">
+                                <div class="item-sel ${isChecked ? 'active' : ''}">
                                     <label style="display:flex; align-items:center; gap:10px; flex-grow:1; cursor:pointer; margin:0">
                                         <input type="checkbox" name="members[${user.id}][id]" value="${user.id}" ${isChecked} class="d-none user-check">
-                                        <div style="width:32px; height:32px; border-radius:50%; background:${bgColor}; display:flex; align-items:center; justify-content:center; font-size:11px; font-weight:bold; color:#fff; overflow:hidden; border: 2px solid rgba(255, 255, 255, 0.1); flex-shrink:0">
-                                            ${user.avatar ? `<img src="${user.avatar}" style="width:100%; height:100%; object-fit:cover">` : user.initials}
+                                        <div class="member-avatar" style="background:${bgColor}">
+                                            ${user.avatar ? `<img src="${user.avatar}">` : user.initials}
                                         </div>
-                                        <div style="font-size:12px; flex-grow:1; color:var(--txt); line-height:1.2">
-                                            <div style="font-weight:600">${user.name}</div>
-                                            <div style="font-size:10px; opacity:0.6">${user.role_name}</div>
+                                        <div style="font-size:12px; flex-grow:1; color:var(--txt); line-height:1.2; min-width: 0;">
+                                            <div style="font-weight:600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.name}</div>
+                                            <div style="font-size:10px; opacity:0.6; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${user.role_name}</div>
                                         </div>
                                     </label>
                                     <div class="role-input-wrap" style="display:${isChecked ? 'block' : 'none'}; width:100px">
@@ -237,6 +246,9 @@
             $parent.addClass('active');
             $roleWrap.fadeIn(200);
             $roleInput.prop('disabled', false);
+            if (!$roleInput.val()) {
+                $roleInput.val('anggota');
+            }
             $checkIco.show();
         } else {
             $parent.removeClass('active');
@@ -390,17 +402,17 @@
                         team.members.forEach(m => {
                             const bgColor = getAvatarColor(m.id);
                             membersHtml += `
-                                <div class="col-12">
-                                    <div style="display:flex; align-items:center; gap:12px; padding:10px; background:rgba(0,200,255,0.04); border:1px solid rgba(0,200,255,0.08); border-radius:12px">
-                                        <div style="width:36px; height:36px; border-radius:50%; background:${bgColor}; display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:bold; color:#fff; overflow:hidden; border:2px solid rgba(255,255,255,0.1); flex-shrink:0">
-                                            ${m.avatar ? `<img src="${m.avatar}" style="width:100%; height:100%; object-fit:cover">` : m.initials}
+                                <div class="col-12 col-md-6">
+                                    <div class="member-card">
+                                        <div class="member-avatar" style="background:${bgColor}">
+                                            ${m.avatar ? `<img src="${m.avatar}">` : m.initials}
                                         </div>
-                                        <div style="flex-grow:1">
-                                            <div style="font-size:13px; font-weight:700; color:var(--txt)">${m.name}</div>
-                                            <div style="font-size:10px; color:var(--muted); font-family:var(--mono)">${m.role_name}</div>
+                                        <div class="member-info">
+                                            <div class="member-name">${m.name}</div>
+                                            <div class="member-role">${m.role_name}</div>
                                         </div>
-                                        <div style="text-align:right">
-                                            <div style="font-size:10px; font-weight:700; color:var(--cyan); text-transform:uppercase; letter-spacing:0.5px">${m.team_role || 'ANGGOTA'}</div>
+                                        <div class="member-team-role">
+                                            ${m.team_role || 'ANGGOTA'}
                                         </div>
                                     </div>
                                 </div>

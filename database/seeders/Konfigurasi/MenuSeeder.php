@@ -27,6 +27,13 @@ class MenuSeeder extends Seeder
 
             // MASTER
             [
+                'name' => 'Permohonan Aplikasi',
+                'url' => 'permohonan-aplikasi',
+                'category' => 'MASTER',
+                'icon' => 'bi bi-file-earmark-plus-fill',
+                'orders' => 0,
+            ],
+            [
                 'name' => 'Project',
                 'url' => 'projects',
                 'category' => 'MASTER',
@@ -91,8 +98,6 @@ class MenuSeeder extends Seeder
                 'category' => 'ROLE MANAGEMENT',
                 'icon' => 'bi bi-diagram-3-fill',
                 'orders' => 7,
-
-                // custom permissions
                 'permissions' => ['menu', 'create', 'read', 'show', 'update', 'delete', 'akses'],
             ],
             [
@@ -108,8 +113,6 @@ class MenuSeeder extends Seeder
                 'category' => 'ROLE MANAGEMENT',
                 'icon' => 'bi bi-people-fill',
                 'orders' => 9,
-
-                // custom permissions
                 'permissions' => ['menu', 'create', 'read', 'show', 'update', 'delete', 'activate'],
             ],
 
@@ -147,9 +150,23 @@ class MenuSeeder extends Seeder
                 $data
             );
 
-            // Jika $customPermissions null, fungsi Anda akan otomatis membuat defaultnya
-            // Jika ada nilainya, ia akan menggunakan array khusus tersebut.
-            $this->attachMenupermission($menu, $customPermissions, ['dev']);
+            if ($menu->url === 'projects') {
+                // dev, admin, anggota mendapatkan semua permission project
+                $this->attachMenupermission($menu, $customPermissions, ['dev', 'admin', 'anggota']);
+                // role user HANYA mendapatkan permission menu, read, dan show untuk project
+                $this->attachMenupermission($menu, ['menu', 'read', 'show'], ['user']);
+            } elseif ($menu->url === 'profil') {
+                $this->attachMenupermission($menu, $customPermissions, ['dev', 'admin', 'anggota', 'user']);
+            } elseif ($menu->url === 'permohonan-aplikasi') {
+                $this->attachMenupermission($menu, $customPermissions, ['dev', 'admin', 'user']);
+            } elseif (in_array($menu->url, ['dokumen', 'catatan'])) {
+                $this->attachMenupermission($menu, $customPermissions, ['dev', 'admin', 'anggota']);
+            } else {
+                $roles = ['dev', 'admin'];
+                // Jika $customPermissions null, fungsi Anda akan otomatis membuat defaultnya
+                // Jika ada nilainya, ia akan menggunakan array khusus tersebut.
+                $this->attachMenupermission($menu, $customPermissions, $roles);
+            }
         }
     }
 }

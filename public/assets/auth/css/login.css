@@ -1067,3 +1067,15 @@ html[data-theme="light"] .otp-box.filled {
 html[data-theme="light"] .btn-social:hover {
     background: rgba(15, 23, 42, 0.05) !important;
 }
+
+html[data-theme="light"] .register-row a:hover,
+html[data-theme="light"] .link-forgot:hover,
+html[data-theme="light"] .resend-text button:not(:disabled):hover {
+    color: #000000 !important;
+}
+
+html[data-theme="light"] .btn-otp-toggle:hover,
+html[data-theme="light"] .btn-back-login:hover {
+    color: var(--cyan) !important;
+    background: rgba(0, 142, 179, 0.08) !important;
+}

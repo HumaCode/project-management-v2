@@ -34,25 +34,31 @@ class ProjectRequestController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'description' => ['nullable', 'string'],
-            'priority' => ['required', 'in:low,medium,high,urgent'],
+            'priority' => ['nullable', 'in:low,medium,high,urgent'],
             'start_date' => ['required', 'date_format:d-m-Y'],
-            'deadline' => ['required', 'date_format:d-m-Y', 'after_or_equal:start_date'],
+            'deadline' => ['nullable', 'date_format:d-m-Y', 'after_or_equal:start_date'],
             'color' => ['nullable', 'string', 'regex:/^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})$/'],
             'reference_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'], // 5MB max
             'reference_file' => ['nullable', 'file', 'mimes:pdf,docx,xlsx,zip,rar,png,jpg,jpeg', 'max:20480'], // 20MB max
+            'app_type' => ['required', 'in:website,android,website_android'],
+        ], [
+            'start_date.required' => 'Tanggal wajib diisi.',
+            'start_date.date_format' => 'Format tanggal tidak valid.',
+            'app_type.required' => 'Jenis aplikasi wajib dipilih.',
+            'app_type.in' => 'Jenis aplikasi tidak valid.',
         ]);
 
         try {
             $project = DB::transaction(function () use ($validated) {
                 // Transform dates
                 $startDate = Carbon::createFromFormat('d-m-Y', $validated['start_date'])->format('Y-m-d');
-                $deadline = Carbon::createFromFormat('d-m-Y', $validated['deadline'])->format('Y-m-d');
+                $deadline = !empty($validated['deadline']) ? Carbon::createFromFormat('d-m-Y', $validated['deadline'])->format('Y-m-d') : null;
 
                 $project = Project::create([
                     'name' => $validated['name'],
                     'description' => $validated['description'] ?? null,
                     'status' => 'to_do',
-                    'priority' => $validated['priority'],
+                    'priority' => $validated['priority'] ?? 'medium',
                     'start_date' => $startDate,
                     'deadline' => $deadline,
                     'progress' => 0,
@@ -61,6 +67,7 @@ class ProjectRequestController extends Controller
                     'team_id' => null, // tim dinullkan dulu sesuai request
                     'color' => $validated['color'] ?? '#4f46e5',
                     'source' => 'request', // membedakan project dibuat dari permohonan
+                    'app_type' => $validated['app_type'],
                 ]);
 
                 // Handle Reference Image (juga dijadikan thumbnail agar muncul di dashboard)

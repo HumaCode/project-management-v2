@@ -77,20 +77,8 @@
 
     /* Form: Flatpickr (Date Picker) */
     var fs = document.getElementById('fStart');
-    var fd = document.getElementById('fDeadline');
 
     var fpStart = flatpickr("#fStart", {
-        locale: "id",
-        dateFormat: "d-m-Y",
-        altInput: true,
-        altFormat: "d F Y",
-        disableMobile: "true",
-        onChange: function(selectedDates, dateStr, instance) {
-            fpDeadline.set('minDate', dateStr);
-        }
-    });
-
-    var fpDeadline = flatpickr("#fDeadline", {
         locale: "id",
         dateFormat: "d-m-Y",
         altInput: true,
@@ -165,7 +153,6 @@
             document.getElementById('formRequestProject').reset();
             if (editorInstance) editorInstance.setData('');
             if (fpStart) fpStart.clear();
-            if (fpDeadline) fpDeadline.clear();
             refImagePreview.innerHTML = '<i class="bi bi-image"></i>';
             refImageUpload.classList.remove('has-file');
             refFileTitle.innerHTML = '<i class="bi bi-file-earmark-arrow-up" style="font-size:28px; color:var(--cyan)"></i><span>Klik atau seret file dokumen ke sini</span>';
@@ -186,8 +173,8 @@
             var ok = true;
             var checks = [
                 { el: document.getElementById('fNama'), fg: document.getElementById('fNama').closest('.fg') },
-                { el: fs, fg: fs.closest('.fg') },
-                { el: fd, fg: fd.closest('.fg') }
+                { el: document.getElementById('fAppType'), fg: document.getElementById('fAppType').closest('.fg') },
+                { el: fs, fg: fs.closest('.fg') }
             ];
 
             checks.forEach(function(c) {

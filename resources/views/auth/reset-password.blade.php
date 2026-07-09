@@ -1057,6 +1057,112 @@
                     max-width: 1120px;
                 }
             }
+
+            /* Light Theme Variables and Styles for Reset Password Page */
+            html[data-theme="light"] {
+                --bg-deep: #f1f5f9;
+                --bg-mid: #ffffff;
+                --bg-card: rgba(255, 255, 255, 0.85);
+                --border-card: rgba(0, 142, 179, 0.15);
+                --cyan: #008eb3;
+                --cyan-dim: rgba(0, 142, 179, 0.12);
+                --cyan-glow: rgba(0, 142, 179, 0.2);
+                --blue: #0072c6;
+                --blue-bright: #1a8fe3;
+                --text: #0f172a;
+                --text-dim: #475569;
+                --text-muted: #94a3b8;
+                --success: #10b981;
+                --error: #ef4444;
+                --input-bg: rgba(0, 142, 179, 0.03);
+                --input-border: rgba(0, 142, 179, 0.15);
+            }
+
+            html[data-theme="light"] .brand-panel {
+                background: linear-gradient(
+                    145deg,
+                    rgba(224, 242, 254, 0.9) 0%,
+                    rgba(240, 249, 255, 0.95) 100%
+                ) !important;
+                border-color: rgba(0, 142, 179, 0.15) !important;
+            }
+
+            html[data-theme="light"] .brand-panel::before {
+                background-image:
+                    linear-gradient(rgba(0, 142, 179, 0.05) 1px, transparent 1px),
+                    linear-gradient(90deg, rgba(0, 142, 179, 0.05) 1px, transparent 1px) !important;
+            }
+
+            html[data-theme="light"] .brand-panel::after {
+                background: radial-gradient(
+                    circle,
+                    rgba(0, 142, 179, 0.08) 0%,
+                    transparent 65%
+                ) !important;
+            }
+
+            html[data-theme="light"] .form-panel {
+                background: rgba(255, 255, 255, 0.45) !important;
+            }
+
+            html[data-theme="light"] .main-card {
+                box-shadow:
+                    0 0 0 1px rgba(0, 142, 179, 0.06),
+                    0 32px 80px rgba(15, 23, 42, 0.08),
+                    0 0 120px rgba(0, 114, 198, 0.05) !important;
+            }
+
+            html[data-theme="light"] input:-webkit-autofill,
+            html[data-theme="light"] input:-webkit-autofill:focus {
+                -webkit-box-shadow: 0 0 0 1000px #e0f2fe inset !important;
+                -webkit-text-fill-color: #0f172a !important;
+            }
+
+            html[data-theme="light"] .form-input:focus {
+                background: #ffffff !important;
+                border-color: var(--cyan) !important;
+            }
+
+            html[data-theme="light"] .form-input.is-valid {
+                background: #f0fdf4 !important;
+                border-color: rgba(16, 185, 129, 0.5) !important;
+            }
+
+            html[data-theme="light"] .form-input.is-invalid {
+                background: #fef2f2 !important;
+                border-color: rgba(239, 68, 68, 0.5) !important;
+            }
+
+            html[data-theme="light"] .back-link:hover {
+                color: #000000 !important;
+            }
+
+            html[data-theme="light"] .login-back a:hover {
+                color: #000000 !important;
+            }
+
+            html[data-theme="light"] .token-box {
+                background: rgba(0, 142, 179, 0.03) !important;
+                border-color: rgba(0, 142, 179, 0.12) !important;
+            }
+
+            html[data-theme="light"] .token-icon {
+                background: rgba(0, 142, 179, 0.06) !important;
+            }
+
+            html[data-theme="light"] .security-badge {
+                background: rgba(16, 185, 129, 0.05) !important;
+                border-color: rgba(16, 185, 129, 0.12) !important;
+            }
+
+            html[data-theme="light"] .info-box {
+                background: rgba(0, 142, 179, 0.03) !important;
+                border-color: rgba(0, 142, 179, 0.12) !important;
+            }
+
+            html[data-theme="light"] .strength-bar {
+                background: rgba(0, 0, 0, 0.06) !important;
+            }
         </style>
     @endpush
 

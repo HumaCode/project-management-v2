@@ -63,8 +63,10 @@ class OtpLoginController extends Controller
         // Clear OTP
         Cache::forget('otp_' . $request->email);
 
+        $redirectUrl = redirect()->intended(route('dashboard'))->getTargetUrl();
+
         return response()->json([
-            'redirect' => route('dashboard'),
+            'redirect' => $redirectUrl,
             'message' => 'Login berhasil!'
         ]);
     }

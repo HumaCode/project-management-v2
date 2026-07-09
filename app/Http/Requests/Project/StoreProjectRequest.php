@@ -36,6 +36,7 @@ class StoreProjectRequest extends FormRequest
             'team_id' => ['required', 'exists:teams,id'],
             'pics' => ['nullable', 'array'],
             'pics.*' => ['exists:users,id'],
+            'app_type' => ['nullable', 'in:website,android,website_android'],
         ];
     }
 }

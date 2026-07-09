@@ -39,10 +39,11 @@ class AuthenticatedSessionController extends Controller
         $request->session()->regenerate();
 
         if ($request->wantsJson()) {
+            $redirectUrl = redirect()->intended(route('dashboard', absolute: false))->getTargetUrl();
             return response()->json([
                 'status' => 'success',
                 'message' => 'Login berhasil, mengalihkan...',
-                'redirect' => route('dashboard', absolute: false)
+                'redirect' => $redirectUrl
             ]);
         }
 

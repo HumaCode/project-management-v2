@@ -44,22 +44,30 @@
             <i class="bi bi-arrow-left"></i> <span class="ms-1">Kembali</span>
           </a>
         </div>
+        @can('update', $project)
         <div class="col-6 col-sm-auto flex-sm-grow-1">
           <a href="#" id="editBtn" class="btn-act btn-outline w-100 justify-content-center">
             <i class="bi bi-pencil-fill"></i> <span class="ms-1">Edit</span>
           </a>
         </div>
+        @endcan
+        @can('delete', $project)
         <div class="col-12 col-sm-auto">
           <button class="btn-act btn-danger-outline w-100 justify-content-center" data-bs-toggle="modal" data-bs-target="#deleteModal">
             <i class="bi bi-trash3-fill"></i> <span class="ms-1 d-sm-none">Hapus Project</span>
           </button>
         </div>
+        @endcan
       </div>
     </div>
 
     <!-- Mini Stats -->
+    @php
+      $isUser = auth()->user()->hasRole('user');
+      $colClass = $isUser ? 'col-4 col-md-4' : 'col-6 col-md-3';
+    @endphp
     <div class="row g-2 mb-4" data-aos="fade-up" data-aos-delay="40">
-      <div class="col-6 col-md-3">
+      <div class="{{ $colClass }}">
         <div class="msc h-100">
           <div class="msc-ico c"><i class="bi bi-folder2-open"></i></div>
           <div>
@@ -68,6 +76,7 @@
           </div>
         </div>
       </div>
+      @if(!$isUser)
       <div class="col-6 col-md-3">
         <div class="msc h-100">
           <div class="msc-ico g"><i class="bi bi-journal-check"></i></div>
@@ -77,7 +86,8 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+      @endif
+      <div class="{{ $colClass }}">
         <div class="msc h-100">
           <div class="msc-ico w"><i class="bi bi-people-fill"></i></div>
           <div>
@@ -86,7 +96,7 @@
           </div>
         </div>
       </div>
-      <div class="col-6 col-md-3">
+      <div class="{{ $colClass }}">
         <div class="msc h-100">
           <div class="msc-ico r" id="statDaysIcon"><i class="bi bi-clock-history"></i></div>
           <div>
@@ -174,6 +184,7 @@
               <span>Dokumen</span>
               <span class="tb-cnt" id="tabDocCount">0</span>
             </button>
+            @if(!$isUser)
             <button class="tab-btn" data-tab="catatan">
               <i class="bi bi-chat-left-text"></i>
               <span>Diskusi</span>
@@ -183,6 +194,7 @@
               <i class="bi bi-activity"></i>
               <span>Aktivitas</span>
             </button>
+            @endif
           </div>
 
           <!-- Tab: Dokumen -->
@@ -220,6 +232,7 @@
           </div>
 
           <!-- Tab: Catatan -->
+          @if(!$isUser)
           <div class="tab-pane" id="tab-catatan">
             <div id="noteWrap">
               <!-- Loaded via AJAX -->
@@ -279,8 +292,10 @@
               </div>
             </div>
           </div>
+          @endif
 
           <!-- Tab: Aktivitas -->
+          @if(!$isUser)
           <div class="tab-pane" id="tab-aktivitas">
             <div class="timeline" id="activityTimeline">
               <!-- Loaded via AJAX -->
@@ -289,6 +304,7 @@
                 <!-- Pagination numbers injected via JS -->
             </div>
           </div>
+          @endif
 
         </div><!-- /crd tabs -->
       </div><!-- /col right -->

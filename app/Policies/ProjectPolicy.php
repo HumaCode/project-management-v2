@@ -45,6 +45,11 @@ class ProjectPolicy
      */
     public function update(User $user, Project $project): bool
     {
+        // Role user tidak boleh mengedit project
+        if ($user->hasRole('user')) {
+            return false;
+        }
+
         // Creator boleh update
         if ($project->created_by === $user->id) {
             return true;
@@ -59,6 +64,11 @@ class ProjectPolicy
      */
     public function delete(User $user, Project $project): bool
     {
+        // Role user tidak boleh menghapus project
+        if ($user->hasRole('user')) {
+            return false;
+        }
+
         return $project->created_by === $user->id;
     }
 }

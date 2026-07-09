@@ -57,6 +57,7 @@
                     <tr>
                         <th style="text-align:center;width:42px">#</th>
                         <th class="th-sort" data-col="name" style="min-width:250px">Nama Project <i class="bi bi-chevron-expand sort-ico"></i></th>
+                        <th style="min-width:130px">Jenis</th>
                         <th style="min-width:130px">Status</th>
                         <th style="min-width:130px">Progress</th>
                         <th style="min-width:140px">Tim Pelaksana</th>

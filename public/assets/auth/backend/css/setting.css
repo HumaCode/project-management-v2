@@ -286,6 +286,12 @@
 }
 
 .fsl option { background: #071528; }
+
+html[data-theme="light"] .fsl option,
+[data-theme="light"] .fsl option {
+    background: #ffffff;
+    color: #1e293b;
+}
 .fg { margin-bottom: 16px; }
 .fg-note { font-size: 11.5px; color: var(--muted); font-family: var(--mono); margin-top: 5px; line-height: 1.55; }
 

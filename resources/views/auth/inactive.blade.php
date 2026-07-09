@@ -8,6 +8,12 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet"/>
   <link href="{{ asset('assets/auth/backend/css/sca.css') }}" rel="stylesheet"/>
   <link href="https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <script>
+    (function() {
+        const savedTheme = localStorage.getItem('theme') || 'dark';
+        document.documentElement.setAttribute('data-theme', savedTheme);
+    })();
+  </script>
   <style>
   /* ─── Variables ─── */
   :root{
@@ -304,6 +310,184 @@
     .step-item{flex:unset}
     .lp-head h2{font-size:20px}
     .rp-head h1{font-size:20px}
+  }
+
+  /* ─── Light Theme Variables and Styles for Inactive Page ─── */
+  html[data-theme="light"] {
+    --bg: #f1f5f9;
+    --bg2: #ffffff;
+    --card: rgba(255, 255, 255, 0.85);
+    --bd: rgba(0, 142, 179, 0.15);
+    --cyan: #008eb3;
+    --blue: #0072c6;
+    --blue2: #1a8fe3;
+    --txt: #0f172a;
+    --dim: #475569;
+    --muted: #94a3b8;
+    --success: #10b981;
+    --error: #ef4444;
+    --input-bg: rgba(0, 142, 179, 0.03);
+    --input-bd: rgba(0, 142, 179, 0.15);
+  }
+
+  html[data-theme="light"] .left-panel {
+    background: linear-gradient(
+        150deg,
+        rgba(224, 242, 254, 0.92) 0%,
+        rgba(240, 249, 255, 0.97) 100%
+    ) !important;
+    border-color: rgba(0, 142, 179, 0.15) !important;
+  }
+
+  html[data-theme="light"] .left-panel::before {
+    background-image:
+        linear-gradient(rgba(0, 142, 179, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 142, 179, 0.05) 1px, transparent 1px) !important;
+  }
+
+  html[data-theme="light"] .left-panel::after {
+    background: radial-gradient(
+        circle,
+        rgba(0, 142, 179, 0.08) 0%,
+        transparent 65%
+    ) !important;
+  }
+
+  html[data-theme="light"] .right-panel {
+    background: rgba(255, 255, 255, 0.45) !important;
+  }
+
+  html[data-theme="light"] .main-card {
+    box-shadow:
+        0 0 0 1px rgba(0, 142, 179, 0.06),
+        0 32px 80px rgba(15, 23, 42, 0.08),
+        0 0 120px rgba(0, 114, 198, 0.05) !important;
+  }
+
+  html[data-theme="light"] input:-webkit-autofill,
+  html[data-theme="light"] input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0 1000px #e0f2fe inset !important;
+    -webkit-text-fill-color: #0f172a !important;
+  }
+
+  html[data-theme="light"] .fi:focus,
+  html[data-theme="light"] .fta:focus,
+  html[data-theme="light"] .fsl:focus {
+    background: #ffffff !important;
+    border-color: var(--cyan) !important;
+  }
+
+  html[data-theme="light"] .fi.err,
+  html[data-theme="light"] .fta.err,
+  html[data-theme="light"] .fsl.err {
+    background: #fef2f2 !important;
+    border-color: rgba(239, 68, 68, 0.5) !important;
+  }
+
+  html[data-theme="light"] .act-row-left a:hover {
+    color: #000000 !important;
+  }
+
+  html[data-theme="light"] .step-item {
+    background: rgba(0, 142, 179, 0.04) !important;
+    border-color: rgba(0, 142, 179, 0.08) !important;
+  }
+
+  html[data-theme="light"] .step-item:hover {
+    background: rgba(0, 142, 179, 0.08) !important;
+    border-color: rgba(0, 142, 179, 0.18) !important;
+  }
+
+  html[data-theme="light"] .step-item.active .st-title {
+    color: var(--warn) !important;
+  }
+
+  html[data-theme="light"] .step-item .st-title {
+    color: var(--txt) !important;
+  }
+
+  html[data-theme="light"] .sn-done {
+    background: rgba(16, 185, 129, 0.12) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: var(--success) !important;
+  }
+
+  html[data-theme="light"] .sn-pending {
+    background: rgba(245, 158, 11, 0.12) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    color: var(--warn) !important;
+  }
+
+  html[data-theme="light"] .sn-wait {
+    background: rgba(148, 163, 184, 0.1) !important;
+    border-color: rgba(148, 163, 184, 0.2) !important;
+    color: #64748b !important;
+  }
+
+  html[data-theme="light"] .warn-box {
+    background: rgba(245, 158, 11, 0.06) !important;
+    border-color: rgba(245, 158, 11, 0.2) !important;
+  }
+
+  html[data-theme="light"] .prog-track {
+    background: rgba(0, 0, 0, 0.06) !important;
+  }
+
+  html[data-theme="light"] .gpill {
+    background: var(--input-bg) !important;
+    border-color: var(--input-bd) !important;
+    color: var(--dim) !important;
+  }
+
+  html[data-theme="light"] .gpill:hover {
+    background: rgba(0, 142, 179, 0.08) !important;
+    border-color: rgba(0, 142, 179, 0.28) !important;
+    color: var(--txt) !important;
+  }
+
+  html[data-theme="light"] .gpill.sel-l {
+    background: rgba(0, 142, 179, 0.12) !important;
+    border-color: rgba(0, 142, 179, 0.4) !important;
+    color: var(--cyan) !important;
+  }
+
+  html[data-theme="light"] .gpill.sel-p {
+    background: rgba(167, 139, 250, 0.1) !important;
+    border-color: rgba(167, 139, 250, 0.35) !important;
+    color: var(--purple) !important;
+  }
+
+  html[data-theme="light"] .fsl option {
+    background: #ffffff !important;
+    color: var(--txt) !important;
+  }
+
+  html[data-theme="light"] .sci-row i {
+    color: var(--success) !important;
+  }
+
+  html[data-theme="light"] .sc-ring {
+    background: rgba(16, 185, 129, 0.1) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: var(--success) !important;
+    box-shadow: 0 0 32px rgba(16, 185, 129, 0.2) !important;
+  }
+
+  html[data-theme="light"] .sc-info {
+    background: rgba(16, 185, 129, 0.04) !important;
+    border-color: rgba(16, 185, 129, 0.15) !important;
+  }
+
+  html[data-theme="light"] .btn-logout-sc {
+    background: rgba(0, 0, 0, 0.03) !important;
+    border-color: rgba(0, 0, 0, 0.08) !important;
+    color: var(--dim) !important;
+  }
+
+  html[data-theme="light"] .btn-logout-sc:hover {
+    background: rgba(239, 68, 68, 0.08) !important;
+    border-color: rgba(239, 68, 68, 0.25) !important;
+    color: var(--error) !important;
   }
   </style>
 </head>

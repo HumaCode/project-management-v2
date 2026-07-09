@@ -36,6 +36,7 @@ test('users can submit project request successfully', function () {
         'start_date' => '08-07-2026',
         'deadline' => '15-07-2026',
         'color' => '#ff0000',
+        'app_type' => 'website',
     ]);
 
     $response->assertStatus(200)
@@ -48,6 +49,36 @@ test('users can submit project request successfully', function () {
         'progress' => 0,
         'team_id' => null,
         'source' => 'request',
+        'app_type' => 'website',
+        'created_by' => $user->id,
+    ]);
+});
+
+test('users can submit project request successfully with null deadline and priority', function () {
+    $user = User::factory()->create([
+        'is_active' => '1',
+    ]);
+
+    $response = $this->actingAs($user)->postJson(route('project-request.store'), [
+        'name' => 'Aplikasi Request Baru Nullable',
+        'description' => 'Ini deskripsi project request nullable',
+        'start_date' => '08-07-2026',
+        'color' => '#ff0000',
+        'app_type' => 'android',
+    ]);
+
+    $response->assertStatus(200)
+        ->assertJsonPath('success', true);
+
+    $this->assertDatabaseHas('projects', [
+        'name' => 'Aplikasi Request Baru Nullable',
+        'priority' => 'medium',
+        'deadline' => null,
+        'status' => 'to_do',
+        'progress' => 0,
+        'team_id' => null,
+        'source' => 'request',
+        'app_type' => 'android',
         'created_by' => $user->id,
     ]);
 });

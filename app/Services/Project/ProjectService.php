@@ -220,14 +220,14 @@ class ProjectService implements ProjectServiceInterface
             'docs_count' => count($dokumenIds),
             'notes_count' => count($diskusiIds),
             'members_count' => $project->team?->members()->count() ?? 0,
-            'days_remaining' => now()->diffInDays($project->deadline, false) >= 0 
+            'days_remaining' => ($project->deadline && now()->diffInDays($project->deadline, false) >= 0)
                 ? now()->diffInDays($project->deadline, false) 
                 : 0,
         ];
         
         // Status class logic for days remaining
         $days = $stats['days_remaining'];
-        $stats['days_remaining_class'] = $days <= 0 ? 'err' : ($days < 7 ? 'warn' : 'ok');
+        $stats['days_remaining_class'] = ($project->deadline === null) ? 'ok' : ($days <= 0 ? 'err' : ($days < 7 ? 'warn' : 'ok'));
 
         // Map data to prevent circular reference and optimize JSON
         return [
@@ -238,8 +238,8 @@ class ProjectService implements ProjectServiceInterface
                 'status' => $project->status,
                 'progress' => $project->progress,
                 'description' => $project->description,
-                'start_date' => $project->start_date->format('Y-m-d'),
-                'deadline' => $project->deadline->format('Y-m-d'),
+                'start_date' => $project->start_date ? $project->start_date->format('Y-m-d') : null,
+                'deadline' => $project->deadline ? $project->deadline->format('Y-m-d') : null,
                 'creator' => [
                     'name' => $project->creator?->name ?? 'System',
                 ],

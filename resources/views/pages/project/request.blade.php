@@ -3,6 +3,100 @@
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
         <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/themes/dark.css">
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/project-create.css') }}?v={{ time() }}">
+        <style>
+            /* ═══ Flatpickr Light Mode Overrides ═══ */
+            html[data-theme="light"] .flatpickr-calendar {
+                background: #ffffff !important;
+                border: 1px solid #e2e8f0 !important;
+                box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -2px rgba(0,0,0,0.05) !important;
+                color: #1e293b !important;
+            }
+            html[data-theme="light"] .flatpickr-calendar::before,
+            html[data-theme="light"] .flatpickr-calendar::after {
+                border-bottom-color: #ffffff !important;
+            }
+            html[data-theme="light"] .flatpickr-months {
+                background: #f8fafc !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                padding: 4px 0 !important;
+            }
+            html[data-theme="light"] .flatpickr-months .flatpickr-month {
+                color: #1e293b !important;
+                fill: #1e293b !important;
+            }
+            html[data-theme="light"] .flatpickr-current-month .numInputWrapper span.arrowUp::after {
+                border-bottom-color: #1e293b !important;
+            }
+            html[data-theme="light"] .flatpickr-current-month .numInputWrapper span.arrowDown::after {
+                border-top-color: #1e293b !important;
+            }
+            html[data-theme="light"] .flatpickr-months .flatpickr-prev-month,
+            html[data-theme="light"] .flatpickr-months .flatpickr-next-month {
+                color: #475569 !important;
+                fill: #475569 !important;
+            }
+            html[data-theme="light"] .flatpickr-months .flatpickr-prev-month:hover,
+            html[data-theme="light"] .flatpickr-months .flatpickr-next-month:hover {
+                color: #0f172a !important;
+                fill: #0f172a !important;
+            }
+            html[data-theme="light"] .flatpickr-current-month select.flatpickr-monthDropdown-months {
+                color: #1e293b !important;
+                background: transparent !important;
+                font-weight: 600 !important;
+            }
+            html[data-theme="light"] .flatpickr-current-month select.flatpickr-monthDropdown-months option {
+                background: #ffffff !important;
+                color: #1e293b !important;
+            }
+            html[data-theme="light"] .flatpickr-current-month input.numInput.cur-year {
+                color: #1e293b !important;
+                font-weight: 600 !important;
+            }
+            html[data-theme="light"] .flatpickr-weekdays {
+                background: #f1f5f9 !important;
+                border-bottom: 1px solid #e2e8f0 !important;
+                height: 28px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+            html[data-theme="light"] span.flatpickr-weekday {
+                color: #475569 !important;
+                font-weight: 600 !important;
+            }
+            html[data-theme="light"] .flatpickr-day {
+                color: #334155 !important;
+            }
+            html[data-theme="light"] .flatpickr-day.prevMonthDay,
+            html[data-theme="light"] .flatpickr-day.nextMonthDay {
+                color: #cbd5e1 !important;
+            }
+            html[data-theme="light"] .flatpickr-day:hover,
+            html[data-theme="light"] .flatpickr-day.prevMonthDay:hover,
+            html[data-theme="light"] .flatpickr-day.nextMonthDay:hover,
+            html[data-theme="light"] .flatpickr-day.focus,
+            html[data-theme="light"] .flatpickr-day.prevMonthDay:focus,
+            html[data-theme="light"] .flatpickr-day.nextMonthDay:focus {
+                background: #f1f5f9 !important;
+                border-color: #cbd5e1 !important;
+                color: #0f172a !important;
+            }
+            html[data-theme="light"] .flatpickr-day.today {
+                border-color: #3b82f6 !important;
+                color: #1d4ed8 !important;
+                font-weight: 600 !important;
+            }
+            html[data-theme="light"] .flatpickr-day.today:hover {
+                background: #eff6ff !important;
+                color: #1d4ed8 !important;
+            }
+            html[data-theme="light"] .flatpickr-day.selected,
+            html[data-theme="light"] .flatpickr-day.selected:hover {
+                background: #3b82f6 !important;
+                border-color: #3b82f6 !important;
+                color: #ffffff !important;
+            }
+        </style>
     @endpush
 
     <div class="page-header" data-aos="fade-down">
@@ -40,7 +134,7 @@
                 <div class="fsec-title"><i class="bi bi-info-circle-fill"></i> Informasi Dasar Permohonan</div>
 
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <div class="fg">
                             <label>Nama Aplikasi / Sistem Yang Diusulkan <span class="req">*</span></label>
                             <div class="fiw">
@@ -53,6 +147,18 @@
                             <div class="emsg">Nama aplikasi wajib diisi.</div>
                         </div>
                     </div>
+                    <div class="col-md-6">
+                        <div class="fg">
+                            <label>Jenis Aplikasi <span class="req">*</span></label>
+                            <select name="app_type" class="fsl" id="fAppType">
+                                <option value="" selected disabled>-- Pilih Jenis Aplikasi --</option>
+                                <option value="website">Website</option>
+                                <option value="android">Android</option>
+                                <option value="website_android">Android &amp; Website</option>
+                            </select>
+                            <div class="emsg">Jenis aplikasi wajib dipilih.</div>
+                        </div>
+                    </div>
                     <div class="col-12">
                         <div class="fg">
                             <label>Deskripsi Kebutuhan &amp; Spesifikasi Fitur</label>
@@ -62,14 +168,13 @@
                     </div>
                     <div class="col-md-6">
                         <div class="fg">
-                            <label>Prioritas Kebutuhan <span class="req">*</span></label>
-                            <select name="priority" class="fsl" id="fPriority">
-                                <option value="low">Low (Biasa)</option>
-                                <option value="medium" selected>Medium (Menengah)</option>
-                                <option value="high">High (Tinggi)</option>
-                                <option value="urgent">Urgent (Mendesak)</option>
-                            </select>
-                            <div class="emsg">Prioritas wajib dipilih.</div>
+                            <label>Tanggal <span class="req">*</span></label>
+                            <div class="fiw">
+                                <i class="bi bi-calendar-event fi-ic"></i>
+                                <input type="text" name="start_date" class="fi" id="fStart"
+                                     style="padding-left:40px" placeholder="Pilih tanggal..." readonly />
+                            </div>
+                            <div class="emsg">Tanggal wajib diisi.</div>
                         </div>
                     </div>
                     <div class="col-md-6">
@@ -82,33 +187,6 @@
                                     <small>Warna preferensi yang akan digunakan untuk tampilan aplikasi.</small>
                                 </div>
                             </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="fsec-title" style="margin-top:28px"><i class="bi bi-calendar3-fill"></i> Estimasi Jadwal Penggunaan</div>
-
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="fg">
-                            <label>Tanggal Mulai Target <span class="req">*</span></label>
-                            <div class="fiw">
-                                <i class="bi bi-calendar-event fi-ic"></i>
-                                <input type="text" name="start_date" class="fi" id="fStart"
-                                    style="padding-left:40px" placeholder="Pilih tanggal..." readonly />
-                            </div>
-                            <div class="emsg">Tanggal mulai target wajib diisi.</div>
-                        </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="fg">
-                            <label>Deadline Target <span class="req">*</span></label>
-                            <div class="fiw">
-                                <i class="bi bi-calendar-x fi-ic"></i>
-                                <input type="text" name="deadline" class="fi" id="fDeadline"
-                                    style="padding-left:40px" placeholder="Pilih tanggal..." readonly />
-                            </div>
-                            <div class="emsg">Deadline target wajib diisi &amp; harus setelah tanggal mulai.</div>
                         </div>
                     </div>
                 </div>

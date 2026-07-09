@@ -43,6 +43,17 @@ $(function () {
         return `<span class="td-dl-ok">${fmtDate(dl)}</span>`;
     }
 
+    function appTypeBadge(type) {
+        if (!type) return '—';
+        const m = {
+            website: ['website', 'Website'],
+            android: ['android', 'Android'],
+            website_android: ['website_android', 'Android & Website']
+        };
+        const [c, l] = m[type] || [type, type];
+        return `<span class="badge-app ${c}">${l}</span>`;
+    }
+
     function statusBadge(s) {
         const m = {
             to_do: ['bs-todo', 'To Do'],
@@ -132,6 +143,7 @@ $(function () {
                                             </div>
                                         </div>
                                     </td>
+                                    <td>${appTypeBadge(p.app_type)}</td>
                                     <td>${statusBadge(p.status)}</td>
                                     <td>${progressHTML(p.progress, p.status)}</td>
                                     <td>

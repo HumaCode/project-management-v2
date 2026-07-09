@@ -52,8 +52,13 @@ class GoogleController extends Controller
                     'is_active' => 0, // Default to inactive for new registration
                 ]);
 
-                // Assign default role 'anggota'
-                $newUser->assignRole('anggota');
+                // Assign default role 'user' (create it first if it doesn't exist to prevent errors in tests/empty db)
+                \App\Models\Shield\Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web'], [
+                    'slug' => 'user',
+                    'type_role' => 'system',
+                    'description' => 'Pengguna luar / pemohon aplikasi'
+                ]);
+                $newUser->assignRole('user');
 
                 Auth::login($newUser);
             }

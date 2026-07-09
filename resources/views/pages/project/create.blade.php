@@ -41,7 +41,7 @@
                 <div class="fsec-title"><i class="bi bi-info-circle-fill"></i> Informasi Dasar</div>
 
                 <div class="row">
-                    <div class="col-12">
+                    <div class="col-md-6">
                         <div class="fg">
                             <label>Nama Project <span class="req">*</span></label>
                             <div class="fiw">
@@ -52,6 +52,18 @@
                             </div>
                             <div class="ccnt" id="cNama">0 / 120</div>
                             <div class="emsg">Nama project wajib diisi.</div>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="fg">
+                            <label>Jenis Aplikasi</label>
+                            <select name="app_type" class="fsl" id="fAppType">
+                                <option value="" selected>-- Pilih Jenis Aplikasi (Opsional) --</option>
+                                <option value="website">Website</option>
+                                <option value="android">Android</option>
+                                <option value="website_android">Android &amp; Website</option>
+                            </select>
+                            <div class="emsg">Jenis aplikasi tidak valid.</div>
                         </div>
                     </div>
                     <div class="col-12">

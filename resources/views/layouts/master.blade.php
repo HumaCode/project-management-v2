@@ -23,7 +23,7 @@
     @if(!empty($cms_settings['app_favicon']))
         <link rel="icon" type="image/x-icon" href="{{ $cms_settings['app_favicon'] }}" />
     @else
-        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+        <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}" />
     @endif
 
     <!-- Open Graph / Social Media -->

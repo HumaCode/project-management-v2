@@ -39,6 +39,7 @@ class Project extends Model implements HasMedia
         'color',
         'icon',
         'source',
+        'app_type',
     ];
 
     protected $casts = [

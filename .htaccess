@@ -1,0 +1,19 @@
+<IfModule mod_rewrite.c>
+    RewriteEngine on
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>
+
+# Block access to hidden files and directories (like .git, .github, .env, .gitignore, etc.)
+RedirectMatch 404 /\..*
+
+# Deny access to sensitive files in the root folder
+<FilesMatch "^(\.env|composer\.json|composer\.lock|package\.json|package-lock\.json|artisan|phpunit\.xml|vite\.config\.js|tailwind\.config\.js|Dockerfile|docker-compose\.yml|AGENTS\.md|CLAUDE\.md|CONVENTIONS\.md|CODEX.md)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>

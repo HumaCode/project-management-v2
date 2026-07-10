@@ -1,3 +1,6 @@
+# Block access to hidden files and directories (like .git, .env)
+RedirectMatch 404 /\..*
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews -Indexes

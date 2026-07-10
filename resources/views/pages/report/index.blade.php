@@ -375,6 +375,27 @@
                     <!-- Tools Sidebar -->
                     <div class="col-md-4 col-lg-3 border-end tools-column custom-scroll" style="max-height: 85vh; overflow-y: auto; padding: 20px;">
                         <div class="mb-4">
+                            <label class="flt-label mb-3">Ukuran Kanvas / Cover</label>
+                            <div class="row g-2 mb-2">
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-transparent border-secondary text-muted" style="font-size: 11px; padding: 0 8px;">W</span>
+                                        <input type="number" id="coverWidth" class="form-control bg-transparent border-secondary text-white text-center" style="font-size: 12px; height: 35px;" value="595" min="100" max="2000">
+                                    </div>
+                                </div>
+                                <div class="col-6">
+                                    <div class="input-group input-group-sm">
+                                        <span class="input-group-text bg-transparent border-secondary text-muted" style="font-size: 11px; padding: 0 8px;">H</span>
+                                        <input type="number" id="coverHeight" class="form-control bg-transparent border-secondary text-white text-center" style="font-size: 12px; height: 35px;" value="842" min="100" max="2000">
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="btn btn-sm btn-outline-secondary w-100 py-2" style="font-size: 11px; border-radius: 8px;" onclick="CoverBuilder.resetToDefaultSize()">
+                                <i class="bi bi-arrow-counterclockwise me-1"></i> Reset ke Default (A4: 595 x 842)
+                            </button>
+                        </div>
+
+                        <div class="mb-4">
                             <label class="flt-label mb-3">Tambah Elemen</label>
                             <div class="d-grid gap-2">
                                 <button class="btn tool-btn text-start" onclick="CoverBuilder.addText('JUDUL BARU', true)">
@@ -387,6 +408,10 @@
                                     <i class="bi bi-image me-2 text-cyan"></i> Unggah Gambar/Logo
                                 </button>
                                 <input type="file" id="coverLogoInput" hidden accept="image/*" onchange="CoverBuilder.handleImageUpload(this)">
+                                <button class="btn tool-btn text-start" onclick="document.getElementById('fullCoverInput').click()">
+                                    <i class="bi bi-file-earmark-image me-2 text-warning"></i> Unggah Full Cover (Canva)
+                                </button>
+                                <input type="file" id="fullCoverInput" hidden accept="image/*" onchange="CoverBuilder.handleFullCoverUpload(this)">
                             </div>
                         </div>
 

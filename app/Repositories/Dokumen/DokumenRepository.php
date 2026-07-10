@@ -96,17 +96,56 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
         return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $items) {
             $dokumen = $this->model->findOrFail($id);
 
-            // Hapus item lama (jika ingin clean rebuild)
-            $dokumen->items()->delete();
+            // 1. Ambil semua media_id dari item baru yang bertipe image
+            $activeMediaIds = [];
+            foreach ($items as $item) {
+                if (($item['type'] ?? '') === 'image' && !empty($item['metadata']['media_id'])) {
+                    $activeMediaIds[] = $item['metadata']['media_id'];
+                }
+            }
 
-            // Simpan item baru
+            // 2. Tandai media yang aktif dengan memindahkan ke collection 'builder_images'
+            if (!empty($activeMediaIds)) {
+                \Spatie\MediaLibrary\MediaCollections\Models\Media::whereIn('id', $activeMediaIds)
+                    ->update([
+                        'collection_name' => 'builder_images'
+                    ]);
+            }
+
+            // 3. Bersihkan media lama yang tidak lagi aktif (dihapus dari database dan disk)
+            $dokumen->media()
+                ->whereIn('collection_name', ['builder_images', 'builder_temp_images'])
+                ->whereNotIn('id', $activeMediaIds)
+                ->get()
+                ->each(function ($media) {
+                    $media->delete();
+                });
+
+            // 4. Hapus item lama secara satu per satu
+            foreach ($dokumen->items as $oldItem) {
+                $oldItem->delete();
+            }
+
+            // 5. Simpan item baru
             foreach ($items as $index => $item) {
-                $dokumen->items()->create([
-                    'type'     => $item['type'],
+                $type = $item['type'] ?? 'text';
+                $newDocItem = $dokumen->items()->create([
+                    'type'     => $type,
                     'content'  => $item['content'] ?? null,
                     'metadata' => $item['metadata'] ?? null,
                     'order'    => $index,
                 ]);
+
+                // Jika tipe adalah image dan ada media_id, perbarui URL-nya jika perlu
+                if ($type === 'image' && !empty($item['metadata']['media_id'])) {
+                    $mediaId = $item['metadata']['media_id'];
+                    $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($mediaId);
+                    if ($media) {
+                        $newDocItem->update([
+                            'content' => $media->getUrl()
+                        ]);
+                    }
+                }
             }
 
             return $dokumen->load('items');

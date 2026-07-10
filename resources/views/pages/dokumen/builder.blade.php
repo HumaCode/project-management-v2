@@ -22,6 +22,11 @@
             .item-type { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
             .item-type.text { color: var(--cyan); }
             .item-type.code { color: var(--warn); }
+            .item-type.image { color: var(--cyan); }
+            .image-upload-zone:hover {
+                border-color: var(--cyan) !important;
+                background: rgba(0, 200, 255, 0.03) !important;
+            }
             
             .item-bd { padding: 20px; }
             .code-editor { height: 300px; border-radius: 8px; border: 1px solid var(--bd); overflow: hidden; }
@@ -147,7 +152,7 @@
                         </div>
                     `;
                     $('.item-list').append(html);
-                } else {
+                } else if(type === 'code') {
                     const editorId = 'editor-' + Date.now();
                     html = `
                         <div class="b-item" data-type="code" id="${id}">
@@ -172,10 +177,95 @@
                     `;
                     $('.item-list').append(html);
                     createCodeEditor(editorId, '// Tulis kode Anda di sini...');
+                } else if(type === 'image') {
+                    html = `
+                        <div class="b-item" data-type="image" id="${id}">
+                            <div class="item-hd">
+                                <div class="item-type image"><i class="bi bi-image"></i> Gambar</div>
+                                <button class="btn-mdel-sm" onclick="$('#${id}').remove()"><i class="bi bi-trash"></i></button>
+                            </div>
+                            <div class="item-bd">
+                                <div class="image-upload-zone" style="border: 2px dashed var(--bd); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(255,255,255,0.01);" onclick="$('#input-${id}').click()">
+                                    <i class="bi bi-cloud-arrow-up" style="font-size: 32px; color: var(--cyan); opacity: 0.8;"></i>
+                                    <p style="margin: 10px 0 0; font-size: 13px; color: var(--muted);">Pilih file gambar (PNG, JPG, JPEG, WEBP) &mdash; Maks. 10 MB</p>
+                                </div>
+                                <input type="file" id="input-${id}" style="display:none;" accept="image/*" onchange="uploadBlockImage(this, '${id}')">
+                                <div class="image-preview-container" style="display:none; text-align:center; position:relative;">
+                                    <div style="position:relative; display:inline-block; max-width:100%; border: 1px solid var(--bd); border-radius:12px; overflow:hidden; background: rgba(0,0,0,0.2);">
+                                        <img src="" style="max-height: 300px; max-width: 100%; display:block;" class="img-fluid rounded">
+                                        <button type="button" class="btn-mdel-sm" style="position:absolute; top:10px; right:10px; background: rgba(255,60,60,0.8); border:none; color:white;" onclick="removeBlockImage('${id}')"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                    <input type="hidden" class="media-id-input" value="">
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    $('.item-list').append(html);
                 }
                 
                 // Scroll to bottom
                 window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+            }
+
+            function uploadBlockImage(input, blockId) {
+                if (!input.files || !input.files[0]) return;
+                const file = input.files[0];
+                const formData = new FormData();
+                formData.append('image', file);
+                formData.append('_token', "{{ csrf_token() }}");
+
+                const $block = $('#' + blockId);
+                const $uploadZone = $block.find('.image-upload-zone');
+                const $previewContainer = $block.find('.image-preview-container');
+
+                $uploadZone.html(`
+                    <div class="spinner-border text-cyan spinner-border-sm" role="status" style="width:24px; height:24px; color: var(--cyan); border-width: 3px;"></div>
+                    <p style="margin:10px 0 0; font-size:13px; color: var(--cyan);">Mengunggah gambar...</p>
+                `);
+
+                $.ajax({
+                    url: "{{ route('dokumen.builder.upload', $dokumen->id) }}",
+                    method: 'POST',
+                    data: formData,
+                    processData: false,
+                    contentType: false,
+                    success: function(res) {
+                        if (res.success) {
+                            $uploadZone.hide();
+                            $previewContainer.find('img').attr('src', res.data.url);
+                            $previewContainer.find('.media-id-input').val(res.data.media_id);
+                            $previewContainer.fadeIn(300);
+                        } else {
+                            SCA.toast({ type: "danger", title: "Gagal!", message: res.message });
+                            resetUploadZone($uploadZone, blockId);
+                        }
+                    },
+                    error: function(err) {
+                        const errMsg = err.responseJSON?.message || "Gagal mengunggah gambar.";
+                        SCA.toast({ type: "danger", title: "Error!", message: errMsg });
+                        resetUploadZone($uploadZone, blockId);
+                    }
+                });
+            }
+
+            function resetUploadZone($uploadZone, blockId) {
+                $uploadZone.html(`
+                    <i class="bi bi-cloud-arrow-up" style="font-size: 32px; color: var(--cyan); opacity: 0.8;"></i>
+                    <p style="margin: 10px 0 0; font-size: 13px; color: var(--muted);">Pilih file gambar (PNG, JPG, JPEG, WEBP) &mdash; Maks. 10 MB</p>
+                `);
+            }
+
+            function removeBlockImage(blockId) {
+                const $block = $('#' + blockId);
+                const $uploadZone = $block.find('.image-upload-zone');
+                const $previewContainer = $block.find('.image-preview-container');
+
+                $previewContainer.hide();
+                $previewContainer.find('img').attr('src', '');
+                $previewContainer.find('.media-id-input').val('');
+                $block.find(`input[type="file"]`).val('');
+                resetUploadZone($uploadZone, blockId);
+                $uploadZone.fadeIn(200);
             }
 
             $('.btn-save-all').on('click', function() {
@@ -190,13 +280,16 @@
 
                     if (type === 'text') {
                         content = $(this).find('textarea').val();
-                    } else {
+                    } else if (type === 'code') {
                         const editorId = $(this).find('.code-editor').attr('id');
                         const editorObj = window.editors.find(e => e.id === editorId);
                         if (editorObj) {
                             content = editorObj.editor.getValue();
                         }
                         metadata.language = $(this).find('.lang-select').val();
+                    } else if (type === 'image') {
+                        content = $(this).find('.image-preview-container img, .image-preview-wrapper img').first().attr('src') || '';
+                        metadata.media_id = $(this).find('.media-id-input').val();
                     }
 
                     items.push({ type, content, metadata });
@@ -265,8 +358,8 @@
                 <div class="b-item" data-type="{{ $item->type }}" id="item-{{ $item->id }}">
                     <div class="item-hd">
                         <div class="item-type {{ $item->type }}">
-                            <i class="bi {{ $item->type == 'text' ? 'bi-text-left' : 'bi-code-slash' }}"></i>
-                            {{ $item->type == 'text' ? 'Paragraf Teks' : 'Snippet Kode' }}
+                            <i class="bi {{ $item->type == 'text' ? 'bi-text-left' : ($item->type == 'code' ? 'bi-code-slash' : 'bi-image') }}"></i>
+                            {{ $item->type == 'text' ? 'Paragraf Teks' : ($item->type == 'code' ? 'Snippet Kode' : 'Gambar') }}
                         </div>
                         @if($item->type == 'code')
                             <div style="display:flex; gap:10px; align-items:center;">
@@ -286,8 +379,15 @@
                     <div class="item-bd">
                         @if($item->type == 'text')
                             <textarea class="fmta" style="height: 120px;">{{ $item->content }}</textarea>
-                        @else
+                        @elseif($item->type == 'code')
                             <div id="editor-{{ $item->id }}" class="code-editor" data-content="{{ $item->content }}" data-lang="{{ $item->metadata['language'] ?? 'javascript' }}"></div>
+                        @elseif($item->type == 'image')
+                            <div class="image-block-content text-center">
+                                <div class="image-preview-wrapper" style="position: relative; display: inline-block; max-width: 100%; border: 1px solid var(--bd); border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2);">
+                                    <img src="{{ asset(parse_url($item->content, PHP_URL_PATH)) }}" style="max-height: 300px; max-width: 100%; display: block;" class="img-fluid rounded">
+                                    <input type="hidden" class="media-id-input" value="{{ $item->metadata['media_id'] ?? '' }}">
+                                </div>
+                            </div>
                         @endif
                     </div>
                 </div>
@@ -307,6 +407,9 @@
             </button>
             <button class="btn-add-item" onclick="addNewItem('code')">
                 <i class="bi bi-plus-circle-fill"></i> Tambah Snippet Kode
+            </button>
+            <button class="btn-add-item" onclick="addNewItem('image')">
+                <i class="bi bi-plus-circle-fill"></i> Tambah Gambar
             </button>
         </div>
 

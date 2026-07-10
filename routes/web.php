@@ -30,19 +30,19 @@ Route::get('/auth/auto-login/{admin_id}', [\App\Http\Controllers\Auth\AutoLoginC
     ->middleware('signed');
 
 Route::middleware(['auth'])->group(function () {
-    
+
     // Halaman Inactive (Untuk user yang belum diaktivasi)
     Route::get('/inactive', function () {
         // Jika user sudah aktif, kembalikan ke dashboard
         if (auth()->user()->is_active == '1') {
             return redirect()->route('dashboard');
         }
-        
-        $isComplete = !empty(auth()->user()->gender) && 
-                      !empty(auth()->user()->city) && 
-                      !empty(auth()->user()->phone) && 
-                      !empty(auth()->user()->username) &&
-                      !empty(auth()->user()->bio);
+
+        $isComplete = !empty(auth()->user()->gender) &&
+            !empty(auth()->user()->city) &&
+            !empty(auth()->user()->phone) &&
+            !empty(auth()->user()->username) &&
+            !empty(auth()->user()->bio);
 
         return view('auth.inactive', compact('isComplete'));
     })->name('inactive');
@@ -109,6 +109,7 @@ Route::middleware(['auth'])->group(function () {
             Route::put('dokumen/{id}', [\App\Http\Controllers\Dokumen\DokumenController::class, 'update'])->name('dokumen.update');
             Route::get('dokumen/{id}/builder', [\App\Http\Controllers\Dokumen\DokumenController::class, 'builder'])->name('dokumen.builder');
             Route::post('dokumen/{id}/builder', [\App\Http\Controllers\Dokumen\DokumenController::class, 'saveBuilder'])->name('dokumen.builder.save');
+            Route::post('dokumen/{id}/builder/upload', [\App\Http\Controllers\Dokumen\DokumenController::class, 'uploadImage'])->name('dokumen.builder.upload');
             Route::delete('dokumen/{id}', [\App\Http\Controllers\Dokumen\DokumenController::class, 'destroy'])->name('dokumen.destroy');
 
             // catatan
@@ -138,7 +139,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('laporan/preview', [\App\Http\Controllers\ReportController::class, 'preview'])->name('reports.preview');
             Route::post('laporan/generate', [\App\Http\Controllers\ReportController::class, 'generate'])->name('reports.generate');
             Route::delete('laporan/{id}', [\App\Http\Controllers\ReportController::class, 'destroy'])->name('reports.destroy');
-            
+
             // Diagrams
             Route::get('diagrams', [\App\Http\Controllers\DiagramController::class, 'index'])->name('diagrams.index');
             Route::get('diagrams/pagination', [\App\Http\Controllers\DiagramController::class, 'getAllPaginated'])->name('diagrams.pagination');
@@ -146,7 +147,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('diagrams/{id}/builder', [\App\Http\Controllers\DiagramController::class, 'builder'])->name('diagrams.builder');
             Route::put('diagrams/{id}', [\App\Http\Controllers\DiagramController::class, 'update'])->name('diagrams.update');
             Route::delete('diagrams/{id}', [\App\Http\Controllers\DiagramController::class, 'destroy'])->name('diagrams.destroy');
-            
+
             // Settings
             Route::get('settings', [\App\Http\Controllers\SettingController::class, 'index'])->name('settings.index');
             Route::post('settings/profile', [\App\Http\Controllers\SettingController::class, 'updateProfile'])->name('settings.update-profile');
@@ -157,7 +158,7 @@ Route::middleware(['auth'])->group(function () {
             Route::post('settings/email/test', [\App\Http\Controllers\SettingController::class, 'sendTestMail'])->name('settings.send-test-mail');
             Route::post('settings/maintenance', [\App\Http\Controllers\SettingController::class, 'updateMaintenance'])->name('settings.update-maintenance');
             Route::get('settings/clear-cache', [\App\Http\Controllers\SettingController::class, 'clearCache'])->name('settings.clear-cache');
-            
+
             // Backups
             Route::post('settings/backups/settings', [\App\Http\Controllers\SettingController::class, 'updateBackup'])->name('settings.update-backup');
             Route::post('settings/backups', [\App\Http\Controllers\SettingController::class, 'runBackup'])->name('settings.run-backup');
@@ -167,7 +168,7 @@ Route::middleware(['auth'])->group(function () {
             Route::get('settings/backups/download/{id}', [\App\Http\Controllers\SettingController::class, 'downloadBackup'])->name('settings.download-backup');
             Route::delete('settings/backups/delete/{id}', [\App\Http\Controllers\SettingController::class, 'deleteBackup'])->name('settings.delete-backup');
             Route::get('settings/threats', [\App\Http\Controllers\SettingController::class, 'getThreatLogs'])->name('settings.threat-logs');
-            
+
             // Global Search
             Route::get('/global-search', [\App\Http\Controllers\GlobalSearchController::class, 'search'])->name('global.search');
 
@@ -175,10 +176,8 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/notifications/recent', [\App\Http\Controllers\NotificationController::class, 'getRecent'])->name('notifications.recent');
             Route::post('/notifications/mark-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all');
             Route::post('/notifications/{id}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
-
-
         }
     );
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

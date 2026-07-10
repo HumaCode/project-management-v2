@@ -183,6 +183,37 @@ class DokumenController extends Controller
     }
 
     /**
+     * Upload gambar dari Document Builder.
+     */
+    public function uploadImage(\Illuminate\Http\Request $request, string $id): JsonResponse
+    {
+        try {
+            $dokumen = \App\Models\Dokumen::findOrFail($id);
+            $this->authorize('update', $dokumen);
+
+            $request->validate([
+                'image' => 'required|image|max:10240', // max 10MB
+            ]);
+
+            $media = $dokumen->addMedia($request->file('image'))
+                ->toMediaCollection('builder_temp_images');
+
+            return ResponseHelper::jsonResponse(
+                true,
+                'Gambar berhasil diunggah',
+                [
+                    'url' => asset(parse_url($media->getUrl(), PHP_URL_PATH)),
+                    'media_id' => $media->id,
+                    'name' => $media->file_name,
+                ],
+                200
+            );
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
+    /**
      * Hapus data dokumen dari database.
      */
     public function destroy(string $id): JsonResponse

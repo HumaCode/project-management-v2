@@ -32,14 +32,25 @@ class ReportService implements ReportServiceInterface
                     $doc->custom_description = $item['desc'] ?? $doc->keterangan;
                     $media = $doc->getFirstMedia('files');
                     if ($media) {
-                        $doc->file_path = $media->getPath();
                         $doc->is_image = str_starts_with($media->mime_type, 'image/');
+                        if ($doc->is_image && file_exists($media->getPath())) {
+                            $ext = pathinfo($media->getPath(), PATHINFO_EXTENSION);
+                            $doc->file_path = 'data:image/' . $ext . ';base64,' . base64_encode(file_get_contents($media->getPath()));
+                        } else {
+                            $doc->file_path = $media->getPath();
+                        }
                     }
                     
                     foreach($doc->items as $docItem) {
                         if ($docItem->type === 'image') {
-                            $itemMedia = $docItem->getFirstMedia('item_files');
-                            $docItem->file_path = $itemMedia ? $itemMedia->getPath() : null;
+                            $mediaId = $docItem->metadata['media_id'] ?? null;
+                            $itemMedia = $mediaId ? \Spatie\MediaLibrary\MediaCollections\Models\Media::find($mediaId) : null;
+                            if ($itemMedia && file_exists($itemMedia->getPath())) {
+                                $ext = pathinfo($itemMedia->getPath(), PATHINFO_EXTENSION);
+                                $docItem->file_path = 'data:image/' . $ext . ';base64,' . base64_encode(file_get_contents($itemMedia->getPath()));
+                            } else {
+                                $docItem->file_path = null;
+                            }
                         }
                     }
                     $documents[] = $doc;

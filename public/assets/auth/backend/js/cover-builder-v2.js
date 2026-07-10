@@ -15,6 +15,10 @@ const CoverBuilder = {
         });
         this.initCanvas();
         this.initGlobalEvents();
+
+        $('#coverWidth, #coverHeight').on('input change', () => {
+            CoverBuilder.updateCanvasSize();
+        });
     },
 
     initCanvas() {
@@ -347,6 +351,41 @@ const CoverBuilder = {
         reader.readAsDataURL(file);
     },
 
+    handleFullCoverUpload(input) {
+        const file = input.files[0];
+        if (!file) return;
+
+        SCA.dialog({
+            type: "warning",
+            title: "Gunakan Gambar Cover Penuh?",
+            message: "Kanvas akan dikosongkan dan gambar ini akan dipasang sebagai cover utama secara penuh.",
+            confirmText: "Ya, Pasang",
+            cancelText: "Batal",
+            showCancel: true,
+        }).then((confirmed) => {
+            if (confirmed) {
+                const reader = new FileReader();
+                reader.onload = (f) => {
+                    CoverBuilder.canvas.clear();
+                    fabric.Image.fromURL(f.target.result, (img) => {
+                        img.set({
+                            scaleX: CoverBuilder.canvas.width / img.width,
+                            scaleY: CoverBuilder.canvas.height / img.height,
+                            originX: 'left',
+                            originY: 'top',
+                            selectable: false,
+                            evented: false
+                        });
+                        CoverBuilder.canvas.setBackgroundImage(img, CoverBuilder.canvas.renderAll.bind(CoverBuilder.canvas));
+                    });
+                };
+                reader.readAsDataURL(file);
+                SCA.toast({ type: 'success', title: 'Cover Berhasil Diunggah!', message: 'Gambar telah dipasang sebagai latar belakang cover.' });
+            }
+            input.value = '';
+        });
+    },
+
     setBgColor(color) {
         CoverBuilder.canvas.setBackgroundColor(color, CoverBuilder.canvas.renderAll.bind(CoverBuilder.canvas));
     },
@@ -366,6 +405,38 @@ const CoverBuilder = {
             CoverBuilder.canvas.discardActiveSelection();
             CoverBuilder.canvas.renderAll();
         }
+    },
+
+    updateCanvasSize() {
+        const w = parseInt(document.getElementById('coverWidth').value) || 595;
+        const h = parseInt(document.getElementById('coverHeight').value) || 842;
+        
+        CoverBuilder.canvas.setWidth(w);
+        CoverBuilder.canvas.setHeight(h);
+        
+        // Update the wrapper style
+        const wrapper = document.querySelector('.canvas-wrapper');
+        if (wrapper) {
+            wrapper.style.width = w + 'px';
+            wrapper.style.height = h + 'px';
+        }
+        
+        // Recalculate background image scale if present
+        const bgImg = CoverBuilder.canvas.backgroundImage;
+        if (bgImg) {
+            bgImg.set({
+                scaleX: w / bgImg.width,
+                scaleY: h / bgImg.height
+            });
+        }
+        
+        CoverBuilder.canvas.renderAll();
+    },
+
+    resetToDefaultSize() {
+        document.getElementById('coverWidth').value = 595;
+        document.getElementById('coverHeight').value = 842;
+        this.updateCanvasSize();
     },
 
     save() {

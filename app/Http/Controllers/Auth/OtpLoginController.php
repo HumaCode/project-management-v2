@@ -19,6 +19,7 @@ class OtpLoginController extends Controller
     {
         $request->validate([
             'email' => 'required|email|exists:users,email',
+            'g-recaptcha-response' => app()->environment('testing') ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
         ], [
             'exists' => 'Email tidak terdaftar di sistem kami.',
         ]);
@@ -45,6 +46,7 @@ class OtpLoginController extends Controller
         $request->validate([
             'email' => 'required|email|exists:users,email',
             'code' => 'required|numeric|digits:6',
+            'g-recaptcha-response' => app()->environment('testing') ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
         ]);
 
         $cachedOtp = Cache::get('otp_' . $request->email);

@@ -260,6 +260,12 @@
         <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
         <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
         <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+        @if(config('services.recaptcha.site_key'))
+            <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+            <script>
+                window.recaptchaSiteKey = "{{ config('services.recaptcha.site_key') }}";
+            </script>
+        @endif
         <script>
             window.projectIndexUrl = "{{ route('projects.index') }}";
         </script>

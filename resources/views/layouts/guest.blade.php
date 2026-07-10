@@ -11,6 +11,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="recaptcha-site-key" content="{{ config('services.recaptcha.site_key') }}">
 
     <title>{{ $cms_settings['app_name'] ?? config('app.name', 'PMS') }}</title>
 
@@ -64,6 +65,10 @@
     <script src="{{ asset('assets/auth/js/global-script.js') }}"></script>
 
     <script src="{{ asset('assets/auth/backend/js/sca.js') }}"></script>
+
+    @if(config('services.recaptcha.site_key'))
+        <script src="https://www.google.com/recaptcha/api.js?render={{ config('services.recaptcha.site_key') }}"></script>
+    @endif
 
     @stack('auth-js')
 

@@ -24,10 +24,32 @@ $(document).ready(function () {
         $alert.hide();
         $btn.addClass("loading").prop("disabled", true);
 
+        const siteKey = $('meta[name="recaptcha-site-key"]').attr('content');
+        if (siteKey && typeof grecaptcha !== 'undefined') {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(siteKey, {action: 'login'}).then(function(token) {
+                    submitLoginForm(token);
+                }).catch(function(err) {
+                    $btn.removeClass("loading").prop("disabled", false);
+                    $alertMsg.text("reCAPTCHA Error: " + err.message);
+                    $alert.css("display", "flex").hide().fadeIn();
+                });
+            });
+        } else {
+            submitLoginForm(null);
+        }
+    });
+
+    function submitLoginForm(recaptchaToken) {
+        let formData = $form.serialize();
+        if (recaptchaToken) {
+            formData += '&g-recaptcha-response=' + encodeURIComponent(recaptchaToken);
+        }
+
         $.ajax({
             url: $form.data("url"),
             type: "POST",
-            data: $form.serialize(),
+            data: formData,
             dataType: "json",
             success: function (response) {
                 $btn.css("background", "linear-gradient(135deg, #00e5a0, #0072c6)");
@@ -41,7 +63,7 @@ $(document).ready(function () {
                 $alert.css("display", "flex").hide().fadeIn();
             },
         });
-    });
+    }
 
     /* ── OTP LOGIN LOGIC ── */
     const $loginStandard = $("#loginStandard");
@@ -70,10 +92,36 @@ $(document).ready(function () {
         $btn.addClass("loading").prop("disabled", true);
         $msg.hide();
 
+        const siteKey = $('meta[name="recaptcha-site-key"]').attr('content');
+        if (siteKey && typeof grecaptcha !== 'undefined') {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(siteKey, {action: 'send_otp'}).then(function(token) {
+                    submitSendOtp(email, token);
+                }).catch(function(err) {
+                    $btn.removeClass("loading").prop("disabled", false);
+                    setMsg($msg, "reCAPTCHA Error: " + err.message, "error");
+                });
+            });
+        } else {
+            submitSendOtp(email, null);
+        }
+    });
+
+    function submitSendOtp(email, recaptchaToken) {
+        const $btn = $("#btnSendOtp");
+        const $msg = $("#otpEmailMsg");
+        const sendData = { 
+            email: email, 
+            _token: $("input[name='_token']").val() 
+        };
+        if (recaptchaToken) {
+            sendData['g-recaptcha-response'] = recaptchaToken;
+        }
+
         $.ajax({
             url: "/login/otp/send",
             type: "POST",
-            data: { email: email, _token: $("input[name='_token']").val() },
+            data: sendData,
             success: function(response) {
                 $btn.removeClass("loading").prop("disabled", false);
                 $("#btnResendOtp").removeClass("loading");
@@ -91,7 +139,7 @@ $(document).ready(function () {
                 setMsg($msg, getErrorMessage(xhr), "error");
             }
         });
-    });
+    }
 
     /* OTP Box Auto-tab */
     $(".otp-box").on("input", function() {
@@ -124,10 +172,37 @@ $(document).ready(function () {
         $btn.addClass("loading").prop("disabled", true);
         $msg.hide();
 
+        const siteKey = $('meta[name="recaptcha-site-key"]').attr('content');
+        if (siteKey && typeof grecaptcha !== 'undefined') {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(siteKey, {action: 'verify_otp'}).then(function(token) {
+                    submitVerifyOtp(email, code, token);
+                }).catch(function(err) {
+                    $btn.removeClass("loading").prop("disabled", false);
+                    setMsg($msg, "reCAPTCHA Error: " + err.message, "error");
+                });
+            });
+        } else {
+            submitVerifyOtp(email, code, null);
+        }
+    });
+
+    function submitVerifyOtp(email, code, recaptchaToken) {
+        const $btn = $("#btnVerifyOtp");
+        const $msg = $("#otpCodeMsg");
+        const verifyData = { 
+            email: email, 
+            code: code, 
+            _token: $("input[name='_token']").val() 
+        };
+        if (recaptchaToken) {
+            verifyData['g-recaptcha-response'] = recaptchaToken;
+        }
+
         $.ajax({
             url: "/login/otp/verify",
             type: "POST",
-            data: { email: email, code: code, _token: $("input[name='_token']").val() },
+            data: verifyData,
             success: function(response) {
                 $btn.css("background", "linear-gradient(135deg, #00e5a0, #0072c6)");
                 $btn.find("span").html('<i class="bi bi-check-lg"></i> Berhasil!');
@@ -140,7 +215,7 @@ $(document).ready(function () {
                 setTimeout(() => $(".otp-box").removeClass("error-shake"), 500);
             }
         });
-    });
+    }
 
     /* Timer Logic */
     function startCountdown() {

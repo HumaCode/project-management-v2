@@ -53,6 +53,7 @@ class RegisteredUserController extends Controller
             'username' => ['required', 'string', 'lowercase', 'max:255', 'unique:'.User::class, 'alpha_dash'],
             'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:'.User::class],
             'password' => ['required', 'confirmed', $passwordRule],
+            'g-recaptcha-response' => app()->environment('testing') ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
         ]);
 
         $user = User::create([

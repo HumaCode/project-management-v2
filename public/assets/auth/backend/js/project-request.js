@@ -205,6 +205,35 @@
         btnSave.style.opacity = '.7';
         btnSave.style.pointerEvents = 'none';
 
+        var siteKey = window.recaptchaSiteKey;
+        if (siteKey && typeof grecaptcha !== 'undefined') {
+            grecaptcha.ready(function() {
+                grecaptcha.execute(siteKey, {action: 'project_request'}).then(function(token) {
+                    formData.append('g-recaptcha-response', token);
+                    sendFormRequest(formData);
+                }).catch(function(err) {
+                    resetSaveButton();
+                    SCA.toast({
+                        type: "error",
+                        title: "Error!",
+                        message: "reCAPTCHA Error: " + err.message,
+                        position: "top-right",
+                    });
+                });
+            });
+        } else {
+            sendFormRequest(formData);
+        }
+    }
+
+    function resetSaveButton() {
+        btnSave.innerHTML = '<span><i class="bi bi-check2-circle"></i> Kirim Permohonan</span>';
+        btnSave.style.opacity = '1';
+        btnSave.style.pointerEvents = 'auto';
+    }
+
+    function sendFormRequest(formData) {
+        var form = document.getElementById('formRequestProject');
         axios.post(form.action, formData)
             .then(res => {
                 SCA.toast({
@@ -218,9 +247,7 @@
                 }, 1000);
             })
             .catch(err => {
-                btnSave.innerHTML = '<span><i class="bi bi-check2-circle"></i> Kirim Permohonan</span>';
-                btnSave.style.opacity = '1';
-                btnSave.style.pointerEvents = 'auto';
+                resetSaveButton();
 
                 if (err.response && err.response.status === 422) {
                     var errors = err.response.data.errors;

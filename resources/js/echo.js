@@ -3,9 +3,17 @@ import Pusher from 'pusher-js';
 
 window.Pusher = Pusher;
 
-const reverbKey = import.meta.env.VITE_REVERB_APP_KEY || import.meta.env.VITE_PUSHER_APP_KEY;
+const pusherKey = import.meta.env.VITE_PUSHER_APP_KEY;
+const reverbKey = import.meta.env.VITE_REVERB_APP_KEY;
 
-if (reverbKey) {
+if (pusherKey) {
+    window.Echo = new Echo({
+        broadcaster: 'pusher',
+        key: pusherKey,
+        cluster: import.meta.env.VITE_PUSHER_APP_CLUSTER ?? 'ap1',
+        forceTLS: true,
+    });
+} else if (reverbKey) {
     window.Echo = new Echo({
         broadcaster: 'reverb',
         key: reverbKey,

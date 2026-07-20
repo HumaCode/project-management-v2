@@ -31,14 +31,17 @@ WORKDIR /app
 # Copy the application code
 COPY . /app
 
-# Set permissions
-RUN chmod -R 775 storage bootstrap/cache
+# Set permissions for entrypoint and storage
+RUN chmod +x /app/docker-entrypoint.sh \
+    && chmod -R 777 storage bootstrap/cache
 
 # Performance: Use worker mode
 ENV OCTANE_SERVER=frankenphp
 
 # Expose port
 EXPOSE 80 443 443/udp
+
+ENTRYPOINT ["/app/docker-entrypoint.sh"]
 
 # Entrypoint to start Laravel Octane with FrankenPHP
 CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=80", "--admin-port=2019"]

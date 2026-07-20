@@ -41,7 +41,7 @@ ENV OCTANE_SERVER=frankenphp
 # Expose port
 EXPOSE 80 443 443/udp
 
-ENTRYPOINT ["/app/docker-entrypoint.sh"]
+ENTRYPOINT ["/bin/sh", "/app/docker-entrypoint.sh"]
 
 # Entrypoint to start Laravel Octane with FrankenPHP
 CMD ["php", "artisan", "octane:start", "--server=frankenphp", "--host=0.0.0.0", "--port=80", "--admin-port=2019"]

@@ -39,8 +39,8 @@
                     // 1. Ambil SEMUA permission dari database untuk mengecek ketersediaan fitur
                     $allSystemPermissions = \Spatie\Permission\Models\Permission::pluck('name')->toArray();
 
-                    // 2. Deteksi apakah ini role super/dev
-                    $isDev = strtolower($data->name) === 'dev' || strtolower($data->name) === 'super admin';
+                    // 2. Deteksi apakah ini role dev
+                    $isDev = strtolower($data->name) === 'dev';
                 @endphp
 
                 @foreach (menus(true) as $category => $menuItems)

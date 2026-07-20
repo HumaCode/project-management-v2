@@ -9,7 +9,7 @@
 
         @php
             $currentUser = auth()->user();
-            $isSuperAdmin = $currentUser && ($currentUser->hasRole('dev') || $currentUser->hasRole('super admin'));
+            $isDev = $currentUser && $currentUser->hasRole('dev');
         @endphp
 
         <script>
@@ -19,9 +19,9 @@
             window.urlEdit = @json($editUrl);
             window.urlShow = @json($showUrl);
             window.urlDestroy = @json($destroyUrl);
-            window.canRead = @json($isSuperAdmin || ($currentUser && $currentUser->can('read ' . $permissionAkses)));
-            window.canUpdate = @json($isSuperAdmin || ($currentUser && $currentUser->can('update ' . $permissionAkses)));
-            window.canDelete = @json($isSuperAdmin || ($currentUser && $currentUser->can('delete ' . $permissionAkses)));
+            window.canRead = @json($isDev || ($currentUser && $currentUser->can('read ' . $permissionAkses)));
+            window.canUpdate = @json($isDev || ($currentUser && $currentUser->can('update ' . $permissionAkses)));
+            window.canDelete = @json($isDev || ($currentUser && $currentUser->can('delete ' . $permissionAkses)));
         </script>
 
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>

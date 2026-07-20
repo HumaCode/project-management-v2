@@ -10,7 +10,7 @@
 
         @php
             $currentUser = auth()->user();
-            $isSuperAdmin = $currentUser && ($currentUser->hasRole('dev') || $currentUser->hasRole('super admin'));
+            $isDev = $currentUser && $currentUser->hasRole('dev');
         @endphp
 
         <script>
@@ -20,10 +20,10 @@
             window.urlEdit = @json($editUrl);
             window.urlShow = @json($showUrl);
             window.urlDestroy = @json($destroyUrl);
-            window.canShow = @json($isSuperAdmin || ($currentUser && $currentUser->can('show ' . $permissionAkses)));
-            window.canActivated = @json($isSuperAdmin || ($currentUser && $currentUser->can('activate ' . $permissionAkses)));
-            window.canUpdate = @json($isSuperAdmin || ($currentUser && $currentUser->can('update ' . $permissionAkses)));
-            window.canDelete = @json($isSuperAdmin || ($currentUser && $currentUser->can('delete ' . $permissionAkses)));
+            window.canShow = @json($isDev || ($currentUser && $currentUser->can('show ' . $permissionAkses)));
+            window.canActivated = @json($isDev || ($currentUser && $currentUser->can('activate ' . $permissionAkses)));
+            window.canUpdate = @json($isDev || ($currentUser && $currentUser->can('update ' . $permissionAkses)));
+            window.canDelete = @json($isDev || ($currentUser && $currentUser->can('delete ' . $permissionAkses)));
         </script>
 
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>

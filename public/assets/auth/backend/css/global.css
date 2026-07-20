@@ -2288,7 +2288,8 @@ html {
     border-color: var(--bdh);
 }
 
-.btn-logout {
+.btn-logout,
+.btn-danger-confirm {
     background: linear-gradient(
         135deg,
         rgba(180, 30, 50, 0.9),
@@ -2310,7 +2311,8 @@ html {
     overflow: hidden;
 }
 
-.btn-logout::before {
+.btn-logout::before,
+.btn-danger-confirm::before {
     content: "";
     position: absolute;
     inset: 0;
@@ -2323,16 +2325,19 @@ html {
     transition: opacity var(--dur) var(--ease);
 }
 
-.btn-logout:hover {
+.btn-logout:hover,
+.btn-danger-confirm:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 28px rgba(255, 77, 109, 0.45);
 }
 
-.btn-logout:hover::before {
+.btn-logout:hover::before,
+.btn-danger-confirm:hover::before {
     opacity: 1;
 }
 
-.btn-logout span {
+.btn-logout span,
+.btn-danger-confirm span {
     position: relative;
     z-index: 1;
     display: flex;

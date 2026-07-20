@@ -327,8 +327,8 @@
             <p style="font-size:13px;color:var(--muted);font-family:var(--mono)"><i class="bi bi-kanban"></i> Project: <span style="color:var(--cyan)">{{ $project->name }}</span></p>
           </div>
           <div class="modal-footer">
-            <button class="btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batalkan</button>
-            <button class="btn-logout"><span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span></button>
+            <button type="button" class="btn-cancel" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i> Batalkan</button>
+            <button type="button" class="btn-danger-confirm" id="btnConfirmDeleteProject"><span><i class="bi bi-trash3-fill"></i> Ya, Hapus</span></button>
           </div>
           <div class="modal-drain"><div class="modal-drain-fill" id="drainFill2"></div></div>
         </div>

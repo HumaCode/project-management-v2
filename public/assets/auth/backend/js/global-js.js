@@ -416,7 +416,7 @@ logoutModal.addEventListener("hidden.bs.modal", function () {
 });
 
 $(document).ready(function () {
-    $(".btn-logout").on("click", function (e) {
+    $("#confirmLogoutBtn").on("click", function (e) {
         e.preventDefault();
 
         let $btn = $(this);

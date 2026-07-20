@@ -749,6 +749,56 @@ $(function() {
     initDrain('deleteModal','drainFill2');
     initDrain('delDocModal','drainDelDoc');
 
+    /* Delete Project Logic */
+    $(document).on('click', '#btnConfirmDeleteProject', function() {
+        const btn = $(this);
+        const originalHtml = btn.html();
+        btn.prop('disabled', true).html('<span><i class="bi bi-hourglass-split"></i> Menghapus...</span>');
+
+        if (typeof SCA !== 'undefined') {
+            SCA.loading({
+                title: "Menghapus Project...",
+                message: "Mohon tunggu sebentar"
+            });
+        }
+
+        $.ajax({
+            url: `/projects/${projectId}`,
+            method: 'DELETE',
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            success: function(res) {
+                $('#deleteModal').modal('hide');
+                if (typeof SCA !== 'undefined') {
+                    SCA.toast({
+                        type: res.success ? "success" : "danger",
+                        title: res.success ? "Berhasil!" : "Gagal!",
+                        message: res.message ?? "Project berhasil dihapus.",
+                    });
+                }
+                if (res.success) {
+                    setTimeout(function() {
+                        window.location.href = '/projects';
+                    }, 800);
+                } else {
+                    btn.prop('disabled', false).html(originalHtml);
+                }
+            },
+            error: function(err) {
+                btn.prop('disabled', false).html(originalHtml);
+                let msg = "Terjadi kesalahan saat menghapus project.";
+                if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                if (typeof SCA !== 'undefined') {
+                    SCA.toast({ type: "danger", title: "Error!", message: msg });
+                }
+            },
+            complete: function() {
+                if (typeof SCA !== 'undefined') SCA.close();
+            }
+        });
+    });
+
     /* Attachment logic with Preview */
     let selectedFiles = [];
 

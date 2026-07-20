@@ -216,17 +216,19 @@ class ProjectService implements ProjectServiceInterface
         $catatanIds = $project->catatans()->pluck('id')->toArray();
 
         // Stats calculation
+        $daysRemaining = $project->deadline 
+            ? (int) ceil(now()->startOfDay()->diffInDays($project->deadline->startOfDay(), false)) 
+            : 0;
+
         $stats = [
             'docs_count' => count($dokumenIds),
             'notes_count' => count($diskusiIds),
             'members_count' => $project->team?->members()->count() ?? 0,
-            'days_remaining' => ($project->deadline && now()->diffInDays($project->deadline, false) >= 0)
-                ? now()->diffInDays($project->deadline, false) 
-                : 0,
+            'days_remaining' => max(0, $daysRemaining),
         ];
         
         // Status class logic for days remaining
-        $days = $stats['days_remaining'];
+        $days = $daysRemaining;
         $stats['days_remaining_class'] = ($project->deadline === null) ? 'ok' : ($days <= 0 ? 'err' : ($days < 7 ? 'warn' : 'ok'));
 
         // Map data to prevent circular reference and optimize JSON

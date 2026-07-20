@@ -234,8 +234,9 @@ $(function() {
                     if(stats.days_remaining_class === 'err') badgeClass = 'dl-err';
                     else if(stats.days_remaining_class === 'warn') badgeClass = 'dl-warn';
                     
+                    const daysRem = Math.round(stats.days_remaining || 0);
                     $('#infoDaysBadge').attr('class', `dl-badge ${badgeClass}`)
-                        .html(`<i class="bi bi-exclamation-circle-fill"></i>H-${stats.days_remaining}`);
+                        .html(`<i class="bi bi-exclamation-circle-fill"></i>H-${daysRem}`);
 
                     $('#infoDesc').html(p.description || '<span class="text-muted">Tidak ada deskripsi.</span>');
 

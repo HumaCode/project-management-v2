@@ -31,28 +31,28 @@ class UserSeeder extends Seeder
                     'is_active'         => '1',
                 ]]
             );
-            
+
             // Assign role only if it's created or doesn't have it
             $user->assignRole($value);
         }
 
-        $faker = \Faker\Factory::create('id_ID');
+        // $faker = \Faker\Factory::create('id_ID');
 
-        for ($i = 0; $i < 100; $i++) {
-            $username = $faker->unique()->userName();
-            $user = User::firstOrCreate(
-                ['username' => $username],
-                [...$default, ...[
-                    'name'              => $faker->name(),
-                    'email'             => $faker->unique()->safeEmail(),
-                    'is_active'         => '1',
-                ]]
-            );
-            
-            if (!$user->hasRole('anggota')) {
-                $user->assignRole('anggota');
-            }
-        }
+        // for ($i = 0; $i < 100; $i++) {
+        //     $username = $faker->unique()->userName();
+        //     $user = User::firstOrCreate(
+        //         ['username' => $username],
+        //         [...$default, ...[
+        //             'name'              => $faker->name(),
+        //             'email'             => $faker->unique()->safeEmail(),
+        //             'is_active'         => '1',
+        //         ]]
+        //     );
+
+        //     if (!$user->hasRole('anggota')) {
+        //         $user->assignRole('anggota');
+        //     }
+        // }
 
         //--------------- 100 user berhasil di buat
     }

@@ -20,9 +20,9 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             UserSeeder::class,
             MenuSeeder::class,
-            ProjectSeeder::class,
-            DokumenSeeder::class,
-            KategoriDokumenSeeder::class,
+            // ProjectSeeder::class,
+            // DokumenSeeder::class,
+            // KategoriDokumenSeeder::class,
             SettingSeeder::class,
         ]);
     }

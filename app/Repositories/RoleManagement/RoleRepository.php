@@ -111,6 +111,7 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
             // 3. Clear Spatie permission cache & menu cache di aplikasi
             app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            \Illuminate\Support\Facades\Cache::forget('spatie.permission.cache');
             \Illuminate\Support\Facades\Cache::forget('menus_data');
             \Illuminate\Support\Facades\Cache::forget('menus_url_list');
 

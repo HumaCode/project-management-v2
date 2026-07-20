@@ -14,7 +14,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     private function applyAccessScope($query)
     {
         $user = auth()->user();
-        if ($user->hasRole(['admin', 'dev'])) {
+        if (!$user || $user->hasRole(['admin', 'dev'])) {
             return $query;
         }
 
@@ -88,7 +88,7 @@ class DashboardRepository implements DashboardRepositoryInterface
             ->select(DB::raw('YEAR(created_at) as year'), DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as count'))
             ->where('created_at', '>=', now()->subMonths(5)->startOfMonth());
 
-        if (!$user->hasRole(['admin', 'dev'])) {
+        if ($user && !$user->hasRole(['admin', 'dev'])) {
             $query->where(function($q) use ($user) {
                 $q->where('created_by', $user->id)
                   ->orWhereExists(function ($sq) use ($user) {
@@ -123,7 +123,7 @@ class DashboardRepository implements DashboardRepositoryInterface
         $user = auth()->user();
         $query = Activity::with(['causer', 'subject'])->latest();
 
-        if (!$user->hasRole(['admin', 'dev'])) {
+        if ($user && !$user->hasRole(['admin', 'dev'])) {
             $projectQuery = $this->applyAccessScope(Project::query())->select('id');
             
             $query->where(function($q) use ($projectQuery) {

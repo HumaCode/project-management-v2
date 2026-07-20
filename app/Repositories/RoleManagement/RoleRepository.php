@@ -109,6 +109,18 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
             // 2. 🔥 WAJIB: Refresh relasi permission agar memuat data terbaru dari DB
             $role->load('permissions');
 
+            // 3. Clear Spatie permission cache & menu cache di aplikasi
+            app(\Spatie\Permission\PermissionRegistrar::class)->forgetCachedPermissions();
+            \Illuminate\Support\Facades\Cache::forget('menus_data');
+            \Illuminate\Support\Facades\Cache::forget('menus_url_list');
+
+            // 4. Reload relasi roles & permissions pada user yang sedang login tanpa perlu re-login
+            if (auth()->check() && auth()->user()->hasRole($role->name)) {
+                auth()->user()->unsetRelation('roles');
+                auth()->user()->unsetRelation('permissions');
+                auth()->user()->load('roles', 'permissions');
+            }
+
             return $role->permissions;
 
         } catch (\Exception $e) {

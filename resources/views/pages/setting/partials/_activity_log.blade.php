@@ -69,8 +69,8 @@
                     </div>
                 </td>
                 <td>
-                    <div style="font-weight: 700; color: #fff; font-size: 14px; letter-spacing: 0.3px;">{{ $eventLabel }} {{ $subject }}</div>
-                    <div style="font-size: 10px; color: var(--dim); opacity: 0.6; margin-top: 2px; font-family: var(--mono);">{{ strtoupper($act->log_name ?? 'SYSTEM') }} LOG</div>
+                    <div style="font-weight: 700; color: var(--txt, #0f172a); font-size: 14px; letter-spacing: 0.3px;">{{ $eventLabel }} {{ $subject }}</div>
+                    <div style="font-size: 10px; color: var(--dim); opacity: 0.8; margin-top: 2px; font-family: var(--mono);">{{ strtoupper($act->log_name ?? 'SYSTEM') }} LOG</div>
                 </td>
                 <td>
                     <div style="font-size: 13px; color: var(--muted); line-height: 1.5;">{{ $act->description }}</div>
@@ -84,16 +84,16 @@
                     @endif
                 </td>
                 <td class="text-end pe-4">
-                    <div style="color: #fff; font-size: 12px; font-weight: 600; font-family: var(--mono);">{{ $act->created_at->format('d/m/Y') }}</div>
-                    <div style="color: var(--dim); font-size: 11px; margin-top: 2px; opacity: 0.7;">{{ $act->created_at->format('H:i') }} WIB</div>
+                    <div style="color: var(--txt, #0f172a); font-size: 12px; font-weight: 600; font-family: var(--mono);">{{ $act->created_at->format('d/m/Y') }}</div>
+                    <div style="color: var(--dim); font-size: 11px; margin-top: 2px; opacity: 0.8;">{{ $act->created_at->format('H:i') }} WIB</div>
                 </td>
             </tr>
             @empty
             <tr>
                 <td colspan="5" class="text-center py-5">
                     <div class="tbl-empty" style="background: transparent; border: 0; padding: 0;">
-                        <i class="bi bi-inbox" style="font-size: 40px; color: #fff; opacity: 0.1;"></i>
-                        <div style="font-size: 13px; margin-top: 12px; color: #fff; opacity: 0.2;">Log aktivitas masih kosong</div>
+                        <i class="bi bi-inbox" style="font-size: 40px; color: var(--txt, #0f172a); opacity: 0.2;"></i>
+                        <div style="font-size: 13px; margin-top: 12px; color: var(--txt, #0f172a); opacity: 0.5;">Log aktivitas masih kosong</div>
                     </div>
                 </td>
             </tr>

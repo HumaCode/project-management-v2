@@ -22,7 +22,7 @@
     <div class="empty-ico-wrap" style="width: 64px; height: 64px; background: linear-gradient(135deg, rgba(0, 200, 255, 0.1), rgba(0, 114, 198, 0.1)); border-radius: 50%; display: grid; place-items: center; margin: 0 auto 15px; border: 1px solid rgba(0, 200, 255, 0.2); box-shadow: 0 10px 20px rgba(0,0,0,0.2);">
         <i class="bi bi-database-exclamation" style="font-size: 28px; color: var(--cyan); text-shadow: 0 0 15px rgba(0, 200, 255, 0.5);"></i>
     </div>
-    <h6 style="color: #fff; font-weight: 700; margin-bottom: 5px; font-size: 15px; letter-spacing: 0.5px;">Belum Ada Riwayat</h6>
+    <h6 style="color: var(--txt, #0f172a); font-weight: 700; margin-bottom: 5px; font-size: 15px; letter-spacing: 0.5px;">Belum Ada Riwayat</h6>
     <p style="color: var(--muted); font-size: 12px; max-width: 250px; margin: 0 auto; opacity: 0.7; line-height: 1.5;">Database Anda belum pernah dibackup secara manual maupun otomatis.</p>
     <div style="margin-top: 20px;">
         <button type="button" class="btn-bk" onclick="document.getElementById('btnRunBackupManual').click()" style="background: rgba(0, 200, 255, 0.1); border: 1px solid rgba(0, 200, 255, 0.2); color: var(--cyan); padding: 6px 16px; font-size: 11px; border-radius: 20px;">

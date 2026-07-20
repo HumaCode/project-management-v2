@@ -39,8 +39,8 @@
                     // 1. Ambil SEMUA permission dari database untuk mengecek ketersediaan fitur
                     $allSystemPermissions = \Spatie\Permission\Models\Permission::pluck('name')->toArray();
 
-                    // 2. Deteksi apakah ini role dev
-                    $isDev = strtolower($data->name) === 'dev';
+                    // 2. Ambil permission yang saat ini dimiliki oleh role
+                    $rolePermissions = $data->permissions->pluck('name')->toArray();
                 @endphp
 
                 @foreach (menus(true) as $category => $menuItems)
@@ -85,6 +85,15 @@
                             $isDeleteAvail = in_array($pDelete, $allSystemPermissions);
                             $isActivateAvail = in_array($pActivate, $allSystemPermissions);
                             $isMenuAvail = in_array($pMenu, $allSystemPermissions);
+
+                            // Cek apakah permission aktif pada role ini
+                            $hasRead = in_array($pRead, $rolePermissions);
+                            $hasShow = in_array($pShow, $rolePermissions);
+                            $hasCreate = in_array($pCreate, $rolePermissions);
+                            $hasUpdate = in_array($pUpdate, $rolePermissions);
+                            $hasDelete = in_array($pDelete, $rolePermissions);
+                            $hasActivate = in_array($pActivate, $rolePermissions);
+                            $hasMenu = in_array($pMenu, $rolePermissions);
                         @endphp
 
                         <tr class="item-row" data-grp="{{ $grpSlug }}">
@@ -95,7 +104,7 @@
                                 <label class="sw-wrap sw-c" title="Read"
                                     style="{{ !$isReadAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pRead }}"
-                                        id="sw_{{ $permKey }}_read" @checked($isReadAvail && ($isDev || $data->hasPermissionTo($pRead)))
+                                        id="sw_{{ $permKey }}_read" @checked($isReadAvail && $hasRead)
                                         @disabled(!$isReadAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -106,7 +115,7 @@
                                 <label class="sw-wrap sw-c" title="Show / Detail"
                                     style="{{ !$isShowAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pShow }}"
-                                        id="sw_{{ $permKey }}_show" @checked($isShowAvail && ($isDev || $data->hasPermissionTo($pShow)))
+                                        id="sw_{{ $permKey }}_show" @checked($isShowAvail && $hasShow)
                                         @disabled(!$isShowAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -117,7 +126,7 @@
                                 <label class="sw-wrap sw-g" title="Create"
                                     style="{{ !$isCreateAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pCreate }}"
-                                        id="sw_{{ $permKey }}_create" @checked($isCreateAvail && ($isDev || $data->hasPermissionTo($pCreate)))
+                                        id="sw_{{ $permKey }}_create" @checked($isCreateAvail && $hasCreate)
                                         @disabled(!$isCreateAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -128,7 +137,7 @@
                                 <label class="sw-wrap sw-a" title="Update"
                                     style="{{ !$isUpdateAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pUpdate }}"
-                                        id="sw_{{ $permKey }}_update" @checked($isUpdateAvail && ($isDev || $data->hasPermissionTo($pUpdate)))
+                                        id="sw_{{ $permKey }}_update" @checked($isUpdateAvail && $hasUpdate)
                                         @disabled(!$isUpdateAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -139,7 +148,7 @@
                                 <label class="sw-wrap sw-r" title="Delete"
                                     style="{{ !$isDeleteAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pDelete }}"
-                                        id="sw_{{ $permKey }}_delete" @checked($isDeleteAvail && ($isDev || $data->hasPermissionTo($pDelete)))
+                                        id="sw_{{ $permKey }}_delete" @checked($isDeleteAvail && $hasDelete)
                                         @disabled(!$isDeleteAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -150,7 +159,7 @@
                                 <label class="sw-wrap sw-v" title="Activate"
                                     style="{{ !$isActivateAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pActivate }}"
-                                        id="sw_{{ $permKey }}_activate" @checked($isActivateAvail && ($isDev || $data->hasPermissionTo($pActivate)))
+                                        id="sw_{{ $permKey }}_activate" @checked($isActivateAvail && $hasActivate)
                                         @disabled(!$isActivateAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -161,7 +170,7 @@
                                 <label class="sw-wrap sw-p" title="Menu"
                                     style="{{ !$isMenuAvail ? 'opacity: 0.3; cursor: not-allowed;' : '' }}">
                                     <input type="checkbox" name="permissions[]" value="{{ $pMenu }}"
-                                        id="sw_{{ $permKey }}_menu" @checked($isMenuAvail && ($isDev || $data->hasPermissionTo($pMenu)))
+                                        id="sw_{{ $permKey }}_menu" @checked($isMenuAvail && $hasMenu)
                                         @disabled(!$isMenuAvail)>
                                     <span class="sw-track"></span>
                                 </label>
@@ -170,9 +179,8 @@
                             {{-- TOGGLE SEMUA --}}
                             <td class="sw-cell">
                                 <label class="sw-wrap sw-all" title="Toggle semua">
-                                    {{-- Jika Dev, langsung centang tombol 'Semua'-nya --}}
                                     <input type="checkbox" id="all_{{ $permKey }}" class="sw-all-cb"
-                                        data-target="{{ $permKey }}" @checked($isDev)>
+                                        data-target="{{ $permKey }}" @checked($hasRead && $hasShow && $hasCreate && $hasUpdate && $hasDelete && $hasActivate && $hasMenu)>
                                     <span class="sw-track"></span>
                                 </label>
                             </td>

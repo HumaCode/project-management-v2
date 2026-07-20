@@ -22,6 +22,8 @@ services:
       - DB_DATABASE=${DB_DATABASE:-project_management_v2}
       - DB_USERNAME=${DB_USERNAME:-pm_user}
       - DB_PASSWORD=${DB_PASSWORD:-SecretPassword123}
+      - RECAPTCHA_SITE_KEY=${RECAPTCHA_SITE_KEY:-6LffI0wtAAAAAHiC-PBuv7cWRiZXnVr6W91E6tIA}
+      - RECAPTCHA_SECRET_KEY=${RECAPTCHA_SECRET_KEY:-6LffI0wtAAAAAIRwUrzY553ZpQCVnUF_4tYnLq9u}
     depends_on:
       - db
     networks:

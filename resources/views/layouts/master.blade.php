@@ -43,7 +43,9 @@
     <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/global.css') }}?v={{ time() }}">
     <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/sca.css') }}">
 
-    @vite(['resources/js/app.js'])
+    @if(file_exists(public_path('build/manifest.json')))
+        @vite(['resources/js/app.js'])
+    @endif
 
     <style>
         .select2-container--default .select2-selection--single .select2-selection__clear {

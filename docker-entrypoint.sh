@@ -21,9 +21,18 @@ if ! grep -q "APP_KEY=base64:" /app/.env; then
     php artisan key:generate --force
 fi
 
-# 4. Beri hak akses storage & cache
+# 4. Pastikan aset Vite ter-build
+if [ ! -f /app/public/build/manifest.json ]; then
+    echo "Aset Vite (public/build/manifest.json) tidak ditemukan, membangun aset..."
+    if command -v npm >/dev/null 2>&1; then
+        npm install --no-audit --no-fund
+        npm run build
+    fi
+fi
+
+# 5. Beri hak akses storage & cache
 chmod -R 777 /app/storage /app/bootstrap/cache
 
-# 5. Jalankan command utama (Octane)
+# 6. Jalankan command utama (Octane)
 echo "Menjalankan Laravel Octane dengan FrankenPHP..."
 exec "$@"

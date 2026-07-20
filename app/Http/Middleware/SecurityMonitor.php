@@ -51,18 +51,22 @@ class SecurityMonitor
 
     private function logThreat(Request $request, string $eventType): void
     {
-        // Don't log if it's already logged in the same request cycle
-        if ($request->attributes->has('logged_threat')) {
-            return;
-        }
-        $request->attributes->set('logged_threat', true);
+        try {
+            // Don't log if it's already logged in the same request cycle
+            if ($request->attributes->has('logged_threat')) {
+                return;
+            }
+            $request->attributes->set('logged_threat', true);
 
-        SecurityLog::create([
-            'ip_address' => $request->ip() === '127.0.0.1' ? '182.16.14.92' : $request->ip(), // Use a realistic IP for local testing
-            'event_type' => $eventType,
-            'url' => $request->getRequestUri(),
-            'user_agent' => $request->header('User-Agent'),
-            'status' => 'BLOCKED',
-        ]);
+            SecurityLog::create([
+                'ip_address' => $request->ip() === '127.0.0.1' ? '182.16.14.92' : $request->ip(), // Use a realistic IP for local testing
+                'event_type' => $eventType,
+                'url' => $request->getRequestUri(),
+                'user_agent' => $request->header('User-Agent'),
+                'status' => 'BLOCKED',
+            ]);
+        } catch (\Throwable $e) {
+            // Ignore logging errors
+        }
     }
 }

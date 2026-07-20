@@ -111,10 +111,18 @@ if (!function_exists('menus')) {
     {
         // 1. Ambil data asli (flat) dari cache agar query hanya 1x
         $allMenus = Cache::rememberForever('menus_data', function () {
-            return Menu::active()
-                ->orderBy('orders')
-                ->get();
+            try {
+                return Menu::active()
+                    ->orderBy('orders')
+                    ->get();
+            } catch (\Throwable $e) {
+                return collect();
+            }
         });
+
+        if (!($allMenus instanceof \Illuminate\Support\Collection)) {
+            $allMenus = collect($allMenus);
+        }
 
         // 2. Jika minta grouped (untuk Sidebar), lakukan grouping di memori PHP
         if ($grouped) {
@@ -131,7 +139,8 @@ if (!function_exists('urlMenu')) {
     {
         // Cache hasil akhir array URL agar tidak perlu pluck() di setiap request
         return Cache::rememberForever('menus_url_list', function () {
-            return menus(false)->whereNotNull('url')->pluck('url')->toArray();
+            $m = menus(false);
+            return ($m instanceof \Illuminate\Support\Collection) ? $m->whereNotNull('url')->pluck('url')->toArray() : [];
         });
     }
 }

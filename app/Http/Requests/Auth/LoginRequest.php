@@ -31,7 +31,7 @@ class LoginRequest extends FormRequest
         return [
             'identitas' => ['required', 'string', 'max:100'],
             'password'  => ['required', 'string'],
-            'g-recaptcha-response' => app()->environment('testing') ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
+            'g-recaptcha-response' => (app()->environment('testing') || empty(config('services.recaptcha.site_key'))) ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
         ];
     }
 

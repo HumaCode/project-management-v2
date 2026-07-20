@@ -19,6 +19,11 @@ class Recaptcha implements ValidationRule
             return;
         }
 
+        // Jika reCAPTCHA tidak dikonfigurasi di .env, lewati validasi
+        if (empty(config('services.recaptcha.site_key')) || empty(config('services.recaptcha.secret_key'))) {
+            return;
+        }
+
         if (empty($value)) {
             $fail('Verifikasi reCAPTCHA wajib diisi.');
             return;

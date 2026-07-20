@@ -41,7 +41,7 @@ class ProjectRequestController extends Controller
             'reference_image' => ['nullable', 'image', 'mimes:jpeg,png,jpg,webp', 'max:5120'], // 5MB max
             'reference_file' => ['nullable', 'file', 'mimes:pdf,docx,xlsx,zip,rar,png,jpg,jpeg', 'max:20480'], // 20MB max
             'app_type' => ['required', 'in:website,android,website_android'],
-            'g-recaptcha-response' => app()->environment('testing') ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
+            'g-recaptcha-response' => (app()->environment('testing') || empty(config('services.recaptcha.site_key'))) ? ['nullable'] : ['required', new \App\Rules\Recaptcha],
         ], [
             'start_date.required' => 'Tanggal wajib diisi.',
             'start_date.date_format' => 'Format tanggal tidak valid.',

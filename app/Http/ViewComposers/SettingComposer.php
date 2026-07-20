@@ -18,15 +18,26 @@ class SettingComposer
 
     public function compose(View $view)
     {
-        $settings = $this->settingService->getAll();
-        
-        // Handle Media URLs
-        $model = Setting::where('key', 'app_name')->first();
-        if ($model) {
-            $settings['app_logo'] = $model->getFirstMediaUrl('logo');
-            $settings['app_favicon'] = $model->getFirstMediaUrl('favicon');
-        }
+        try {
+            $settings = $this->settingService->getAll();
+            
+            // Handle Media URLs
+            $model = Setting::where('key', 'app_name')->first();
+            if ($model) {
+                try {
+                    $logo = $model->getFirstMediaUrl('logo');
+                    if ($logo) $settings['app_logo'] = $logo;
+                    
+                    $favicon = $model->getFirstMediaUrl('favicon');
+                    if ($favicon) $settings['app_favicon'] = $favicon;
+                } catch (\Throwable $e) {
+                    // Ignore media library errors
+                }
+            }
 
-        $view->with('cms_settings', $settings);
+            $view->with('cms_settings', $settings);
+        } catch (\Throwable $e) {
+            $view->with('cms_settings', []);
+        }
     }
 }

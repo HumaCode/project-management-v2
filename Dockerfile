@@ -22,8 +22,9 @@ RUN install-php-extensions \
     bcmath \
     exif
 
-# Set Caddy server name
+# Set Caddy server name & Composer env
 ENV SERVER_NAME=":80"
+ENV COMPOSER_ALLOW_SUPERUSER=1
 
 # Set working directory
 WORKDIR /app

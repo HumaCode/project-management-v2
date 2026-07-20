@@ -1,6 +1,8 @@
 #!/bin/sh
 set -e
 
+export COMPOSER_ALLOW_SUPERUSER=1
+
 # 1. Pastikan file .env ada
 if [ ! -f /app/.env ]; then
     echo "File .env tidak ditemukan, membuat dari .env.example..."
@@ -8,8 +10,8 @@ if [ ! -f /app/.env ]; then
 fi
 
 # 2. Pastikan dependensi Composer terinstal
-if [ ! -d /app/vendor ]; then
-    echo "Folder vendor/ tidak ditemukan, menginstal dependensi composer..."
+if [ ! -f /app/vendor/autoload.php ]; then
+    echo "Folder vendor/autoload.php tidak ditemukan, menginstal dependensi composer..."
     composer install --no-interaction --prefer-dist --optimize-autoloader
 fi
 

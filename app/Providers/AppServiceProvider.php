@@ -82,11 +82,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // Developer (dev role) Bypass Gate
-        \Illuminate\Support\Facades\Gate::before(function ($user, $ability) {
-            return $user->hasRole('dev') ? true : null;
-        });
-
         view()->composer(['layouts.master', 'layouts.guest'], \App\Http\ViewComposers\SettingComposer::class);
 
         // Global Mail Config Override from Database

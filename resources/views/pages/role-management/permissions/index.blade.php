@@ -7,6 +7,11 @@
     @push('js')
         <script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 
+        @php
+            $currentUser = auth()->user();
+            $isSuperAdmin = $currentUser && ($currentUser->hasRole('dev') || $currentUser->hasRole('super admin'));
+        @endphp
+
         <script>
             // Konfigurasi Global (Dinamis dari PHP)
             window.dataTableId = @json($dataTableId);
@@ -14,9 +19,9 @@
             window.urlEdit = @json($editUrl);
             window.urlShow = @json($showUrl);
             window.urlDestroy = @json($destroyUrl);
-            window.canRead = @json(auth()->user()->can('read ' . $permissionAkses));
-            window.canUpdate = @json(auth()->user()->can('update ' . $permissionAkses));
-            window.canDelete = @json(auth()->user()->can('delete ' . $permissionAkses));
+            window.canRead = @json($isSuperAdmin || ($currentUser && $currentUser->can('read ' . $permissionAkses)));
+            window.canUpdate = @json($isSuperAdmin || ($currentUser && $currentUser->can('update ' . $permissionAkses)));
+            window.canDelete = @json($isSuperAdmin || ($currentUser && $currentUser->can('delete ' . $permissionAkses)));
         </script>
 
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>

@@ -266,6 +266,12 @@ tr:hover .ct-ico{transform:scale(1.1) rotate(-4deg)}
     color: var(--muted) !important;
 }
 
+/* CKEditor Height limit for Modals */
+.ck-editor__editable_inline {
+    min-height: 150px !important;
+    max-height: 240px !important;
+}
+
 /* Custom File Upload & Dropzone */
 .file-upload-wrapper {
     position: relative;

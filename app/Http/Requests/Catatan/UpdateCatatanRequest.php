@@ -28,6 +28,10 @@ class UpdateCatatanRequest extends FormRequest
             'project_id' => 'nullable|exists:projects,id',
             'user_id' => 'nullable|exists:users,id',
             'content' => 'required|string',
+            'attachments' => 'nullable|array',
+            'attachments.*' => 'nullable|file|max:10240',
+            'delete_attachments' => 'nullable|array',
+            'delete_attachments.*' => 'nullable|string',
         ];
     }
 

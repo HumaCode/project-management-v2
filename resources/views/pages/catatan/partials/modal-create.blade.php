@@ -2,7 +2,7 @@
 <div class="modal fade m-dark m-cyan" id="addModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <form id="form_add" action="{{ $storeUrl }}" method="POST">
+            <form id="form_add" action="{{ $storeUrl }}" method="POST" enctype="multipart/form-data">
                 <div class="m-hd">
                     <h5 class="m-hd-title"><i class="bi bi-journal-plus"></i> Tambah Catatan Baru</h5>
                     <button type="button" class="m-close" data-bs-dismiss="modal"><i class="bi bi-x-lg"></i></button>
@@ -44,9 +44,22 @@
                             </select>
                         </div>
                     </div>
-                    <label class="fm-lbl">Isi Catatan<span class="req">*</span></label>
-                    <div class="ck-wrap">
+                    <label class="fm-lbl mb-1">Isi Catatan<span class="req">*</span></label>
+                    <div class="ck-wrap mb-3">
                         <textarea name="content" id="ckAdd"></textarea>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <label class="fm-lbl d-block"><i class="bi bi-paperclip"></i> Lampiran Gambar / PDF / File</label>
+                        <div class="file-upload-wrapper">
+                            <div class="file-dropzone" onclick="document.getElementById('add_attachments_input').click()">
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <div class="upload-title">Klik untuk memilih Gambar atau PDF</div>
+                                <div class="upload-hint">Format didukung: PNG, JPG, WEBP, PDF, DOCX, ZIP (Maks 10MB per file)</div>
+                            </div>
+                            <input type="file" id="add_attachments_input" name="attachments[]" class="d-none" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip" />
+                        </div>
+                        <div id="add_attachments_preview" class="preview-grid"></div>
                     </div>
                 </div>
                 <div class="m-ft">

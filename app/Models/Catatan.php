@@ -8,10 +8,12 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Spatie\Activitylog\Models\Concerns\LogsActivity;
 use Spatie\Activitylog\Support\LogOptions;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Catatan extends Model
+class Catatan extends Model implements HasMedia
 {
-    use HasFactory, HasUlids, LogsActivity;
+    use HasFactory, HasUlids, LogsActivity, InteractsWithMedia;
 
     public function getActivitylogOptions(): LogOptions
     {

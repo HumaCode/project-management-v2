@@ -221,19 +221,87 @@ $(function () {
     // View modal populate (Now from AJAX context)
     $(document).on('click', '.btn-view', function () {
         var d = $(this).data();
-        // Since content is long, we might want to fetch it via AJAX or just use the resource if included
-        // For now, let's assume we fetch detail if needed, but I'll use a placeholder if not in data
         $('#viewTitle').html('<i class="bi bi-journal-text"></i>&nbsp;' + (d.title || 'Detail Catatan'));
         
-        // Fetch full content via AJAX for view modal to be accurate
         const id = d.id;
         $('#viewBody').html('<div class="text-center py-4"><div class="spinner-border text-cyan spinner-border-sm"></div></div>');
+        $('#viewAttachments').hide().empty();
         $('#viewModal').modal('show');
 
         $.get(`/catatan/${id}`, function(res) {
             if(res.success) {
                 const item = res.data;
                 $('#viewBody').html(item.content || '<em style="color:var(--muted)">Tidak ada isi.</em>');
+                
+                if (item.attachments && item.attachments.length > 0) {
+                    let attHtml = '<div style="font-weight:700;font-size:12px;color:var(--cyan);margin-bottom:10px;"><i class="bi bi-paperclip"></i> Berkas & Lampiran (' + item.attachments.length + ')</div><div class="preview-grid">';
+                    item.attachments.forEach(att => {
+                        const isPdf = att.mime_type === 'application/pdf' || att.file_name.toLowerCase().endsWith('.pdf');
+                        if (att.is_image) {
+                            attHtml += `
+                                <div class="preview-card img-card">
+                                    <div class="preview-card-left">
+                                        <img src="${att.url}" class="preview-card-thumb" onclick="window.open('${att.url}', '_blank')">
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span class="preview-tag-badge img">GAMBAR</span>
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <a href="${att.url}" target="_blank" class="btn-preview-link"><i class="bi bi-eye"></i> Buka Gambar</a>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (isPdf) {
+                            attHtml += `
+                                <div class="preview-card pdf-card">
+                                    <div class="preview-card-left">
+                                        <div class="preview-card-icon-box pdf" onclick="window.open('${att.url}', '_blank')">
+                                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                                        </div>
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span class="preview-tag-badge pdf">PDF</span>
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <a href="${att.url}" target="_blank" class="btn-preview-link pdf-link"><i class="bi bi-eye"></i> Lihat PDF</a>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            attHtml += `
+                                <div class="preview-card file-card">
+                                    <div class="preview-card-left">
+                                        <div class="preview-card-icon-box file" onclick="window.open('${att.url}', '_blank')">
+                                            <i class="bi bi-file-earmark-arrow-down-fill"></i>
+                                        </div>
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <a href="${att.url}" target="_blank" class="btn-preview-link"><i class="bi bi-download"></i> Unduh</a>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                    attHtml += '</div>';
+                    $('#viewAttachments').html(attHtml).show();
+                } else {
+                    $('#viewAttachments').hide().empty();
+                }
+
                 $('#viewMeta').html(`
                     <div class="view-meta-item"><i class="bi bi-tags-fill"></i>${item.category}</div>
                     <div class="view-meta-item"><i class="bi bi-kanban-fill"></i>${item.project_name || '-'}</div>
@@ -243,6 +311,122 @@ $(function () {
                 `);
             }
         });
+    });
+
+    // Edit modal populate
+    $(document).on('click', '.btn-edit', function () {
+        const id = $(this).data('id');
+        $('#editModal').modal('show');
+        
+        // Reset form and show loading
+        $('#form_edit')[0].reset();
+        $('#edit_existing_attachments').hide();
+        $('#edit_attachments_list').empty();
+        $('#edit_new_attachments_preview').empty();
+        $('#form_edit').find('input[name="delete_attachments[]"]').remove();
+
+        if (editEditor) editEditor.setData('');
+        
+        $.get(`/catatan/${id}`, function(res) {
+            if(res.success) {
+                const item = res.data;
+                $('#edit_id').val(item.id);
+                $('#edit_title').val(item.title);
+                $('#edit_category').val(item.category);
+                $('#edit_priority').val(item.priority);
+                $('#edit_project_id').val(item.project_id || '').trigger('change');
+                
+                if (editEditor) {
+                    editEditor.setData(item.content || '');
+                } else {
+                    // Fallback if editor not ready
+                    $('#ckEdit').val(item.content || '');
+                }
+
+                if (item.attachments && item.attachments.length > 0) {
+                    let extHtml = '';
+                    item.attachments.forEach(att => {
+                        const isPdf = att.mime_type === 'application/pdf' || att.file_name.toLowerCase().endsWith('.pdf');
+                        if (att.is_image) {
+                            extHtml += `
+                                <div class="preview-card img-card" id="att_item_${att.id}">
+                                    <div class="preview-card-left">
+                                        <img src="${att.url}" class="preview-card-thumb" onclick="window.open('${att.url}', '_blank')">
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span class="preview-tag-badge img">GAMBAR</span>
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <button type="button" class="preview-remove-btn-row btn-del-att" data-id="${att.id}" title="Hapus Lampiran"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </div>
+                            `;
+                        } else if (isPdf) {
+                            extHtml += `
+                                <div class="preview-card pdf-card" id="att_item_${att.id}">
+                                    <div class="preview-card-left">
+                                        <div class="preview-card-icon-box pdf" onclick="window.open('${att.url}', '_blank')">
+                                            <i class="bi bi-file-earmark-pdf-fill"></i>
+                                        </div>
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span class="preview-tag-badge pdf">PDF</span>
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <a href="${att.url}" target="_blank" class="btn-preview-link pdf-link"><i class="bi bi-eye"></i> Lihat PDF</a>
+                                        <button type="button" class="preview-remove-btn-row btn-del-att" data-id="${att.id}" title="Hapus Lampiran"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </div>
+                            `;
+                        } else {
+                            extHtml += `
+                                <div class="preview-card file-card" id="att_item_${att.id}">
+                                    <div class="preview-card-left">
+                                        <div class="preview-card-icon-box file" onclick="window.open('${att.url}', '_blank')">
+                                            <i class="bi bi-file-earmark-text-fill"></i>
+                                        </div>
+                                        <div class="preview-card-details">
+                                            <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
+                                            <div class="preview-card-meta">
+                                                <span>${att.file_size}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="preview-card-actions">
+                                        <button type="button" class="preview-remove-btn-row btn-del-att" data-id="${att.id}" title="Hapus Lampiran"><i class="bi bi-x-lg"></i></button>
+                                    </div>
+                                </div>
+                            `;
+                        }
+                    });
+                    $('#edit_attachments_list').html(extHtml);
+                    $('#edit_existing_attachments').show();
+                } else {
+                    $('#edit_existing_attachments').hide();
+                    $('#edit_attachments_list').empty();
+                }
+                
+                $('#form_edit').attr('action', `/catatan/${item.id}`);
+            }
+        });
+    });
+
+    // Delete existing attachment handler
+    $(document).on('click', '.btn-del-att', function() {
+        const attId = $(this).data('id');
+        $(`#att_item_${attId}`).remove();
+        $('#form_edit').append(`<input type="hidden" name="delete_attachments[]" value="${attId}">`);
+        if ($('#edit_attachments_list').children().length === 0) {
+            $('#edit_existing_attachments').hide();
+        }
     });
 
     // CKEditor 5 Initialization
@@ -417,12 +601,118 @@ $(function () {
     // Initial Load
     window.loadData();
 
+    // Live File Preview Handler for Add and Edit Forms
+    function handleFileInputChange(inputEl, containerId) {
+        const $container = $('#' + containerId);
+        $container.empty();
+        const files = inputEl.files;
+        if (!files || files.length === 0) return;
+
+        Array.from(files).forEach((file, index) => {
+            const isImg = file.type.startsWith('image/');
+            const isPdf = file.type === 'application/pdf' || file.name.toLowerCase().endsWith('.pdf');
+            const sizeKb = (file.size / 1024).toFixed(1) + ' KB';
+            const cardId = `prev_card_${containerId}_${index}`;
+
+            if (isImg) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const cardHtml = `
+                        <div class="preview-card img-card" id="${cardId}">
+                            <div class="preview-card-left">
+                                <img src="${e.target.result}" class="preview-card-thumb" onclick="window.open('${e.target.result}', '_blank')">
+                                <div class="preview-card-details">
+                                    <div class="preview-card-name" title="${file.name}">${file.name}</div>
+                                    <div class="preview-card-meta">
+                                        <span class="preview-tag-badge img">GAMBAR</span>
+                                        <span>${sizeKb}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="preview-card-actions">
+                                <button type="button" class="preview-remove-btn-row" onclick="removeSelectedFile('${inputEl.id}', ${index}, '${containerId}')" title="Hapus File"><i class="bi bi-x-lg"></i></button>
+                            </div>
+                        </div>
+                    `;
+                    $container.append(cardHtml);
+                };
+                reader.readAsDataURL(file);
+            } else if (isPdf) {
+                const fileUrl = URL.createObjectURL(file);
+                const cardHtml = `
+                    <div class="preview-card pdf-card" id="${cardId}">
+                        <div class="preview-card-left">
+                            <div class="preview-card-icon-box pdf" onclick="window.open('${fileUrl}', '_blank')">
+                                <i class="bi bi-file-earmark-pdf-fill"></i>
+                            </div>
+                            <div class="preview-card-details">
+                                <div class="preview-card-name" title="${file.name}">${file.name}</div>
+                                <div class="preview-card-meta">
+                                    <span class="preview-tag-badge pdf">PDF</span>
+                                    <span>${sizeKb}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-card-actions">
+                            <a href="${fileUrl}" target="_blank" class="btn-preview-link pdf-link"><i class="bi bi-eye"></i> Lihat PDF</a>
+                            <button type="button" class="preview-remove-btn-row" onclick="removeSelectedFile('${inputEl.id}', ${index}, '${containerId}')" title="Hapus File"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                    </div>
+                `;
+                $container.append(cardHtml);
+            } else {
+                const cardHtml = `
+                    <div class="preview-card file-card" id="${cardId}">
+                        <div class="preview-card-left">
+                            <div class="preview-card-icon-box file">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+                            <div class="preview-card-details">
+                                <div class="preview-card-name" title="${file.name}">${file.name}</div>
+                                <div class="preview-card-meta">
+                                    <span>${sizeKb}</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="preview-card-actions">
+                            <button type="button" class="preview-remove-btn-row" onclick="removeSelectedFile('${inputEl.id}', ${index}, '${containerId}')" title="Hapus File"><i class="bi bi-x-lg"></i></button>
+                        </div>
+                    </div>
+                `;
+                $container.append(cardHtml);
+            }
+        });
+    }
+
+    $(document).on('change', '#add_attachments_input', function() {
+        handleFileInputChange(this, 'add_attachments_preview');
+    });
+
+    $(document).on('change', '#edit_attachments_input', function() {
+        handleFileInputChange(this, 'edit_new_attachments_preview');
+    });
+
+    window.removeSelectedFile = function(inputId, indexToRemove, containerId) {
+        const input = document.getElementById(inputId);
+        if (!input || !input.files) return;
+
+        const dt = new DataTransfer();
+        Array.from(input.files).forEach((file, index) => {
+            if (index !== indexToRemove) {
+                dt.items.add(file);
+            }
+        });
+        input.files = dt.files;
+        handleFileInputChange(input, containerId);
+    };
+
     // Form Add Submit Handler
     if (typeof handleFormSubmit === 'function') {
         handleFormSubmit('#form_add')
             .onSuccess(function() {
                 $('#addModal').modal('hide');
                 $('#form_add')[0].reset();
+                $('#add_attachments_preview').empty();
                 if (addEditor) addEditor.setData('');
                 $('.select2').val(null).trigger('change');
                 if (typeof window.loadData === 'function') window.loadData();
@@ -436,4 +726,19 @@ $(function () {
             $('#ckAdd').val(addEditor.getData());
         }
     });
+
+    // Form Edit onSuccess Reset Preview
+    if (typeof handleFormSubmit === 'function') {
+        handleFormSubmit('#form_edit')
+            .onSuccess(function() {
+                $('#editModal').modal('hide');
+                $('#form_edit')[0].reset();
+                $('#edit_new_attachments_preview').empty();
+                $('#edit_attachments_list').empty();
+                if (editEditor) editEditor.setData('');
+                $('.select2').val(null).trigger('change');
+                if (typeof window.loadData === 'function') window.loadData();
+            })
+            .init();
+    }
 });

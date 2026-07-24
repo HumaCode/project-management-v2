@@ -2,7 +2,7 @@
 <div class="modal fade m-dark m-cyan" id="editModal" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-xl modal-dialog-scrollable">
         <div class="modal-content">
-            <form id="form_edit" action="" method="POST">
+            <form id="form_edit" action="" method="POST" enctype="multipart/form-data">
                 @method('PUT')
                 <div class="m-hd">
                     <h5 class="m-hd-title"><i class="bi bi-pencil-square"></i> Edit Catatan</h5>
@@ -46,9 +46,28 @@
                             </select>
                         </div>
                     </div>
-                    <label class="fm-lbl">Isi Catatan<span class="req">*</span></label>
-                    <div class="ck-wrap">
+                    <label class="fm-lbl mb-1">Isi Catatan<span class="req">*</span></label>
+                    <div class="ck-wrap mb-3">
                         <textarea name="content" id="ckEdit"></textarea>
+                    </div>
+
+                    <!-- Existing Attachments -->
+                    <div id="edit_existing_attachments" class="mt-3" style="display:none;">
+                        <label class="fm-lbl mb-2"><i class="bi bi-folder-symlink"></i> Lampiran Tersimpan</label>
+                        <div id="edit_attachments_list" class="preview-grid mb-3"></div>
+                    </div>
+
+                    <div class="col-12 mt-3">
+                        <label class="fm-lbl d-block"><i class="bi bi-paperclip"></i> Tambah Lampiran Baru</label>
+                        <div class="file-upload-wrapper">
+                            <div class="file-dropzone" onclick="document.getElementById('edit_attachments_input').click()">
+                                <i class="bi bi-cloud-arrow-up-fill upload-icon"></i>
+                                <div class="upload-title">Klik untuk menambah Gambar atau PDF baru</div>
+                                <div class="upload-hint">Format didukung: PNG, JPG, WEBP, PDF, DOCX, ZIP (Maks 10MB per file)</div>
+                            </div>
+                            <input type="file" id="edit_attachments_input" name="attachments[]" class="d-none" multiple accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.zip" />
+                        </div>
+                        <div id="edit_new_attachments_preview" class="preview-grid"></div>
                     </div>
                 </div>
                 <div class="m-ft">

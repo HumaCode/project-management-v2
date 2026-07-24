@@ -15,7 +15,7 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
 
     public function getPaginated(?string $search, ?string $category, ?string $project_id, ?string $priority, int $perPage)
     {
-        $query = $this->model->newQuery()->with(['user', 'project']);
+        $query = $this->model->newQuery()->with(['user', 'project', 'media']);
 
         $user = auth()->user();
         if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
@@ -45,6 +45,62 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
         }
 
         return $query->latest()->paginate($perPage);
+    }
+
+    public function findById(string $id, array $relations = [])
+    {
+        if (empty($relations)) {
+            $relations = ['user', 'project', 'media'];
+        } else if (!in_array('media', $relations)) {
+            $relations[] = 'media';
+        }
+        return parent::findById($id, $relations);
+    }
+
+    public function create(array $data)
+    {
+        $attachments = $data['attachments'] ?? [];
+        unset($data['attachments']);
+
+        $catatan = parent::create($data);
+
+        if (!empty($attachments) && is_array($attachments)) {
+            foreach ($attachments as $file) {
+                if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments');
+                }
+            }
+        }
+
+        return $catatan->load(['user', 'project', 'media']);
+    }
+
+    public function update(string $id, array $data)
+    {
+        $attachments = $data['attachments'] ?? [];
+        $deleteAttachments = $data['delete_attachments'] ?? [];
+        unset($data['attachments'], $data['delete_attachments']);
+
+        $catatan = parent::update($id, $data);
+
+        if (!empty($deleteAttachments) && is_array($deleteAttachments)) {
+            foreach ($deleteAttachments as $mediaId) {
+                $media = $catatan->getMedia('catatan_attachments')->where('id', $mediaId)->first();
+                if ($media) {
+                    $media->delete();
+                }
+            }
+        }
+
+        if (!empty($attachments) && is_array($attachments)) {
+            foreach ($attachments as $file) {
+                if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments');
+                }
+            }
+        }
+
+        return $catatan->load(['user', 'project', 'media']);
     }
 
     public function getStatistics()

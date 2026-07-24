@@ -10,6 +10,7 @@
                 <div style="padding:18px 20px 14px">
                     <div id="viewBody" class="view-content"></div>
                 </div>
+                <div id="viewAttachments" style="padding:10px 20px 14px; border-top:1px solid rgba(255,255,255,0.08); display:none;"></div>
                 <div class="view-meta" id="viewMeta"></div>
             </div>
             <div class="m-ft">

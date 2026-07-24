@@ -31,6 +31,16 @@ class CatatanResource extends JsonResource
             'created_at' => $this->created_at->format('d M Y'),
             'updated_at_diff' => $this->updated_at->diffForHumans(),
             'created_at_raw' => $this->created_at->toDateTimeString(),
+            'attachments' => $this->getMedia('catatan_attachments')->map(function ($media) {
+                return [
+                    'id' => $media->id,
+                    'file_name' => $media->file_name,
+                    'file_size' => number_format($media->size / 1024, 1) . ' KB',
+                    'mime_type' => $media->mime_type,
+                    'url' => $media->getUrl(),
+                    'is_image' => str_starts_with($media->mime_type, 'image/'),
+                ];
+            }),
         ];
     }
 }

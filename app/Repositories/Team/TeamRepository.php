@@ -102,6 +102,10 @@ class TeamRepository implements TeamRepositoryInterface
     {
         Cache::forget('team_count_total');
         Cache::forget('team_member_count_distinct');
+        
+        // Invalidate cache list project agar perubahan anggota tim langsung memperbarui tampilan project per user
+        $version = Cache::get('project_cache_version', 1);
+        Cache::forever('project_cache_version', $version + 1);
     }
 
     public function all()

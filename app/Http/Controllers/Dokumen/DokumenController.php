@@ -203,6 +203,7 @@ class DokumenController extends Controller
                 'Gambar berhasil diunggah',
                 [
                     'url' => asset(parse_url($media->getUrl(), PHP_URL_PATH)),
+                    'location' => asset(parse_url($media->getUrl(), PHP_URL_PATH)),
                     'media_id' => $media->id,
                     'name' => $media->file_name,
                 ],

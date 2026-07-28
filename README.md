@@ -2,34 +2,41 @@
 
 ![Laravel 12](https://img.shields.io/badge/Laravel-12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
 ![PHP](https://img.shields.io/badge/PHP-^8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![TinyMCE 7](https://img.shields.io/badge/TinyMCE-7.x-348BFB?style=for-the-badge&logo=tinymce&logoColor=white)
 ![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
 ![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)
 ![Mermaid.js](https://img.shields.io/badge/Mermaid.js-10.6-FF3670?style=for-the-badge&logo=mermaid&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
-Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan fitur **Visual Interactive Diagram Builder**, manajemen tim & hak akses (Spatie), pengelolaan dokumen, serta sistem autentikasi modern.
+Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan **TinyMCE 7 Full Suite Document Builder**, **Visual Interactive Diagram Builder**, **Penjana Laporan PDF (DomPDF + Spatie Media Library)**, serta sistem manajemen tim & hak akses (Spatie) berestetika **Glassmorphism Modern**.
 
 ---
 
 ## 🚀 Fitur Unggulan
 
-### 📊 1. Visual Interactive Diagram Builder
+### 📝 1. Rich Text Document Builder (TinyMCE 7)
+* **Word & Notion-Style Experience:** Pengalaman mengetik satu kanvas terpadu yang praktis, fleksibel, dan modern.
+* **Full Suite Toolbar & Menubar:** Mendukung format *Headings (H1-H6)*, *Bold/Italic/Underline/Strikethrough*, *Text/Background Color Picker*, *Lists*, *Table Builder*, *Code Sample Snippets*, *Accordion Widget*, dan *Emoticons*.
+* **Spatie Media Library Integration:** Upload gambar via *drag & drop* atau dialog file yang terintegrasi langsung dengan koleksi Spatie Media Library (`builder_images`), aman dari pembersihan otomatis.
+* **Responsive Height Calculation:** Kanvas editor menyesuaikan tinggi resolusi layar (*dynamic viewport height calc*) untuk kenyamanan mengetik maksimal.
+
+### 📄 2. Penjana & Pratinjau Laporan PDF (DomPDF + Spatie)
+* **Live PDF Preview Stream:** Pratinjau dokumen laporan proyek secara *real-time* via `/laporan/preview`.
+* **Automatic Base64 HTML Image Converter:** Konversi otomatis tag `<img>` dan path gambar dari Rich Text HTML ke Base64 Data URI untuk rendering gambar PDF yang presisi tanpa ketergantungan jaringan.
+* **Drag & Drop Reorderable Canvas:** Penyusunan aset dokumen dengan fitur *drag & drop sortable*, margin yang lapang, dan tampilan kartu responsif mode terang & gelap.
+
+### 📊 3. Visual Interactive Diagram Builder
 * **2-Way Realtime Sync:** Sinkronisasi dua arah otomatis antara **Form Visual** dan **Editor Kode Mermaid.js**.
 * **Interactive Drag & Drop Nodes:** Node langkah diagram dapat digeser secara kustom dengan mouse. Ujung garis panah & kepala panah terkunci secara geometris (*Geometric Anchor Proximity*) serta bergerak meluncur secara real-time.
 * **Direct Smooth & Elastic Curves:** Lintasan garis panah melengkung/lurus secara elastis (*Rubber-Band Scaling*) dan bebas dari gelombang S-curve yang mengganggu.
+* **Cursor Specificity & Pintasan Modal:** Indikator kursor khusus untuk pergeseran node (*Move / Panah 4 Arah*) dan *pan canvas* (*Grab / Tangan*).
 * **Target Focus & Zoom Controls:** Tombol fokus diagram bergaya Google Maps (`crosshair`), kontrol pan & zoom responsif.
-* **Light & Dark Theme Support:** Tampilan UI beradaptasi penuh terhadap mode terang dan gelap dengan kontras warna yang nyaman di mata.
 * **High-Res PNG Export:** Fitur ekspor gambar diagram berkualitas tinggi.
 
-### 👥 2. Manajemen Pengguna & Tim (RBAC)
+### 👥 4. Manajemen Pengguna & Tim (RBAC)
 * Hak akses berbasis peran (*Role-Based Access Control*) menggunakan `spatie/laravel-permission`.
 * Integrasi **Google OAuth Single Sign-On (SSO)** via `laravel/socialite`.
-* Fitur manajemen status pengguna (aktif / non-aktif).
-
-### 📄 3. Manajemen Dokumen & Catatan
-* Manajemen dokumen berkategori dan lampiran file menggunakan `spatie/laravel-medialibrary`.
-* Fitur ekspor dokumen ke format PDF via `barryvdh/laravel-dompdf`.
-* Pencatatan log aktivitas sistem dengan `spatie/laravel-activitylog`.
+* Sidebar bernavigasi halus dengan fitur **Hover Auto-Expand** pada posisi *collapsed*.
 
 ---
 
@@ -46,7 +53,8 @@ Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan fit
 
 ### Frontend
 * **Build Tool:** Vite ^7.0
-* **Styling:** Vanilla CSS, Tailwind CSS ^3.1, Bootstrap Icons ^1.11
+* **Editor Engine:** TinyMCE 7 Full Suite
+* **Styling:** Vanilla CSS (Glassmorphism), Tailwind CSS ^3.1, Bootstrap Icons ^1.11
 * **Reactivity:** Alpine.js ^3.4
 * **Diagram Engine:** Mermaid.js ^10.6
 

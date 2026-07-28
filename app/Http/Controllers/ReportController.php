@@ -113,7 +113,7 @@ class ReportController extends Controller
                     }
                 }
                 
-                // Also process items media if it's an article/code
+                // Also process items media if it's an article/code/text
                 foreach($doc->items as $docItem) {
                     if ($docItem->type === 'image') {
                         $mediaId = $docItem->metadata['media_id'] ?? null;
@@ -124,6 +124,8 @@ class ReportController extends Controller
                         } else {
                             $docItem->file_path = null;
                         }
+                    } elseif ($docItem->type === 'text' || $docItem->type === 'paragraph') {
+                        $docItem->content = $this->processHtmlImagesForPdf($docItem->content);
                     }
                 }
                 
@@ -195,5 +197,52 @@ class ReportController extends Controller
         $this->reportService->deleteReport($id);
 
         return response()->json(['message' => 'Laporan berhasil dihapus.']);
+    }
+
+    /**
+     * Konversi semua tag <img> HTML di dalam konten menjadi Base64 untuk DomPDF.
+     */
+    private function processHtmlImagesForPdf(?string $html): string
+    {
+        if (empty($html)) return '';
+
+        return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\']/i', function ($matches) {
+            $originalTag = $matches[0];
+            $src = $matches[1];
+
+            if (str_starts_with($src, 'data:image/')) {
+                return $originalTag;
+            }
+
+            $path = parse_url($src, PHP_URL_PATH);
+            if ($path) {
+                // Strip leading slashes and relative path dots like ../ or ./
+                $cleanPath = preg_replace('#^(\.\./|\./|/)+#', '', $path);
+                
+                // Try public_path first
+                $fullPath = public_path($cleanPath);
+
+                if (!file_exists($fullPath)) {
+                    $storageRelative = preg_replace('#^storage/#i', '', $cleanPath);
+                    $fullPath = storage_path('app/public/' . $storageRelative);
+                }
+
+                if (file_exists($fullPath)) {
+                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+                    $mime = match (strtolower($ext)) {
+                        'jpg', 'jpeg' => 'image/jpeg',
+                        'png' => 'image/png',
+                        'gif' => 'image/gif',
+                        'svg' => 'image/svg+xml',
+                        'webp' => 'image/webp',
+                        default => 'image/jpeg',
+                    };
+                    $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+                    return str_replace($src, $base64, $originalTag);
+                }
+            }
+
+            return $originalTag;
+        }, $html);
     }
 }

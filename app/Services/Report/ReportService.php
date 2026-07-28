@@ -51,6 +51,8 @@ class ReportService implements ReportServiceInterface
                             } else {
                                 $docItem->file_path = null;
                             }
+                        } elseif ($docItem->type === 'text' || $docItem->type === 'paragraph') {
+                            $docItem->content = $this->processHtmlImagesForPdf($docItem->content);
                         }
                     }
                     $documents[] = $doc;
@@ -112,5 +114,49 @@ class ReportService implements ReportServiceInterface
         $laporan = Laporan::findOrFail($id);
         $laporan->clearMediaCollection('reports');
         return $laporan->delete();
+    }
+
+    private function processHtmlImagesForPdf(?string $html): string
+    {
+        if (empty($html)) return '';
+
+        return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\']/i', function ($matches) {
+            $originalTag = $matches[0];
+            $src = $matches[1];
+
+            if (str_starts_with($src, 'data:image/')) {
+                return $originalTag;
+            }
+
+            $path = parse_url($src, PHP_URL_PATH);
+            if ($path) {
+                // Strip leading slashes and relative path dots like ../ or ./
+                $cleanPath = preg_replace('#^(\.\./|\./|/)+#', '', $path);
+                
+                // Try public_path first
+                $fullPath = public_path($cleanPath);
+
+                if (!file_exists($fullPath)) {
+                    $storageRelative = preg_replace('#^storage/#i', '', $cleanPath);
+                    $fullPath = storage_path('app/public/' . $storageRelative);
+                }
+
+                if (file_exists($fullPath)) {
+                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+                    $mime = match (strtolower($ext)) {
+                        'jpg', 'jpeg' => 'image/jpeg',
+                        'png' => 'image/png',
+                        'gif' => 'image/gif',
+                        'svg' => 'image/svg+xml',
+                        'webp' => 'image/webp',
+                        default => 'image/jpeg',
+                    };
+                    $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+                    return str_replace($src, $base64, $originalTag);
+                }
+            }
+
+            return $originalTag;
+        }, $html);
     }
 }

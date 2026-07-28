@@ -4,299 +4,136 @@
         <style>
             .builder-wrap { display: flex; flex-direction: column; gap: 20px; }
             .builder-hd { 
-                background: var(--bg-card); border: 1px solid var(--bd); border-radius: 16px; 
-                padding: 20px; display: flex; align-items: center; justify-content: space-between;
-                backdrop-filter: blur(10px);
+                background: linear-gradient(135deg, rgba(2, 132, 199, 0.05) 0%, rgba(0, 200, 255, 0.02) 100%);
+                border: 1px solid var(--bd, rgba(148, 163, 184, 0.2)); 
+                border-top: 3px solid var(--cyan, #0284c7);
+                border-radius: 16px; 
+                padding: 20px 24px; 
+                display: flex; 
+                align-items: center; 
+                justify-content: space-between;
+                backdrop-filter: blur(12px);
+                box-shadow: 0 8px 30px rgba(0, 0, 0, 0.04);
             }
-            .item-list { display: flex; flex-direction: column; gap: 15px; }
-            .b-item { 
-                background: var(--bg-card); border: 1px solid var(--bd); border-radius: 16px; 
-                padding: 0; overflow: hidden; transition: all 0.3s ease;
-                position: relative;
+            .document-paper-container {
+                background: var(--bg-card, #ffffff);
+                border: 1px solid var(--bd, rgba(148, 163, 184, 0.2));
+                border-radius: 16px;
+                overflow: hidden;
+                box-shadow: 0 8px 32px rgba(0, 0, 0, 0.04);
             }
-            .b-item:hover { border-color: var(--cyan); box-shadow: 0 0 20px rgba(0, 200, 255, 0.1); }
-            .item-hd { 
-                padding: 12px 20px; background: rgba(255,255,255,0.03); 
-                border-bottom: 1px solid var(--bd); display: flex; align-items: center; justify-content: space-between;
-            }
-            .item-type { display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
-            .item-type.text { color: var(--cyan); }
-            .item-type.code { color: var(--warn); }
-            .item-type.image { color: var(--cyan); }
-            .image-upload-zone:hover {
-                border-color: var(--cyan) !important;
-                background: rgba(0, 200, 255, 0.03) !important;
-            }
-            
-            .item-bd { padding: 20px; }
-            .code-editor { height: 300px; border-radius: 8px; border: 1px solid var(--bd); overflow: hidden; }
-            
-            .add-actions { 
-                display: flex; gap: 10px; justify-content: center; margin-top: 20px; padding: 20px;
-                border: 2px dashed var(--bd); border-radius: 16px; transition: all 0.3s;
-            }
-            .add-actions:hover { border-color: var(--cyan); background: rgba(0,200,255,0.02); }
-            .btn-add-item { 
-                background: var(--bg-body); border: 1px solid var(--bd); color: var(--fg);
-                padding: 10px 20px; border-radius: 10px; font-size: 14px; display: flex; align-items: center; gap: 8px;
-                transition: 0.2s;
-            }
-            .btn-add-item:hover { border-color: var(--cyan); color: var(--cyan); transform: translateY(-2px); }
-            
-            .sticky-save {
-                position: sticky; bottom: 20px; z-index: 100;
-                display: flex; justify-content: center;
+            /* Custom TinyMCE Wrapper */
+            .tox-tinymce {
+                border: none !important;
+                border-radius: 16px !important;
             }
             .btn-save-all {
-                background: var(--cyan); color: #000; border: none; padding: 12px 40px; 
-                border-radius: 30px; font-weight: 700; box-shadow: 0 10px 20px rgba(0,200,255,0.3);
-                display: flex; align-items: center; gap: 10px; transition: 0.3s;
-            }
-            .btn-save-all:hover { transform: scale(1.05); filter: brightness(1.1); }
-
-            /* Premium Controls */
-            .lang-select {
-                appearance: none;
-                background-color: rgba(255, 255, 255, 0.03);
-                border: 1px solid var(--bd);
-                border-radius: 8px;
-                padding: 6px 32px 6px 12px;
-                font-size: 11px;
+                background: #0284c7;
+                color: #ffffff !important;
+                border: none;
+                padding: 9px 24px;
+                border-radius: 20px;
+                font-size: 13px;
                 font-weight: 600;
-                color: var(--muted);
-                cursor: pointer;
-                background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%236c757d' class='bi bi-chevron-down' viewBox='0 0 16 16'%3E%3Cpath fill-rule='evenodd' d='M1.646 4.646a.5.5 0 0 1 .708 0L8 10.293l5.646-5.647a.5.5 0 0 1 .708.708l-6 6a.5.5 0 0 1-.708 0l-6-6a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
-                background-repeat: no-repeat;
-                background-position: right 10px center;
-                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                outline: none;
-            }
-            .lang-select:hover { 
-                border-color: var(--cyan); 
-                color: var(--cyan); 
-                background-color: rgba(0, 200, 255, 0.05);
-                box-shadow: 0 0 10px rgba(0, 200, 255, 0.1);
-            }
-            .lang-select:focus { border-color: var(--cyan); }
-
-            .btn-mdel-sm {
-                width: 32px; height: 32px;
-                background: rgba(255, 60, 60, 0.05);
-                border: 1px solid rgba(255, 60, 60, 0.15);
-                color: #ff5e5e;
-                border-radius: 8px;
-                display: flex; align-items: center; justify-content: center;
-                transition: all 0.3s ease;
+                display: inline-flex;
+                align-items: center;
+                gap: 8px;
+                transition: all 0.2s ease;
+                box-shadow: 0 4px 14px rgba(2, 132, 199, 0.25);
                 cursor: pointer;
             }
-            .btn-mdel-sm:hover { 
-                background: #ff4d4d; 
-                color: white; 
-                border-color: #ff4d4d;
-                transform: translateY(-2px) rotate(8deg);
-                box-shadow: 0 5px 15px rgba(255, 77, 77, 0.3);
+            .btn-save-all:hover {
+                background: #0369a1;
+                color: #ffffff !important;
+                box-shadow: 0 6px 20px rgba(2, 132, 199, 0.35);
+                transform: translateY(-2px);
             }
-            .btn-mdel-sm i { font-size: 14px; }
+            html[data-theme="dark"] .btn-save-all {
+                background: var(--cyan, #00c8ff);
+                color: #050e1d !important;
+                box-shadow: 0 4px 14px rgba(0, 200, 255, 0.2);
+            }
+            html[data-theme="dark"] .btn-save-all:hover {
+                background: #1ad1ff;
+                color: #050e1d !important;
+                box-shadow: 0 6px 18px rgba(0, 200, 255, 0.35);
+            }
         </style>
     @endpush
 
     @push('js')
-        <!-- Monaco Editor loader -->
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs/loader.min.js"></script>
+        <!-- Official TinyMCE 7 CDN with User API Key -->
+        <script src="https://cdn.tiny.cloud/1/re1hyyagcsptel9z6bg836dptpkbrbpua7kjc4rgae0ap8kj/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
-            require.config({ paths: { 'vs': 'https://cdnjs.cloudflare.com/ajax/libs/monaco-editor/0.44.0/min/vs' }});
-            
-            window.editors = [];
-
-            function createCodeEditor(containerId, initialValue = '', language = 'javascript') {
-                require(['vs/editor/editor.main'], function() {
-                    const editor = monaco.editor.create(document.getElementById(containerId), {
-                        value: initialValue,
-                        language: language,
-                        theme: 'vs-dark',
-                        automaticLayout: true,
-                        fontSize: 14,
-                        fontFamily: 'JetBrains Mono, Fira Code, monospace',
-                        minimap: { enabled: false },
-                        scrollBeyondLastLine: false,
-                        padding: { top: 16, bottom: 16 }
-                    });
-                    window.editors.push({ id: containerId, editor: editor });
-                });
-            }
-
             $(function() {
-                // Initialize existing code items
-                $('.code-editor').each(function() {
-                    const id = $(this).attr('id');
-                    const val = $(this).data('content') || '';
-                    const lang = $(this).data('lang') || 'javascript';
-                    createCodeEditor(id, val, lang);
-                });
-            });
+                const isDark = $('html').attr('data-theme') === 'dark';
+                const dynamicHeight = Math.max(650, $(window).height() - 210);
 
-            function addNewItem(type) {
-                const id = 'item-' + Date.now();
-                let html = '';
-                
-                if(type === 'text') {
-                    html = `
-                        <div class="b-item" data-type="text" id="${id}">
-                            <div class="item-hd">
-                                <div class="item-type text"><i class="bi bi-text-left"></i> Paragraf Teks</div>
-                                <button class="btn-mdel-sm" onclick="$('#${id}').remove()"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="item-bd">
-                                <textarea class="fmta" style="height: 120px;" placeholder="Tulis penjelasan di sini..."></textarea>
-                            </div>
-                        </div>
-                    `;
-                    $('.item-list').append(html);
-                } else if(type === 'code') {
-                    const editorId = 'editor-' + Date.now();
-                    html = `
-                        <div class="b-item" data-type="code" id="${id}">
-                            <div class="item-hd">
-                                <div class="item-type code"><i class="bi bi-code-slash"></i> Snippet Kode</div>
-                                <div style="display:flex; gap:10px; align-items:center;">
-                                    <select class="lang-select">
-                                        <option value="javascript">JavaScript</option>
-                                        <option value="php">PHP</option>
-                                        <option value="html">HTML</option>
-                                        <option value="css">CSS</option>
-                                        <option value="sql">SQL</option>
-                                        <option value="json">JSON</option>
-                                    </select>
-                                    <button class="btn-mdel-sm" onclick="$('#${id}').remove()"><i class="bi bi-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="item-bd">
-                                <div id="${editorId}" class="code-editor"></div>
-                            </div>
-                        </div>
-                    `;
-                    $('.item-list').append(html);
-                    createCodeEditor(editorId, '// Tulis kode Anda di sini...');
-                } else if(type === 'image') {
-                    html = `
-                        <div class="b-item" data-type="image" id="${id}">
-                            <div class="item-hd">
-                                <div class="item-type image"><i class="bi bi-image"></i> Gambar</div>
-                                <button class="btn-mdel-sm" onclick="$('#${id}').remove()"><i class="bi bi-trash"></i></button>
-                            </div>
-                            <div class="item-bd">
-                                <div class="image-upload-zone" style="border: 2px dashed var(--bd); border-radius: 12px; padding: 30px; text-align: center; cursor: pointer; transition: all 0.3s; background: rgba(255,255,255,0.01);" onclick="$('#input-${id}').click()">
-                                    <i class="bi bi-cloud-arrow-up" style="font-size: 32px; color: var(--cyan); opacity: 0.8;"></i>
-                                    <p style="margin: 10px 0 0; font-size: 13px; color: var(--muted);">Pilih file gambar (PNG, JPG, JPEG, WEBP) &mdash; Maks. 10 MB</p>
-                                </div>
-                                <input type="file" id="input-${id}" style="display:none;" accept="image/*" onchange="uploadBlockImage(this, '${id}')">
-                                <div class="image-preview-container" style="display:none; text-align:center; position:relative;">
-                                    <div style="position:relative; display:inline-block; max-width:100%; border: 1px solid var(--bd); border-radius:12px; overflow:hidden; background: rgba(0,0,0,0.2);">
-                                        <img src="" style="max-height: 300px; max-width: 100%; display:block;" class="img-fluid rounded">
-                                        <button type="button" class="btn-mdel-sm" style="position:absolute; top:10px; right:10px; background: rgba(255,60,60,0.8); border:none; color:white;" onclick="removeBlockImage('${id}')"><i class="bi bi-x-lg"></i></button>
-                                    </div>
-                                    <input type="hidden" class="media-id-input" value="">
-                                </div>
-                            </div>
-                        </div>
-                    `;
-                    $('.item-list').append(html);
-                }
-                
-                // Scroll to bottom
-                window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
-            }
+                // Initialize TinyMCE 7 Full Suite Editor
+                tinymce.init({
+                    selector: '#documentEditor',
+                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount codesample accordion emoticons directionality',
+                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample accordion emoticons | removeformat fullscreen code preview',
+                    menubar: 'file edit view insert format table tools help',
+                    height: dynamicHeight,
+                    branding: false,
+                    promotion: false,
+                    skin: isDark ? 'oxide-dark' : 'oxide',
+                    content_css: isDark ? 'dark' : 'default',
+                    content_style: 'body { font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.8; padding: 25px 35px; color: ' + (isDark ? '#f8fafc' : '#0f172a') + '; } img { max-width: 100%; height: auto; border-radius: 10px; margin: 12px 0; } pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 10px; font-family: "JetBrains Mono", monospace; }',
+                    images_upload_handler: function (blobInfo, progress) {
+                        return new Promise(function (resolve, reject) {
+                            const formData = new FormData();
+                            formData.append('image', blobInfo.blob(), blobInfo.filename());
+                            formData.append('_token', "{{ csrf_token() }}");
 
-            function uploadBlockImage(input, blockId) {
-                if (!input.files || !input.files[0]) return;
-                const file = input.files[0];
-                const formData = new FormData();
-                formData.append('image', file);
-                formData.append('_token', "{{ csrf_token() }}");
-
-                const $block = $('#' + blockId);
-                const $uploadZone = $block.find('.image-upload-zone');
-                const $previewContainer = $block.find('.image-preview-container');
-
-                $uploadZone.html(`
-                    <div class="spinner-border text-cyan spinner-border-sm" role="status" style="width:24px; height:24px; color: var(--cyan); border-width: 3px;"></div>
-                    <p style="margin:10px 0 0; font-size:13px; color: var(--cyan);">Mengunggah gambar...</p>
-                `);
-
-                $.ajax({
-                    url: "{{ route('dokumen.builder.upload', $dokumen->id) }}",
-                    method: 'POST',
-                    data: formData,
-                    processData: false,
-                    contentType: false,
-                    success: function(res) {
-                        if (res.success) {
-                            $uploadZone.hide();
-                            $previewContainer.find('img').attr('src', res.data.url);
-                            $previewContainer.find('.media-id-input').val(res.data.media_id);
-                            $previewContainer.fadeIn(300);
-                        } else {
-                            SCA.toast({ type: "danger", title: "Gagal!", message: res.message });
-                            resetUploadZone($uploadZone, blockId);
-                        }
-                    },
-                    error: function(err) {
-                        const errMsg = err.responseJSON?.message || "Gagal mengunggah gambar.";
-                        SCA.toast({ type: "danger", title: "Error!", message: errMsg });
-                        resetUploadZone($uploadZone, blockId);
+                            $.ajax({
+                                url: "{{ route('dokumen.builder.upload', $dokumen->id) }}",
+                                method: 'POST',
+                                data: formData,
+                                processData: false,
+                                contentType: false,
+                                success: function(res) {
+                                    if (res.success) {
+                                        resolve(res.data.url);
+                                        SCA.toast({ type: "success", title: "Berhasil!", message: "Gambar berhasil disisipkan." });
+                                    } else {
+                                        reject(res.message || "Gagal mengunggah gambar");
+                                    }
+                                },
+                                error: function(err) {
+                                    reject(err.responseJSON?.message || "Gagal mengunggah gambar");
+                                }
+                            });
+                        });
                     }
                 });
-            }
-
-            function resetUploadZone($uploadZone, blockId) {
-                $uploadZone.html(`
-                    <i class="bi bi-cloud-arrow-up" style="font-size: 32px; color: var(--cyan); opacity: 0.8;"></i>
-                    <p style="margin: 10px 0 0; font-size: 13px; color: var(--muted);">Pilih file gambar (PNG, JPG, JPEG, WEBP) &mdash; Maks. 10 MB</p>
-                `);
-            }
-
-            function removeBlockImage(blockId) {
-                const $block = $('#' + blockId);
-                const $uploadZone = $block.find('.image-upload-zone');
-                const $previewContainer = $block.find('.image-preview-container');
-
-                $previewContainer.hide();
-                $previewContainer.find('img').attr('src', '');
-                $previewContainer.find('.media-id-input').val('');
-                $block.find(`input[type="file"]`).val('');
-                resetUploadZone($uploadZone, blockId);
-                $uploadZone.fadeIn(200);
-            }
+            });
 
             $('.btn-save-all').on('click', function() {
                 const $btn = $(this);
                 const originalHtml = $btn.html();
-                const items = [];
+                const htmlContent = tinymce.get('documentEditor').getContent();
 
-                $('.b-item').each(function() {
-                    const type = $(this).data('type');
-                    let content = '';
-                    let metadata = {};
+                const mediaIds = [];
+                const regex = /\/(?:storage|media)\/[^"'\s>]+\/(\d+)\//gi;
+                let match;
+                while ((match = regex.exec(htmlContent)) !== null) {
+                    if (match[1]) mediaIds.push(parseInt(match[1]));
+                }
 
-                    if (type === 'text') {
-                        content = $(this).find('textarea').val();
-                    } else if (type === 'code') {
-                        const editorId = $(this).find('.code-editor').attr('id');
-                        const editorObj = window.editors.find(e => e.id === editorId);
-                        if (editorObj) {
-                            content = editorObj.editor.getValue();
+                const items = [
+                    {
+                        type: 'text',
+                        content: htmlContent,
+                        metadata: {
+                            is_tinymce: true,
+                            media_ids: mediaIds
                         }
-                        metadata.language = $(this).find('.lang-select').val();
-                    } else if (type === 'image') {
-                        content = $(this).find('.image-preview-container img, .image-preview-wrapper img').first().attr('src') || '';
-                        metadata.media_id = $(this).find('.media-id-input').val();
                     }
+                ];
 
-                    items.push({ type, content, metadata });
-                });
-
-                // Loading state
-                $btn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm"></i> Menyimpan...');
+                $btn.prop('disabled', true).html('<i class="spinner-border spinner-border-sm me-1"></i> Menyimpan...');
 
                 $.ajax({
                     url: "{{ route('dokumen.builder.save', $dokumen->id) }}",
@@ -315,7 +152,7 @@
                         if (res.success) {
                             setTimeout(() => {
                                 window.location.href = "{{ route('dokumen.index') }}";
-                            }, 1500);
+                            }, 1200);
                         }
                     },
                     error: function(err) {
@@ -333,91 +170,91 @@
         </script>
     @endpush
 
+    @php
+        $fixImageUrl = function ($url) {
+            if (empty($url)) return '';
+            $path = parse_url($url, PHP_URL_PATH);
+            if ($path) {
+                return asset(ltrim($path, '/'));
+            }
+            return asset(ltrim($url, '/'));
+        };
+
+        $initialHtml = '';
+        if ($dokumen->items->count() > 0) {
+            if ($dokumen->items->count() == 1 && ( ($dokumen->items->first()->metadata['is_tinymce'] ?? false) || ($dokumen->items->first()->metadata['is_wysiwyg'] ?? false) )) {
+                $rawContent = $dokumen->items->first()->content;
+                $initialHtml = preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\']/i', function ($m) use ($fixImageUrl) {
+                    $newSrc = $fixImageUrl($m[1]);
+                    return str_replace($m[1], $newSrc, $m[0]);
+                }, $rawContent);
+            } else {
+                foreach ($dokumen->items as $item) {
+                    if ($item->type == 'text') {
+                        $initialHtml .= $item->content;
+                    } elseif ($item->type == 'code') {
+                        $lang = e($item->metadata['language'] ?? 'javascript');
+                        $initialHtml .= '<pre style="background:#0f172a; color:#f8fafc; padding:16px; border-radius:10px;"><code class="language-' . $lang . '">' . e($item->content) . '</code></pre>';
+                    } elseif ($item->type == 'image') {
+                        $caption = e($item->metadata['caption'] ?? '');
+                        $imgSrc = $fixImageUrl($item->content);
+
+                        if (empty($item->content) && !empty($item->metadata['media_id'])) {
+                            $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($item->metadata['media_id']);
+                            if ($media) {
+                                $imgSrc = asset(parse_url($media->getUrl(), PHP_URL_PATH));
+                            }
+                        }
+
+                        if (!empty($imgSrc)) {
+                            $initialHtml .= '<p style="text-align:center;"><img src="' . $imgSrc . '" class="img-fluid rounded shadow-sm"></p>';
+                        }
+                        if ($caption) {
+                            $initialHtml .= '<p style="text-align:center;" class="text-muted small"><em>' . $caption . '</em></p>';
+                        }
+                    }
+                }
+            }
+        }
+    @endphp
+
     <div class="builder-wrap">
         <!-- Header Info -->
         <div class="builder-hd">
-            <div style="display:flex; align-items:center; gap:20px;">
-                <a href="{{ route('dokumen.index') }}" class="ibtn ib-v" style="width:40px; height:40px;"><i class="bi bi-arrow-left"></i></a>
+            <div class="d-flex align-items-center gap-3">
+                <a href="{{ route('dokumen.index') }}" class="btn btn-outline-secondary rounded-circle d-flex align-items-center justify-content-center p-0" style="width:42px; height:42px; border-color: var(--bd, rgba(148,163,184,0.3));" title="Kembali ke Daftar Dokumen">
+                    <i class="bi bi-arrow-left" style="font-size: 16px;"></i>
+                </a>
                 <div>
-                    <h4 style="margin:0; font-weight:700;">{{ $dokumen->nama }}</h4>
-                    <div style="font-size:13px; color:var(--muted); display:flex; gap:15px; margin-top:4px;">
-                        <span><i class="bi bi-kanban"></i> {{ $dokumen->project->name }}</span>
-                        <span><i class="bi bi-tags"></i> {{ $dokumen->kategori_label }}</span>
-                        <span><i class="bi bi-person"></i> {{ $dokumen->uploader->name }}</span>
+                    <div class="d-flex align-items-center gap-3">
+                        <h4 class="fw-bold mb-0" style="font-size: 19px; letter-spacing: -0.3px;">{{ $dokumen->nama }}</h4>
+                        <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
+                            <i class="bi bi-git me-1"></i>Versi {{ $dokumen->versi }}
+                        </span>
+                    </div>
+                    <div class="d-flex align-items-center gap-3 mt-2 flex-wrap" style="gap: 12px !important;">
+                        <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 me-1" style="font-size: 12px; font-weight: 600;">
+                            <i class="bi bi-kanban me-1.5"></i>{{ $dokumen->project->name }}
+                        </span>
+                        <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1.5 me-1" style="font-size: 12px; font-weight: 600;">
+                            <i class="bi bi-tags me-1.5"></i>{{ $dokumen->kategori_label }}
+                        </span>
+                        <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-1.5" style="font-size: 12px; font-weight: 600;">
+                            <i class="bi bi-person me-1.5"></i>{{ $dokumen->uploader->name }}
+                        </span>
                     </div>
                 </div>
             </div>
-            <div style="text-align:right">
-                <span class="vbadge">Versi {{ $dokumen->versi }}</span>
+            <div class="d-flex align-items-center gap-2">
+                <button type="button" class="btn-save-all">
+                    <i class="bi bi-cloud-arrow-up-fill me-1"></i> Simpan Dokumentasi
+                </button>
             </div>
         </div>
 
-        <!-- Content Items -->
-        <div class="item-list">
-            @forelse($dokumen->items as $item)
-                <div class="b-item" data-type="{{ $item->type }}" id="item-{{ $item->id }}">
-                    <div class="item-hd">
-                        <div class="item-type {{ $item->type }}">
-                            <i class="bi {{ $item->type == 'text' ? 'bi-text-left' : ($item->type == 'code' ? 'bi-code-slash' : 'bi-image') }}"></i>
-                            {{ $item->type == 'text' ? 'Paragraf Teks' : ($item->type == 'code' ? 'Snippet Kode' : 'Gambar') }}
-                        </div>
-                        @if($item->type == 'code')
-                            <div style="display:flex; gap:10px; align-items:center;">
-                                <select class="lang-select">
-                                    @foreach(['javascript', 'php', 'html', 'css', 'sql', 'json'] as $lang)
-                                        <option value="{{ $lang }}" {{ ($item->metadata['language'] ?? '') == $lang ? 'selected' : '' }}>
-                                            {{ ucfirst($lang) }}
-                                        </option>
-                                    @endforeach
-                                </select>
-                                <button class="btn-mdel-sm" onclick="$('#item-{{ $item->id }}').remove()"><i class="bi bi-trash"></i></button>
-                            </div>
-                        @else
-                            <button class="btn-mdel-sm" onclick="$('#item-{{ $item->id }}').remove()"><i class="bi bi-trash"></i></button>
-                        @endif
-                    </div>
-                    <div class="item-bd">
-                        @if($item->type == 'text')
-                            <textarea class="fmta" style="height: 120px;">{{ $item->content }}</textarea>
-                        @elseif($item->type == 'code')
-                            <div id="editor-{{ $item->id }}" class="code-editor" data-content="{{ $item->content }}" data-lang="{{ $item->metadata['language'] ?? 'javascript' }}"></div>
-                        @elseif($item->type == 'image')
-                            <div class="image-block-content text-center">
-                                <div class="image-preview-wrapper" style="position: relative; display: inline-block; max-width: 100%; border: 1px solid var(--bd); border-radius: 12px; overflow: hidden; background: rgba(0,0,0,0.2);">
-                                    <img src="{{ asset(parse_url($item->content, PHP_URL_PATH)) }}" style="max-height: 300px; max-width: 100%; display: block;" class="img-fluid rounded">
-                                    <input type="hidden" class="media-id-input" value="{{ $item->metadata['media_id'] ?? '' }}">
-                                </div>
-                            </div>
-                        @endif
-                    </div>
-                </div>
-            @empty
-                <div class="empty-state" style="background:var(--bg-card); border-radius:16px; padding:60px;">
-                    <i class="bi bi-magic" style="font-size:48px; opacity:0.3;"></i>
-                    <h5 style="margin-top:20px; opacity:0.6;">Belum ada konten di dokumen ini.</h5>
-                    <p style="opacity:0.4;">Mulai susun dokumentasi Anda dengan menambahkan blok di bawah.</p>
-                </div>
-            @endforelse
-        </div>
-
-        <!-- Add Actions -->
-        <div class="add-actions">
-            <button class="btn-add-item" onclick="addNewItem('text')">
-                <i class="bi bi-plus-circle-fill"></i> Tambah Teks Penjelasan
-            </button>
-            <button class="btn-add-item" onclick="addNewItem('code')">
-                <i class="bi bi-plus-circle-fill"></i> Tambah Snippet Kode
-            </button>
-            <button class="btn-add-item" onclick="addNewItem('image')">
-                <i class="bi bi-plus-circle-fill"></i> Tambah Gambar
-            </button>
-        </div>
-
-        <!-- Sticky Save -->
-        <div class="sticky-save">
-            <button class="btn-save-all">
-                <i class="bi bi-floppy-fill"></i> Simpan Dokumentasi
-            </button>
+        <!-- Document Paper Canvas -->
+        <div class="document-paper-container">
+            <textarea id="documentEditor">{!! $initialHtml !!}</textarea>
         </div>
     </div>
 </x-master-layout>

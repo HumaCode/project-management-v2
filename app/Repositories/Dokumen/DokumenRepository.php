@@ -96,13 +96,29 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
         return \Illuminate\Support\Facades\DB::transaction(function () use ($id, $items) {
             $dokumen = $this->model->findOrFail($id);
 
-            // 1. Ambil semua media_id dari item baru yang bertipe image
+            // 1. Ambil semua media_id dari item baru (tipe image maupun HTML content TinyMCE)
             $activeMediaIds = [];
             foreach ($items as $item) {
                 if (($item['type'] ?? '') === 'image' && !empty($item['metadata']['media_id'])) {
-                    $activeMediaIds[] = $item['metadata']['media_id'];
+                    $activeMediaIds[] = (int) $item['metadata']['media_id'];
+                }
+
+                if (!empty($item['metadata']['media_ids']) && is_array($item['metadata']['media_ids'])) {
+                    foreach ($item['metadata']['media_ids'] as $mId) {
+                        $activeMediaIds[] = (int) $mId;
+                    }
+                }
+
+                if (!empty($item['content'])) {
+                    preg_match_all('#/(?:storage|media)/[^"\'\s>]+/(\d+)/#i', $item['content'], $matches);
+                    if (!empty($matches[1])) {
+                        foreach ($matches[1] as $mId) {
+                            $activeMediaIds[] = (int) $mId;
+                        }
+                    }
                 }
             }
+            $activeMediaIds = array_unique(array_filter($activeMediaIds));
 
             // 2. Tandai media yang aktif dengan memindahkan ke collection 'builder_images'
             if (!empty($activeMediaIds)) {

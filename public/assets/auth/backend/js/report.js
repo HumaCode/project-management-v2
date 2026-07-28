@@ -161,7 +161,7 @@ const ReportBuilder = {
                 </div>
                 <img src="${data.thumb}" class="canvas-img" alt="">
                 <div class="canvas-content">
-                    <div style="font-size: 11px; color: var(--muted); margin-bottom: 2px;">${data.name}</div>
+                    <div class="canvas-title">${data.name}</div>
                     <textarea class="canvas-desc" rows="1" placeholder="Tambah keterangan...">${data.desc || ''}</textarea>
                 </div>
                 <div class="canvas-remove">

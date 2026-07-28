@@ -87,10 +87,38 @@
 
         .text-content {
             font-size: 13px;
-            text-align: justify;
+            text-align: left;
             margin-bottom: 15px;
-            color: #444;
+            color: #334155;
+            line-height: 1.6;
         }
+
+        .text-content img {
+            max-width: 100% !important;
+            max-height: 380px !important;
+            width: auto;
+            height: auto;
+            display: block;
+            margin: 15px auto;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .text-content p {
+            margin-top: 0;
+            margin-bottom: 10px;
+        }
+
+        .text-content h1, .text-content h2, .text-content h3, .text-content h4 {
+            color: #0f172a;
+            margin-top: 18px;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .text-content h1 { font-size: 18px; }
+        .text-content h2 { font-size: 16px; }
+        .text-content h3 { font-size: 14px; }
         
         .image-content {
             text-align: center;
@@ -200,7 +228,7 @@
                     @else
                         @foreach($doc->items as $item)
                             @if($item->type === 'text' || $item->type === 'paragraph')
-                                <div class="text-content">{!! nl2br(e($item->content)) !!}</div>
+                                <div class="text-content">{!! $item->content !!}</div>
                             @elseif($item->type === 'image' && isset($item->file_path))
                                 <div class="image-content"><img src="{{ $item->file_path }}"></div>
                             @elseif($item->type === 'code')

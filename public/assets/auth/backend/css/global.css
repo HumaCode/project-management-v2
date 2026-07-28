@@ -1248,6 +1248,40 @@ html {
     opacity: 1;
 }
 
+/* ── Hover Expand on Collapsed Sidebar ── */
+.sidebar.collapsed {
+    transition: width 0.25s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.25s ease;
+}
+.sidebar.collapsed:hover {
+    width: var(--sw, 260px) !important;
+    box-shadow: 8px 0 32px rgba(0, 0, 0, 0.5) !important;
+    z-index: 500 !important;
+}
+.sidebar.collapsed:hover .sb-title,
+.sidebar.collapsed:hover .nav-text,
+.sidebar.collapsed:hover .nav-badge,
+.sidebar.collapsed:hover .nav-section,
+.sidebar.collapsed:hover .sb-user-info,
+.sidebar.collapsed:hover .sb-user-chevron,
+.sidebar.collapsed:hover .sb-chev {
+    opacity: 1 !important;
+    width: auto !important;
+    pointer-events: auto !important;
+    overflow: visible !important;
+    transition: opacity 0.2s ease 0.05s;
+}
+.sidebar.collapsed:hover .nav-link {
+    justify-content: flex-start !important;
+    padding: 10px 16px !important;
+}
+.sidebar.collapsed:hover .sb-user {
+    justify-content: flex-start !important;
+    padding: 10px 16px !important;
+}
+.sidebar.collapsed:hover .nav-link::after {
+    display: none !important;
+}
+
 /* ═══════════════════════════════════════
      OVERLAY
      Rules:

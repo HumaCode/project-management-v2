@@ -1,59 +1,104 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Project Management System (PMS) V2
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+![Laravel 12](https://img.shields.io/badge/Laravel-12.0-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)
+![PHP](https://img.shields.io/badge/PHP-^8.2-777BB4?style=for-the-badge&logo=php&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-3.1-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Alpine.js](https://img.shields.io/badge/Alpine.js-3.x-8BC0D0?style=for-the-badge&logo=alpine.js&logoColor=white)
+![Mermaid.js](https://img.shields.io/badge/Mermaid.js-10.6-FF3670?style=for-the-badge&logo=mermaid&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
-## About Laravel
+Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan fitur **Visual Interactive Diagram Builder**, manajemen tim & hak akses (Spatie), pengelolaan dokumen, serta sistem autentikasi modern.
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+---
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 🚀 Fitur Unggulan
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 📊 1. Visual Interactive Diagram Builder
+* **2-Way Realtime Sync:** Sinkronisasi dua arah otomatis antara **Form Visual** dan **Editor Kode Mermaid.js**.
+* **Interactive Drag & Drop Nodes:** Node langkah diagram dapat digeser secara kustom dengan mouse. Ujung garis panah & kepala panah terkunci secara geometris (*Geometric Anchor Proximity*) serta bergerak meluncur secara real-time.
+* **Direct Smooth & Elastic Curves:** Lintasan garis panah melengkung/lurus secara elastis (*Rubber-Band Scaling*) dan bebas dari gelombang S-curve yang mengganggu.
+* **Target Focus & Zoom Controls:** Tombol fokus diagram bergaya Google Maps (`crosshair`), kontrol pan & zoom responsif.
+* **Light & Dark Theme Support:** Tampilan UI beradaptasi penuh terhadap mode terang dan gelap dengan kontras warna yang nyaman di mata.
+* **High-Res PNG Export:** Fitur ekspor gambar diagram berkualitas tinggi.
 
-## Learning Laravel
+### 👥 2. Manajemen Pengguna & Tim (RBAC)
+* Hak akses berbasis peran (*Role-Based Access Control*) menggunakan `spatie/laravel-permission`.
+* Integrasi **Google OAuth Single Sign-On (SSO)** via `laravel/socialite`.
+* Fitur manajemen status pengguna (aktif / non-aktif).
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+### 📄 3. Manajemen Dokumen & Catatan
+* Manajemen dokumen berkategori dan lampiran file menggunakan `spatie/laravel-medialibrary`.
+* Fitur ekspor dokumen ke format PDF via `barryvdh/laravel-dompdf`.
+* Pencatatan log aktivitas sistem dengan `spatie/laravel-activitylog`.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+---
 
-## Laravel Sponsors
+## 🛠️ Teknologi & Dependensi
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Backend
+* **Framework:** Laravel ^12.0 (PHP ^8.2)
+* **Authentication:** Laravel Breeze, Laravel Socialite (Google OAuth)
+* **Permissions:** `spatie/laravel-permission` ^7.2
+* **Media & Files:** `spatie/laravel-medialibrary` ^11.21
+* **PDF Generator:** `barryvdh/laravel-dompdf` ^3.1
+* **Activity Logging:** `spatie/laravel-activitylog` ^5.0
+* **Websockets:** `laravel/reverb` ^1.0
 
-### Premium Partners
+### Frontend
+* **Build Tool:** Vite ^7.0
+* **Styling:** Vanilla CSS, Tailwind CSS ^3.1, Bootstrap Icons ^1.11
+* **Reactivity:** Alpine.js ^3.4
+* **Diagram Engine:** Mermaid.js ^10.6
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+---
 
-## Contributing
+## ⚙️ Panduan Instalasi & Pengoperasian
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### 1. Prasyarat Sistem
+* PHP >= 8.2 dengan ekstensi (PDO, OpenSSL, Mbstring, Tokenizer, XML, Ctype, JSON, BCMath, GD).
+* Composer >= 2.x
+* Node.js >= 18.x & NPM
+* Database MySQL / MariaDB
 
-## Code of Conduct
+### 2. Langkah Instalasi
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+# 1. Clone Repositori
+git clone https://github.com/username/project-management-v2.git
+cd project-management-v2
 
-## Security Vulnerabilities
+# 2. Install Dependensi Backend (Composer)
+composer install
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 3. Install Dependensi Frontend (NPM)
+npm install
 
-## License
+# 4. Salin File Konfigurasi Environment
+cp .env.example .env
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+# 5. Generate Application Key
+php artisan key:generate
+
+# 6. Konfigurasi Database pada file .env
+# DB_DATABASE=project_management_v2
+# DB_USERNAME=root
+# DB_PASSWORD=
+
+# 7. Jalankan Migrasi & Database Seeder
+php artisan migrate --seed
+
+# 8. Buat Storage Symlink
+php artisan storage:link
+
+# 9. Jalankan Server Lokal & Vite
+npm run dev
+php artisan serve
+```
+
+Aplikasi dapat diakses melalui peramban di `http://localhost:8000`.
+
+---
+
+## 📄 Lisensi
+
+Proyek ini dilindungi di bawah lisensi [MIT License](LICENSE).

@@ -17,7 +17,8 @@ class GoogleController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $redirectUrl = config('services.google.redirect') ?: url('/auth/google/callback');
+        return Socialite::driver('google')->redirectUrl($redirectUrl)->redirect();
     }
 
     /**
@@ -28,7 +29,8 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $redirectUrl = config('services.google.redirect') ?: url('/auth/google/callback');
+            $googleUser = Socialite::driver('google')->redirectUrl($redirectUrl)->user();
             
             $user = User::where('google_id', $googleUser->id)
                         ->orWhere('email', $googleUser->email)

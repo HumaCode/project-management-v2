@@ -48,6 +48,7 @@ Route::middleware(['auth'])->group(function () {
     })->name('inactive');
 
     Route::post('/inactive/update', [InactiveUserController::class, 'update'])->name('inactive.update');
+    Route::post('/inactive/resend-notification', [InactiveUserController::class, 'resendNotification'])->name('inactive.resend');
 
     // Group untuk user yang SUDAH aktif
     Route::middleware(['user.active'])->group(

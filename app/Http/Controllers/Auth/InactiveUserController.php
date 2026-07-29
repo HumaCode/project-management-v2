@@ -84,4 +84,49 @@ class InactiveUserController extends Controller
             'message' => 'Data berhasil disimpan dan menunggu verifikasi admin.'
         ]);
     }
+
+    /**
+     * Resend notification email to user and admin.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function resendNotification(Request $request)
+    {
+        $user = auth()->user();
+
+        try {
+            $admins = User::whereHas('roles', function($q) {
+                $q->whereIn('name', ['admin', 'dev']);
+            })->get();
+
+            if ($admins->isEmpty()) {
+                $admins = User::where('id', 1)->get();
+            }
+
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new AccountCompletionNotification($user, $user->bio ?? '-'));
+            }
+
+            // Send Email Confirmation directly to User
+            \Illuminate\Support\Facades\Mail::raw(
+                "Halo " . $user->name . ",\n\nTerima kasih telah melengkapi data profil pendaftaran Anda.\n\nData pendaftaran Anda telah kami terima dan saat ini dalam proses verifikasi oleh Admin (1x24 jam kerja).\nKami akan memberi tahu Anda via email setelah akun Anda disetujui.\n\nSalam,\nProject Management Team",
+                function ($mail) use ($user) {
+                    $mail->to($user->email)
+                         ->subject('📌 Pendaftaran Akun Diterima - Menunggu Verifikasi');
+                }
+            );
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Email notifikasi verifikasi berhasil dikirim ulang ke ' . $user->email . '!'
+            ]);
+        } catch (\Exception $e) {
+            \Log::error('Gagal mengirim ulang notifikasi: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim ulang email notifikasi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }

@@ -268,13 +268,27 @@
   .sci-row i{color:var(--ok);font-size:15px;flex-shrink:0}
   .sci-row strong{color:var(--txt)}
   .btn-logout-sc{
-    height:42px;display:inline-flex;align-items:center;gap:7px;
+    height:42px;display:inline-flex;align-items:center;justify-content:center;gap:7px;
     padding:0 20px;border-radius:var(--rs);
     background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);
     color:var(--dim);font-family:var(--font);font-size:13.5px;
     cursor:pointer;transition:all .2s;
   }
-  .btn-logout-sc:hover{background:rgba(255,77,109,.1);border-color:rgba(255,77,109,.3);color:var(--err)}
+  .btn-logout-sc:hover{background:rgba(255,255,255,.1);color:var(--txt)}
+  .btn-resend-sc{
+    height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+    padding:0 22px;border-radius:var(--rs);
+    background:rgba(0,200,255,.1);border:1px solid rgba(0,200,255,.28);
+    color:var(--cyan);font-family:var(--font);font-size:13.5px;font-weight:600;
+    cursor:pointer;transition:all .2s var(--ease);
+  }
+  .btn-resend-sc:hover:not(:disabled){
+    background:rgba(0,200,255,.2);border-color:var(--cyan);
+    transform:translateY(-1px);box-shadow:0 4px 16px rgba(0,200,255,.25);
+  }
+  .btn-resend-sc:disabled{
+    opacity:.55;cursor:not-allowed;transform:none !important;box-shadow:none !important;
+  }
 
   /* autofill */
   input:-webkit-autofill,input:-webkit-autofill:focus{-webkit-box-shadow:0 0 0 1000px rgba(0,30,60,.9) inset;-webkit-text-fill-color:var(--txt);transition:background-color 9999s ease}
@@ -738,9 +752,14 @@
               <div class="sci-row"><i class="bi bi-envelope-fill"></i><span>Notifikasi akan dikirim ke <strong>{{ auth()->user()->email }}</strong></span></div>
               <div class="sci-row"><i class="bi bi-shield-fill-check"></i><span>Data Anda <strong>aman</strong> dan terenkripsi</span></div>
             </div>
-            <button class="btn-logout-sc" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
-              <i class="bi bi-box-arrow-left"></i> Kembali ke Halaman Login
-            </button>
+            <div class="d-flex flex-column gap-2.5 align-items-center w-100 mt-1" style="max-width:360px">
+              <button class="btn-resend-sc w-100" id="btnResendEmail" onclick="resendNotificationEmail(this)">
+                <i class="bi bi-arrow-repeat"></i> <span id="resendBtnText">Kirim Ulang Email Notifikasi</span>
+              </button>
+              <button class="btn-logout-sc w-100" onclick="event.preventDefault(); document.getElementById('logout-form').submit();">
+                <i class="bi bi-box-arrow-left"></i> Kembali ke Halaman Login
+              </button>
+            </div>
           </div>
 
         </div>
@@ -1010,6 +1029,65 @@ document.querySelectorAll('.fi,.fsl,.fta').forEach(function(el){
     }
   });
 });
+
+/* ─── Resend Notification Email Handler ─── */
+function resendNotificationEmail(btn) {
+  if (btn.disabled) return;
+
+  btn.disabled = true;
+  var txt = document.getElementById('resendBtnText');
+  var origText = txt ? txt.textContent : 'Kirim Ulang Email Notifikasi';
+  if (txt) txt.textContent = 'Mengirim email...';
+
+  var formData = new FormData();
+  formData.append('_token', '{{ csrf_token() }}');
+
+  fetch('{{ route('inactive.resend') }}', {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-Requested-With': 'XMLHttpRequest' }
+  })
+  .then(function(res){ return res.json(); })
+  .then(function(data){
+    if (data.success) {
+      SCA.toast({
+        type: "success",
+        title: "Terkirim!",
+        message: data.message || "Email notifikasi berhasil dikirim ulang.",
+        position: "top-right"
+      });
+      var seconds = 60;
+      var timer = setInterval(function() {
+        seconds--;
+        if (txt) txt.textContent = 'Kirim ulang (' + seconds + 's)';
+        if (seconds <= 0) {
+          clearInterval(timer);
+          btn.disabled = false;
+          if (txt) txt.textContent = origText;
+        }
+      }, 1000);
+    } else {
+      btn.disabled = false;
+      if (txt) txt.textContent = origText;
+      SCA.toast({
+        type: "error",
+        title: "Gagal!",
+        message: data.message || "Gagal mengirim email notifikasi.",
+        position: "top-right"
+      });
+    }
+  })
+  .catch(function(err){
+    btn.disabled = false;
+    if (txt) txt.textContent = origText;
+    SCA.toast({
+      type: "error",
+      title: "Gagal!",
+      message: "Terjadi kesalahan jaringan.",
+      position: "top-right"
+    });
+  });
+}
 </script>
 </body>
 </html>

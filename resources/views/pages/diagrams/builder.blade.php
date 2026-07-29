@@ -618,15 +618,19 @@
                     </div>
                     <h6 class="mb-0 fw-bold" style="font-size: 13px; letter-spacing: 0.3px;">Konfigurasi</h6>
                 </div>
-                <button type="button" class="btn-save-diagram" @click="saveDiagram" :disabled="isSaving" :class="isSaving ? 'saving' : ''">
-                    <span x-show="!isSaving" class="d-flex align-items-center gap-1">
-                        <i class="bi bi-cloud-arrow-up-fill"></i>
-                        <span>Simpan</span>
-                    </span>
-                    <span x-show="isSaving" class="d-flex align-items-center gap-1" style="display:none!important">
-                        <span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px;"></span>
-                        <span>Menyimpan...</span>
-                    </span>
+                <button type="button" class="btn-save-diagram" @click="saveDiagram" :disabled="isSaving">
+                    <template x-if="!isSaving">
+                        <span class="d-flex align-items-center gap-1">
+                            <i class="bi bi-cloud-arrow-up-fill"></i>
+                            <span>Simpan</span>
+                        </span>
+                    </template>
+                    <template x-if="isSaving">
+                        <span class="d-flex align-items-center gap-1">
+                            <span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px;"></span>
+                            <span>Menyimpan...</span>
+                        </span>
+                    </template>
                 </button>
             </div>
 

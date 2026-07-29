@@ -1608,24 +1608,21 @@
                         
                         if (nodes.length === 0) return;
 
-                        // Initialize delta and center position for each node
+                        // Initialize delta and center position for each node accurately
                         nodes.forEach(node => {
                             node._delta = { x: 0, y: 0 };
-                            let cx = 0, cy = 0;
                             let transform = node.getAttribute('transform') || '';
                             let match = transform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
-                            if (match) {
-                                cx = parseFloat(match[1]);
-                                cy = parseFloat(match[2]);
-                            } else {
-                                try {
-                                    const bbox = node.getBBox();
-                                    cx = bbox.x + bbox.width / 2;
-                                    cy = bbox.y + bbox.height / 2;
-                                } catch (e) {
-                                    cx = 0; cy = 0;
-                                }
-                            }
+                            let tx = match ? parseFloat(match[1]) : 0;
+                            let ty = match ? parseFloat(match[2]) : 0;
+                            
+                            let cx = tx, cy = ty;
+                            try {
+                                const bbox = node.getBBox();
+                                cx = tx + bbox.x + bbox.width / 2;
+                                cy = ty + bbox.y + bbox.height / 2;
+                            } catch (e) {}
+
                             node._initialCenter = { x: cx, y: cy };
                         });
 
@@ -1701,17 +1698,44 @@
                                 matchedLabel.matched = true;
                             }
                             
-                            const edgeGroup = pathEl.closest('g.edgePath') || pathEl.parentElement;
-                            const arrowEl = edgeGroup ? edgeGroup.querySelector('.arrowheadPath, path:not(.path)') : null;
-                            const origArrowTransform = arrowEl ? (arrowEl.getAttribute('transform') || '') : '';
+                            // Collect edge decorations (cardinality markers, arrows, circles, paths)
+                            const edgeGroup = pathEl.closest('g.edgePath, g.relationship, g[class*="relationship"]') || pathEl.parentElement;
+                            const extraEls = [];
+                            if (edgeGroup) {
+                                const children = Array.from(edgeGroup.querySelectorAll('path, circle, rect, polygon, line, g'));
+                                children.forEach(child => {
+                                    if (child === pathEl || child.contains(pathEl) || child === edgeGroup) return;
+                                    
+                                    let cx = 0, cy = 0;
+                                    let transform = child.getAttribute('transform') || '';
+                                    let match = transform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
+                                    let tx = match ? parseFloat(match[1]) : 0;
+                                    let ty = match ? parseFloat(match[2]) : 0;
+                                    try {
+                                        const bbox = child.getBBox();
+                                        cx = tx + bbox.x + bbox.width / 2;
+                                        cy = ty + bbox.y + bbox.height / 2;
+                                    } catch(e) {
+                                        cx = tx; cy = ty;
+                                    }
+
+                                    const distSource = Math.hypot(cx - startX, cy - startY);
+                                    const distTarget = Math.hypot(cx - endX, cy - endY);
+
+                                    extraEls.push({
+                                        el: child,
+                                        origTransform: transform,
+                                        isTarget: distTarget < distSource
+                                    });
+                                });
+                            }
                             
                             edgesData.push({
                                 pathEl,
                                 origD,
                                 sourceNode,
                                 targetNode,
-                                arrowEl,
-                                origArrowTransform,
+                                extraEls,
                                 labelGroup: matchedLabel ? matchedLabel.lGroup : null,
                                 origLabelTransform: matchedLabel ? matchedLabel.origTransform : '',
                                 origLabelCenter: matchedLabel ? matchedLabel.center : { x: 0, y: 0 }
@@ -1768,10 +1792,11 @@
 
                                 const endpoints = updatePathFlexible(edge.pathEl, edge.origD, sourceDelta, targetDelta);
 
-                                if (edge.arrowEl && endpoints) {
-                                    const shiftArrowX = endpoints.currEndX - endpoints.origEndX;
-                                    const shiftArrowY = endpoints.currEndY - endpoints.origEndY;
-                                    edge.arrowEl.setAttribute('transform', `${edge.origArrowTransform} translate(${shiftArrowX.toFixed(2)}, ${shiftArrowY.toFixed(2)})`.trim());
+                                if (edge.extraEls && endpoints) {
+                                    edge.extraEls.forEach(item => {
+                                        const delta = item.isTarget ? targetDelta : sourceDelta;
+                                        item.el.setAttribute('transform', `${item.origTransform} translate(${delta.x.toFixed(2)}, ${delta.y.toFixed(2)})`.trim());
+                                    });
                                 }
 
                                 if (edge.labelGroup) {

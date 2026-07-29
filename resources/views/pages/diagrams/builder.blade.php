@@ -77,10 +77,10 @@
             }
             
             /* Distinct Node Cursor */
-            .mermaid-wrapper g.node, .mermaid-wrapper .node {
+            .mermaid-wrapper g.node, .mermaid-wrapper .node, .mermaid-wrapper g.entityBox, .mermaid-wrapper g[id^="entity-"], .mermaid-wrapper g.entity, .mermaid-wrapper g[id^="elem-"] {
                 cursor: move !important;
             }
-            .mermaid-wrapper g.node:active, .mermaid-wrapper .node:active {
+            .mermaid-wrapper g.node:active, .mermaid-wrapper .node:active, .mermaid-wrapper g.entityBox:active, .mermaid-wrapper g[id^="entity-"]:active, .mermaid-wrapper g.entity:active {
                 cursor: grabbing !important;
             }
             
@@ -1602,11 +1602,11 @@
                         const container = document.getElementById('mermaidContainer');
                         if (!container) return;
                         
-                        const nodes = Array.from(container.querySelectorAll('g.node, g.cluster, .node'));
-                        const edgePaths = Array.from(container.querySelectorAll('g.edgePaths path, g.edgePath path, path.path'));
-                        const edgeLabels = Array.from(container.querySelectorAll('g.edgeLabel, g.edgeLabels g'));
+                        const nodes = Array.from(container.querySelectorAll('g.node, g.cluster, .node, g.entityBox, g[id^="entity-"], g[id^="elem-"], g.entity, .er.entityBox, g.classGroup'));
+                        const edgePaths = Array.from(container.querySelectorAll('g.edgePaths path, g.edgePath path, path.path, g.relationship path, .er.relationshipLine, path.relationshipLine, g[class*="relationship"] path'));
+                        const edgeLabels = Array.from(container.querySelectorAll('g.edgeLabel, g.edgeLabels g, g.relationshipLabel, g[class*="relationshipLabel"]'));
                         
-                        if (nodes.length === 0 || edgePaths.length === 0) return;
+                        if (nodes.length === 0) return;
 
                         // Initialize delta and center position for each node
                         nodes.forEach(node => {

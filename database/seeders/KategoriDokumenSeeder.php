@@ -14,7 +14,7 @@ class KategoriDokumenSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::where('email', 'admin@pm-v2.test')->first() ?? User::first();
+        $admin = User::where('email', 'dev@gmail.com')->first() ?? User::first();
         
         if (!$admin) return;
 
@@ -74,6 +74,41 @@ class KategoriDokumenSeeder extends Seeder
                 'description' => 'Panduan penggunaan sistem bagi user.',
                 'icon' => 'bi-info-circle',
                 'color' => '#0ea5e9',
+            ],
+            [
+                'name' => 'Diagram & Arsitektur',
+                'slug' => 'diagram',
+                'description' => 'Diagram sistem, Flowchart, ERD, DFD, dan arsitektur aplikasi.',
+                'icon' => 'bi-diagram-3',
+                'color' => '#00c8ff',
+            ],
+            [
+                'name' => 'Kontrak & SPK',
+                'slug' => 'kontrak',
+                'description' => 'Surat Perintah Kerja (SPK), Kontrak, dan perjanjian kerjasama.',
+                'icon' => 'bi-file-earmark-pdf',
+                'color' => '#ef4444',
+            ],
+            [
+                'name' => 'Testing & UAT',
+                'slug' => 'testing',
+                'description' => 'Dokumen pengujian sistem, Test Cases, dan User Acceptance Test.',
+                'icon' => 'bi-check2-square',
+                'color' => '#14b8a6',
+            ],
+            [
+                'name' => 'Notulen Rapat',
+                'slug' => 'notulen',
+                'description' => 'Catatan dan kesepakatan hasil diskusi rapat proyek (MoM).',
+                'icon' => 'bi-card-heading',
+                'color' => '#a855f7',
+            ],
+            [
+                'name' => 'SOP & Panduan',
+                'slug' => 'sop',
+                'description' => 'Standar Operasional Prosedur dan kebijakan tata kelola proyek.',
+                'icon' => 'bi-file-earmark-ruled',
+                'color' => '#64748b',
             ],
         ];
 

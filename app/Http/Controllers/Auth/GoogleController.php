@@ -17,8 +17,19 @@ class GoogleController extends Controller
      */
     public function redirectToGoogle()
     {
-        $redirectUrl = config('services.google.redirect') ?: url('/auth/google/callback');
-        return Socialite::driver('google')->redirectUrl($redirectUrl)->redirect();
+        $redirectUrl = env('GOOGLE_REDIRECT_URI') 
+            ?: config('services.google.redirect') 
+            ?: url('/auth/google/callback');
+            
+        if (empty($redirectUrl) || (str_contains(request()->getHost(), 'humacode.my.id') && str_contains($redirectUrl, 'localhost'))) {
+            $redirectUrl = 'https://pm.humacode.my.id/auth/google/callback';
+        }
+
+        return Socialite::driver('google')
+            ->stateless()
+            ->with(['redirect_uri' => $redirectUrl])
+            ->redirectUrl($redirectUrl)
+            ->redirect();
     }
 
     /**
@@ -29,8 +40,18 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $redirectUrl = config('services.google.redirect') ?: url('/auth/google/callback');
-            $googleUser = Socialite::driver('google')->redirectUrl($redirectUrl)->user();
+            $redirectUrl = env('GOOGLE_REDIRECT_URI') 
+                ?: config('services.google.redirect') 
+                ?: url('/auth/google/callback');
+
+            if (empty($redirectUrl) || (str_contains(request()->getHost(), 'humacode.my.id') && str_contains($redirectUrl, 'localhost'))) {
+                $redirectUrl = 'https://pm.humacode.my.id/auth/google/callback';
+            }
+
+            $googleUser = Socialite::driver('google')
+                ->stateless()
+                ->redirectUrl($redirectUrl)
+                ->user();
             
             $user = User::where('google_id', $googleUser->id)
                         ->orWhere('email', $googleUser->email)

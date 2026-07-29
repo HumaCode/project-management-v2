@@ -116,7 +116,6 @@ Route::middleware(['auth'])->group(function () {
             Route::get('catatan', [\App\Http\Controllers\Catatan\CatatanController::class, 'index'])->name('catatan.index');
             Route::get('catatan/pagination', [\App\Http\Controllers\Catatan\CatatanController::class, 'getAllPaginated'])->name('catatan.pagination');
             Route::post('catatan', [\App\Http\Controllers\Catatan\CatatanController::class, 'store'])->name('catatan.store');
-            Route::get('catatan/media/{mediaId}', [\App\Http\Controllers\Catatan\CatatanController::class, 'showMedia'])->name('catatan.media');
             Route::get('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'show'])->name('catatan.show');
             Route::put('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'update'])->name('catatan.update');
             Route::delete('catatan/{id}', [\App\Http\Controllers\Catatan\CatatanController::class, 'destroy'])->name('catatan.destroy');
@@ -177,6 +176,11 @@ Route::middleware(['auth'])->group(function () {
             Route::get('/notifications/recent', [\App\Http\Controllers\NotificationController::class, 'getRecent'])->name('notifications.recent');
             Route::post('/notifications/mark-all', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all');
             Route::post('/notifications/{id}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+
+            // Direct Encrypted Media Access (No Subfolders)
+            Route::get('{mediaId}', [\App\Http\Controllers\Catatan\CatatanController::class, 'showMedia'])
+                ->where('mediaId', '^[A-Za-z0-9_-]{8,40}$')
+                ->name('catatan.media');
         }
     );
 });

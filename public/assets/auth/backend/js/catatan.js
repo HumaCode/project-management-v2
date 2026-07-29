@@ -321,10 +321,39 @@ $(function () {
 
         if (type === 'image') {
             $title.html('<i class="bi bi-image" style="color:var(--cyan)"></i>&nbsp; Preview Gambar: ' + fileName);
-            $body.html('<img src="' + url + '" style="max-width:100%;max-height:72vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5)">');
+            $body.html(`
+                <div id="mediaLoader" class="d-flex flex-column align-items-center justify-content-center py-5">
+                    <div class="spinner-border text-cyan mb-3" style="width:2.5rem;height:2.5rem" role="status"></div>
+                    <div style="font-family:var(--font);font-size:13.5px;color:var(--txt);font-weight:600">
+                        Memuat gambar...
+                    </div>
+                    <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Mohon tunggu sebentar</div>
+                </div>
+            `);
+
+            const img = new Image();
+            img.onload = function () {
+                $body.html('<img src="' + url + '" style="max-width:100%;max-height:72vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5)">');
+            };
+            img.onerror = function () {
+                $body.html('<div class="text-danger py-4"><i class="bi bi-exclamation-triangle" style="font-size:24px"></i><div class="mt-2">Gagal memuat gambar.</div></div>');
+            };
+            img.src = url;
+
         } else if (type === 'pdf') {
             $title.html('<i class="bi bi-file-earmark-pdf-fill" style="color:#ef4444"></i>&nbsp; Preview PDF: ' + fileName);
-            $body.html('<iframe src="' + url + '#toolbar=1" style="width:100%;height:72vh;border:none;border-radius:10px"></iframe>');
+            $body.html(`
+                <div class="position-relative w-100" style="height:72vh">
+                    <div id="pdfLoader" class="position-absolute top-50 start-50 translate-middle d-flex flex-column align-items-center justify-content-center w-100" style="z-index:5">
+                        <div class="spinner-border text-cyan mb-3" style="width:2.5rem;height:2.5rem" role="status"></div>
+                        <div style="font-family:var(--font);font-size:13.5px;color:var(--txt);font-weight:600">
+                            Memuat dokumen PDF...
+                        </div>
+                        <div style="font-size:11.5px;color:var(--muted);margin-top:4px">Mohon tunggu sebentar</div>
+                    </div>
+                    <iframe src="${url}#toolbar=1" style="width:100%;height:72vh;border:none;border-radius:10px;position:relative;z-index:10;background:transparent" onload="document.getElementById('pdfLoader') && (document.getElementById('pdfLoader').style.display='none')"></iframe>
+                </div>
+            `);
         } else {
             window.open(url, '_blank');
             return;
@@ -600,6 +629,13 @@ $(function () {
                     ],
                     shouldNotGroupWhenFull: true
                 },
+                table: {
+                    contentToolbar: [
+                        'tableColumn',
+                        'tableRow',
+                        'mergeTableCells'
+                    ]
+                },
                 extraPlugins: [
                     function(editor) {
                         editor.plugins.get('FileRepository').createUploadAdapter = (loader) => {
@@ -608,7 +644,17 @@ $(function () {
                     }
                 ],
                 mediaEmbed: {
-                    previewsInData: true
+                    previewsInData: true,
+                    extraProviders: [
+                        {
+                            name: 'youtube-shorts',
+                            url: /^(?:m\.)?youtube\.com\/shorts\/([a-zA-Z0-9_-]+)/,
+                            html: match => {
+                                const id = match[1];
+                                return `<div class="raw-html-embed" style="position: relative; padding-bottom: 56.25%; height: 0; max-width: 100%; margin: 12px auto;"><iframe src="https://www.youtube.com/embed/${id}" style="position: absolute; width: 100%; height: 100%; top: 0; left: 0; border: 0; border-radius: 12px;" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div>`;
+                            }
+                        }
+                    ]
                 }
             });
     }

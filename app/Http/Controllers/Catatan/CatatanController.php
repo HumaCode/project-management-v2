@@ -177,10 +177,13 @@ class CatatanController extends Controller
     public function showMedia($mediaId)
     {
         try {
-            try {
-                $id = \Illuminate\Support\Facades\Crypt::decryptString($mediaId);
-            } catch (\Exception $e) {
-                $id = $mediaId;
+            $id = \App\Helpers\MediaHasher::decode($mediaId) ?? (is_numeric($mediaId) ? (int)$mediaId : null);
+            if (!$id) {
+                try {
+                    $id = \Illuminate\Support\Facades\Crypt::decryptString($mediaId);
+                } catch (\Exception $e) {
+                    abort(404);
+                }
             }
 
             $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::findOrFail($id);

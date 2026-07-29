@@ -729,3 +729,79 @@ span.flatpickr-weekday {
     opacity: 0.6 !important;
 }
 
+/* ─────────────────────────────────────
+   CKEDITOR 5 & DETAIL VIEW TABLE STYLING
+   ───────────────────────────────────── */
+.ck-content figure.table,
+.view-content figure.table,
+.ck-content table,
+.view-content table {
+    width: 100% !important;
+    margin: 14px 0 !important;
+    border-collapse: collapse !important;
+    border-spacing: 0 !important;
+    overflow-x: auto !important;
+    display: table !important;
+}
+
+.ck-content table,
+.view-content table,
+.ck-content table th,
+.ck-content table td,
+.view-content table th,
+.view-content table td {
+    border: 1px solid #cbd5e1 !important;
+}
+
+/* Dark Mode & Modal Dark Support */
+[data-bs-theme="dark"] .ck-content table,
+[data-bs-theme="dark"] .view-content table,
+[data-bs-theme="dark"] .ck-content table th,
+[data-bs-theme="dark"] .ck-content table td,
+[data-bs-theme="dark"] .view-content table th,
+[data-bs-theme="dark"] .view-content table td,
+.m-dark .view-content table,
+.m-dark .view-content table th,
+.m-dark .view-content table td {
+    border-color: rgba(0, 142, 179, 0.3) !important;
+}
+
+.ck-content table th,
+.ck-content table td,
+.view-content table th,
+.view-content table td {
+    padding: 10px 14px !important;
+    font-size: 13.5px !important;
+    line-height: 1.6 !important;
+    vertical-align: middle !important;
+    word-break: break-word !important;
+}
+
+.ck-content table th,
+.view-content table th {
+    background-color: rgba(0, 142, 179, 0.12) !important;
+    font-weight: 700 !important;
+    color: var(--txt, #0f172a) !important;
+    text-align: left !important;
+}
+
+.ck-content table tr:nth-child(even),
+.view-content table tr:nth-child(even) {
+    background-color: rgba(0, 142, 179, 0.03) !important;
+}
+
+/* Responsive Media Embeds (YouTube Videos & Shorts) */
+.ck-content .media,
+.view-content .media,
+.view-content iframe,
+.ck-content iframe {
+    max-width: 100% !important;
+    border-radius: 12px !important;
+}
+
+.view-content figure.media {
+    margin: 14px auto !important;
+    text-align: center !important;
+}
+
+

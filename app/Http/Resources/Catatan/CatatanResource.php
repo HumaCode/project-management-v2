@@ -39,7 +39,7 @@ class CatatanResource extends JsonResource
                     'file_name' => $media->file_name,
                     'file_size' => number_format($media->size / 1024, 1) . ' KB',
                     'mime_type' => $media->mime_type,
-                    'url' => route('catatan.media', \Illuminate\Support\Facades\Crypt::encryptString($media->id)),
+                    'url' => route('catatan.media', \App\Helpers\MediaHasher::encode($media->id)),
                     'is_image' => str_starts_with($media->mime_type, 'image/'),
                 ];
             }),

@@ -472,6 +472,85 @@
                 background: rgba(2, 132, 199, 0.08) !important;
             }
 
+            /* ─── Sidebar Icon Badge ─── */
+            .sidebar-icon-wrap {
+                width: 28px;
+                height: 28px;
+                border-radius: 8px;
+                background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 13px;
+                color: #fff;
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+                flex-shrink: 0;
+            }
+
+            /* ─── Premium Save Button ─── */
+            .btn-save-diagram {
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 6px 14px;
+                border: none;
+                border-radius: 20px;
+                font-size: 12px;
+                font-weight: 600;
+                letter-spacing: 0.3px;
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+                background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%);
+                color: #fff;
+                box-shadow: 0 3px 12px rgba(99, 102, 241, 0.45), inset 0 1px 0 rgba(255,255,255,0.15);
+                transition: all 0.25s ease;
+            }
+            .btn-save-diagram::before {
+                content: '';
+                position: absolute;
+                inset: 0;
+                background: linear-gradient(135deg, #60a5fa 0%, #818cf8 100%);
+                opacity: 0;
+                transition: opacity 0.25s ease;
+                border-radius: 20px;
+            }
+            .btn-save-diagram:hover:not(:disabled)::before {
+                opacity: 1;
+            }
+            .btn-save-diagram:hover:not(:disabled) {
+                transform: translateY(-1px);
+                box-shadow: 0 6px 20px rgba(99, 102, 241, 0.55), inset 0 1px 0 rgba(255,255,255,0.2);
+            }
+            .btn-save-diagram:active:not(:disabled) {
+                transform: translateY(0px);
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.4);
+            }
+            .btn-save-diagram:disabled {
+                opacity: 0.75;
+                cursor: not-allowed;
+                transform: none;
+            }
+            .btn-save-diagram > * {
+                position: relative;
+                z-index: 1;
+            }
+            .btn-save-diagram .bi-cloud-arrow-up-fill {
+                font-size: 13px;
+                animation: none;
+                transition: transform 0.3s ease;
+            }
+            .btn-save-diagram:hover:not(:disabled) .bi-cloud-arrow-up-fill {
+                animation: floatUp 0.6s ease infinite alternate;
+            }
+            @keyframes floatUp {
+                from { transform: translateY(0px); }
+                to   { transform: translateY(-2px); }
+            }
+            html[data-theme="light"] .sidebar-icon-wrap {
+                box-shadow: 0 2px 8px rgba(99, 102, 241, 0.3);
+            }
+
             /* Responsive */
             @media(max-width: 991px) {
                 .builder-container { flex-direction: column; height: auto; }
@@ -533,10 +612,21 @@
         <!-- Sidebar Form -->
         <div class="builder-sidebar">
             <div class="builder-sidebar-header">
-                <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-2"></i> Konfigurasi</h6>
-                <button type="button" class="btn btn-primary btn-sm" @click="saveDiagram" :disabled="isSaving">
-                    <span x-show="!isSaving"><i class="bi bi-save me-1"></i> Simpan</span>
-                    <span x-show="isSaving"><span class="spinner-border spinner-border-sm"></span></span>
+                <div class="d-flex align-items-center gap-2">
+                    <div class="sidebar-icon-wrap">
+                        <i class="bi bi-sliders2"></i>
+                    </div>
+                    <h6 class="mb-0 fw-bold" style="font-size: 13px; letter-spacing: 0.3px;">Konfigurasi</h6>
+                </div>
+                <button type="button" class="btn-save-diagram" @click="saveDiagram" :disabled="isSaving" :class="isSaving ? 'saving' : ''">
+                    <span x-show="!isSaving" class="d-flex align-items-center gap-1">
+                        <i class="bi bi-cloud-arrow-up-fill"></i>
+                        <span>Simpan</span>
+                    </span>
+                    <span x-show="isSaving" class="d-flex align-items-center gap-1" style="display:none!important">
+                        <span class="spinner-border spinner-border-sm" style="width:12px;height:12px;border-width:2px;"></span>
+                        <span>Menyimpan...</span>
+                    </span>
                 </button>
             </div>
 

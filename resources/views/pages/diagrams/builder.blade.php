@@ -1602,9 +1602,17 @@
                         const container = document.getElementById('mermaidContainer');
                         if (!container) return;
                         
-                        const nodes = Array.from(container.querySelectorAll('g.node, g.cluster, .node, g.entityBox, g[id^="entity-"], g[id^="elem-"], g.entity, .er.entityBox, g.classGroup'));
-                        const edgePaths = Array.from(container.querySelectorAll('g.edgePaths path, g.edgePath path, path.path, g.relationship path, .er.relationshipLine, path.relationshipLine, g[class*="relationship"] path'));
-                        const edgeLabels = Array.from(container.querySelectorAll('g.edgeLabel, g.edgeLabels g, g.relationshipLabel, g[class*="relationshipLabel"]'));
+                        const rawNodes = Array.from(container.querySelectorAll('g.node, g.cluster, .node, g.entityBox, g[id^="entity-"], g[id^="elem-"], g.entity, .er.entityBox, g.classGroup'));
+                        // Filter top-most container elements to prevent parent-child duplicate drag conflicts
+                        const nodes = rawNodes.filter(el => {
+                            return !rawNodes.some(other => other !== el && other.contains(el));
+                        });
+
+                        const rawPaths = Array.from(container.querySelectorAll('g.edgePaths path, g.edgePath path, path.path, g.relationship path, .er.relationshipLine, path.relationshipLine, g[class*="relationship"] path'));
+                        const edgePaths = Array.from(new Set(rawPaths));
+
+                        const rawLabels = Array.from(container.querySelectorAll('g.edgeLabel, g.edgeLabels g, g.relationshipLabel, g[class*="relationshipLabel"]'));
+                        const edgeLabels = Array.from(new Set(rawLabels));
                         
                         if (nodes.length === 0) return;
 
@@ -1829,8 +1837,8 @@
                                 
                                 node.style.cursor = 'grabbing';
                                 
-                                let transform = node.getAttribute('transform') || 'translate(0, 0)';
-                                let match = transform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
+                                let origTransform = node.getAttribute('transform') || '';
+                                let match = origTransform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
                                 let currentX = match ? parseFloat(match[1]) : 0;
                                 let currentY = match ? parseFloat(match[2]) : 0;
                                 
@@ -1848,7 +1856,11 @@
                                     let newX = currentX + dx;
                                     let newY = currentY + dy;
                                     
-                                    node.setAttribute('transform', `translate(${newX}, ${newY})`);
+                                    if (match) {
+                                        node.setAttribute('transform', origTransform.replace(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/, `translate(${newX.toFixed(2)}, ${newY.toFixed(2)})`));
+                                    } else {
+                                        node.setAttribute('transform', `translate(${newX.toFixed(2)}, ${newY.toFixed(2)}) ${origTransform}`.trim());
+                                    }
                                     
                                     node._delta.x += dx;
                                     node._delta.y += dy;

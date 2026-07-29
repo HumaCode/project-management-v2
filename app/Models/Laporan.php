@@ -27,6 +27,12 @@ class Laporan extends Model implements HasMedia
         'user_id',
     ];
 
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('reports')
+            ->useDisk('local');
+    }
+
     public function project()
     {
         return $this->belongsTo(Project::class);

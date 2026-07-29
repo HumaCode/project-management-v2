@@ -51,7 +51,9 @@ class ReportService implements ReportServiceInterface
                             } else {
                                 $docItem->file_path = null;
                             }
-                        } elseif ($docItem->type === 'text' || $docItem->type === 'paragraph') {
+                        }
+
+                        if (!empty($docItem->content)) {
                             $docItem->content = $this->processHtmlImagesForPdf($docItem->content);
                         }
                     }
@@ -122,38 +124,57 @@ class ReportService implements ReportServiceInterface
 
         return preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\']/i', function ($matches) {
             $originalTag = $matches[0];
-            $src = $matches[1];
+            $src = trim($matches[1]);
 
             if (str_starts_with($src, 'data:image/')) {
                 return $originalTag;
             }
 
-            $path = parse_url($src, PHP_URL_PATH);
-            if ($path) {
-                // Strip leading slashes and relative path dots like ../ or ./
-                $cleanPath = preg_replace('#^(\.\./|\./|/)+#', '', $path);
-                
-                // Try public_path first
-                $fullPath = public_path($cleanPath);
+            $media = null;
 
+            // 1. Try decoding encrypted token URL like http://localhost:8000/MzIzNzM0NA or /MzIzNzM0NA
+            $path = parse_url($src, PHP_URL_PATH);
+            $cleanPath = preg_replace('#^(\.\./|\./|/)+#', '', $path ?? $src);
+
+            if (preg_match('#(?:^|/)([A-Za-z0-9_-]{8,40})$#', $cleanPath, $tokenMatches)) {
+                $decodedId = \App\Helpers\MediaHasher::decode($tokenMatches[1]);
+                if ($decodedId) {
+                    $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($decodedId);
+                }
+            }
+
+            // 2. Try extracting numeric media ID from old public paths like /storage/dokumen/21/...
+            if (!$media && preg_match('#/(?:storage|media|dokumen)/[^"\'\s>]*?(\d+)/#i', $src, $idMatches)) {
+                $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($idMatches[1]);
+            }
+
+            $fullPath = null;
+            if ($media && file_exists($media->getPath())) {
+                $fullPath = $media->getPath();
+            } else {
+                // Try direct file path lookups in public and private storage
+                $fullPath = public_path($cleanPath);
                 if (!file_exists($fullPath)) {
                     $storageRelative = preg_replace('#^storage/#i', '', $cleanPath);
                     $fullPath = storage_path('app/public/' . $storageRelative);
                 }
-
-                if (file_exists($fullPath)) {
-                    $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
-                    $mime = match (strtolower($ext)) {
-                        'jpg', 'jpeg' => 'image/jpeg',
-                        'png' => 'image/png',
-                        'gif' => 'image/gif',
-                        'svg' => 'image/svg+xml',
-                        'webp' => 'image/webp',
-                        default => 'image/jpeg',
-                    };
-                    $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
-                    return str_replace($src, $base64, $originalTag);
+                if (!file_exists($fullPath)) {
+                    $fullPath = storage_path('app/private/' . $cleanPath);
                 }
+            }
+
+            if ($fullPath && file_exists($fullPath)) {
+                $ext = pathinfo($fullPath, PATHINFO_EXTENSION);
+                $mime = match (strtolower($ext)) {
+                    'jpg', 'jpeg' => 'image/jpeg',
+                    'png' => 'image/png',
+                    'gif' => 'image/gif',
+                    'svg' => 'image/svg+xml',
+                    'webp' => 'image/webp',
+                    default => 'image/jpeg',
+                };
+                $base64 = 'data:' . $mime . ';base64,' . base64_encode(file_get_contents($fullPath));
+                return str_replace($src, $base64, $originalTag);
             }
 
             return $originalTag;

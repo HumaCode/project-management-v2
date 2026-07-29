@@ -382,7 +382,7 @@ const ReportHistory = {
                     <td class="td-mono">${date}</td>
                     <td class="text-end pe-4">
                         <div class="d-flex justify-content-end gap-2">
-                            <a href="/laporan/download/${item.id}" class="btn-act" title="Download PDF">
+                            <a href="${item.download_url || '/laporan/download/' + item.id}" target="_blank" class="btn-act" title="Download PDF">
                                 <i class="bi bi-download"></i>
                             </a>
                             <button class="btn-act btn-act-danger" onclick="ReportHistory.delete('${item.id}')" title="Hapus">

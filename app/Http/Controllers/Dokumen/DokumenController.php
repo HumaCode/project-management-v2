@@ -196,14 +196,16 @@ class DokumenController extends Controller
             ]);
 
             $media = $dokumen->addMedia($request->file('image'))
-                ->toMediaCollection('builder_temp_images');
+                ->toMediaCollection('builder_temp_images', 'local');
+
+            $encryptedUrl = route('catatan.media', \App\Helpers\MediaHasher::encode($media->id));
 
             return ResponseHelper::jsonResponse(
                 true,
                 'Gambar berhasil diunggah',
                 [
-                    'url' => asset(parse_url($media->getUrl(), PHP_URL_PATH)),
-                    'location' => asset(parse_url($media->getUrl(), PHP_URL_PATH)),
+                    'url' => $encryptedUrl,
+                    'location' => $encryptedUrl,
                     'media_id' => $media->id,
                     'name' => $media->file_name,
                 ],

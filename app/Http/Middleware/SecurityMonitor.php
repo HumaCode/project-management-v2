@@ -16,7 +16,19 @@ class SecurityMonitor
      */
     public function handle(Request $request, Closure $next): Response
     {
-        $input = json_encode($request->all());
+        // Exclude rich text content fields from global threat scanner to allow code snippet documentation
+        $inputData = $request->except([
+            'content',
+            'items',
+            'builder_content',
+            'description',
+            'keterangan',
+            'body',
+            'html',
+            'code'
+        ]);
+
+        $input = json_encode($inputData);
 
         // 1. Detect SQL Injection (Refined to prevent false positives on hex colors '#', double dashes '--', and natural sentences)
         $sqliPattern = '/(union\s+select|insert\s+into|delete\s+from|drop\s+table|\b(or|and)\b\s+\d+\s*=\s*\d+|\b(or|and)\b\s+[\'"].*[\'"]\s*=\s*[\'"].*[\'"])/i';

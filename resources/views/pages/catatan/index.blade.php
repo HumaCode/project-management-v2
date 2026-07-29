@@ -123,7 +123,7 @@
                         <th style="width:42px;text-align:center">#</th>
                         <th style="min-width:280px">JUDUL CATATAN</th>
                         <th>KATEGORI</th>
-                        <th>PROJECT</th>
+                        <th style="min-width:260px">PROJECT</th>
                         <th>PRIORITAS</th>
                         <th>DIBUAT OLEH</th>
                         <th>TGL DIBUAT</th>

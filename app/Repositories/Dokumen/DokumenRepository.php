@@ -100,25 +100,47 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
             $activeMediaIds = [];
             foreach ($items as $item) {
                 if (($item['type'] ?? '') === 'image' && !empty($item['metadata']['media_id'])) {
-                    $activeMediaIds[] = (int) $item['metadata']['media_id'];
+                    $activeMediaIds[] = $item['metadata']['media_id'];
                 }
 
                 if (!empty($item['metadata']['media_ids']) && is_array($item['metadata']['media_ids'])) {
                     foreach ($item['metadata']['media_ids'] as $mId) {
-                        $activeMediaIds[] = (int) $mId;
+                        $activeMediaIds[] = $mId;
                     }
                 }
 
                 if (!empty($item['content'])) {
+                    // Match numeric media IDs in old URLs
                     preg_match_all('#/(?:storage|media)/[^"\'\s>]+/(\d+)/#i', $item['content'], $matches);
                     if (!empty($matches[1])) {
                         foreach ($matches[1] as $mId) {
                             $activeMediaIds[] = (int) $mId;
                         }
                     }
+
+                    // Match base64url tokens
+                    preg_match_all('#/([A-Za-z0-9_-]{8,40})#i', $item['content'], $tokenMatches);
+                    if (!empty($tokenMatches[1])) {
+                        foreach ($tokenMatches[1] as $token) {
+                            $decodedId = \App\Helpers\MediaHasher::decode($token);
+                            if ($decodedId) {
+                                $activeMediaIds[] = $decodedId;
+                            }
+                        }
+                    }
                 }
             }
-            $activeMediaIds = array_unique(array_filter($activeMediaIds));
+
+            $resolvedMediaIds = [];
+            foreach ($activeMediaIds as $mId) {
+                if (is_string($mId) && !is_numeric($mId)) {
+                    $decoded = \App\Helpers\MediaHasher::decode($mId);
+                    if ($decoded) $resolvedMediaIds[] = $decoded;
+                } elseif (is_numeric($mId)) {
+                    $resolvedMediaIds[] = (int) $mId;
+                }
+            }
+            $activeMediaIds = array_unique(array_filter($resolvedMediaIds));
 
             // 2. Tandai media yang aktif dengan memindahkan ke collection 'builder_images'
             if (!empty($activeMediaIds)) {

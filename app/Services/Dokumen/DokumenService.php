@@ -33,9 +33,9 @@ class DokumenService implements DokumenServiceInterface
 
         $dokumen = $this->dokumenRepository->create($data);
 
-        // Jika ada file dan tipe adalah file, simpan ke media library
+        // Jika ada file dan tipe adalah file, simpan ke media library privat
         if (isset($data['file']) && $data['type'] === 'file') {
-            $dokumen->addMedia($data['file'])->toMediaCollection('files');
+            $dokumen->addMedia($data['file'])->toMediaCollection('files', 'local');
         }
 
         $this->clearDokumenCache();
@@ -50,7 +50,7 @@ class DokumenService implements DokumenServiceInterface
         if (isset($data['file']) && $data['type'] === 'file') {
             // Hapus media lama dan ganti dengan yang baru
             $dokumen->clearMediaCollection('files');
-            $dokumen->addMedia($data['file'])->toMediaCollection('files');
+            $dokumen->addMedia($data['file'])->toMediaCollection('files', 'local');
         }
 
         $this->clearDokumenCache();

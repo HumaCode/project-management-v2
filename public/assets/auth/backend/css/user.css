@@ -2866,3 +2866,124 @@
 .pass-toggle { position: absolute; right: 12px; background: none; border: none; color: #7a90a8; font-size: 1.1rem; cursor: pointer; display: flex; align-items: center; justify-content: center; padding: 4px; transition: color 0.2s; outline: none; }
 .pass-toggle:hover { color: #00c8ff; }
 .pass-toggle:focus { outline: none; }
+
+/* ─────────────────────────────────────
+   GLOBAL TABLE ACTION BUTTON STYLES
+   ───────────────────────────────────── */
+.act-row {
+    display: flex !important;
+    gap: 6px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+}
+
+.ibtn {
+    width: 32px !important;
+    height: 32px !important;
+    border-radius: 8px !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    font-size: 14px !important;
+    cursor: pointer !important;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    flex-shrink: 0 !important;
+}
+
+/* Builder / Magic Wand Button (Purple / Indigo) */
+.ib-b,
+.ib-p,
+button.ib-b,
+a.ib-b {
+    background: #f3e8ff !important;
+    border: 1px solid #e9d5ff !important;
+    color: #9333ea !important;
+}
+.ib-b:hover,
+.ib-p:hover,
+button.ib-b:hover,
+a.ib-b:hover {
+    background: #9333ea !important;
+    border-color: #9333ea !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.35) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* View / Detail Button (Cyan / Emerald Green) */
+.ib-v,
+button.ib-v,
+a.ib-v {
+    background: #ecfdf5 !important;
+    border: 1px solid #a7f3d0 !important;
+    color: #059669 !important;
+}
+.ib-v:hover,
+button.ib-v:hover,
+a.ib-v:hover {
+    background: #10b981 !important;
+    border-color: #10b981 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Edit Button (Amber / Warning Yellow) */
+.ib-e,
+button.ib-e,
+a.ib-e {
+    background: #fffbe6 !important;
+    border: 1px solid #fde68a !important;
+    color: #d97706 !important;
+}
+.ib-e:hover,
+button.ib-e:hover,
+a.ib-e:hover {
+    background: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.35) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Delete Button (Rose / Crimson Red) */
+.ib-x,
+button.ib-x,
+a.ib-x {
+    background: #fff1f2 !important;
+    border: 1px solid #fecdd3 !important;
+    color: #e11d48 !important;
+}
+.ib-x:hover,
+button.ib-x:hover,
+a.ib-x:hover {
+    background: #e11d48 !important;
+    border-color: #e11d48 !important;
+    color: #ffffff !important;
+    box-shadow: 0 4px 12px rgba(225, 29, 72, 0.35) !important;
+    transform: translateY(-2px) !important;
+}
+
+/* Dark Mode Overrides */
+[data-bs-theme="dark"] .ib-v, .m-dark .ib-v {
+    background: rgba(16, 185, 129, 0.15) !important;
+    border-color: rgba(16, 185, 129, 0.3) !important;
+    color: #34d399 !important;
+}
+[data-bs-theme="dark"] .ib-e, .m-dark .ib-e {
+    background: rgba(245, 158, 11, 0.15) !important;
+    border-color: rgba(245, 158, 11, 0.3) !important;
+    color: #fbbf24 !important;
+}
+[data-bs-theme="dark"] .ib-x, .m-dark .ib-x {
+    background: rgba(225, 29, 72, 0.15) !important;
+    border-color: rgba(225, 29, 72, 0.3) !important;
+    color: #fb7185 !important;
+}
+[data-bs-theme="dark"] .ib-b, .m-dark .ib-b {
+    background: rgba(147, 51, 234, 0.15) !important;
+    border-color: rgba(147, 51, 234, 0.3) !important;
+    color: #c084fc !important;
+}
+

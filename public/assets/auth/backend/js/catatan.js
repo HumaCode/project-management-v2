@@ -622,7 +622,7 @@ $(function () {
                     items: [
                         'undo', 'redo', '|',
                         'heading', '|',
-                        'bold', 'italic', '|',
+                        'bold', 'italic', 'code', 'codeBlock', '|',
                         'link', 'bulletedList', 'numberedList', '|',
                         'outdent', 'indent', '|',
                         'blockQuote', 'insertTable', 'mediaEmbed'

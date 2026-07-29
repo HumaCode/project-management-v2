@@ -82,6 +82,21 @@ class Dokumen extends Model implements HasMedia
     }
 
     /**
+     * Register Spatie media collections for private storage.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('files')
+            ->useDisk('local');
+            
+        $this->addMediaCollection('builder_temp_images')
+            ->useDisk('local');
+
+        $this->addMediaCollection('builder_images')
+            ->useDisk('local');
+    }
+
+    /**
      * Get human readable file size from media.
      */
     public function getFileSizeLabelAttribute(): string

@@ -66,6 +66,13 @@
         <script src="https://cdn.tiny.cloud/1/re1hyyagcsptel9z6bg836dptpkbrbpua7kjc4rgae0ap8kj/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
         <script>
             $(function() {
+                // Auto collapse sidebar on Document Builder page load for maximum editor width
+                if (window.innerWidth >= 992) {
+                    $('#sidebar').addClass('collapsed');
+                    $('#mainWrap').addClass('expanded');
+                    $('#toggleIcon').attr('class', 'bi bi-layout-sidebar');
+                }
+
                 const isDark = $('html').attr('data-theme') === 'dark';
                 const dynamicHeight = Math.max(650, $(window).height() - 210);
 
@@ -76,6 +83,9 @@
                     toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample accordion emoticons | removeformat fullscreen code preview',
                     menubar: 'file edit view insert format table tools help',
                     height: dynamicHeight,
+                    relative_urls: false,
+                    remove_script_host: false,
+                    convert_urls: true,
                     branding: false,
                     promotion: false,
                     skin: isDark ? 'oxide-dark' : 'oxide',
@@ -173,11 +183,31 @@
     @php
         $fixImageUrl = function ($url) {
             if (empty($url)) return '';
-            $path = parse_url($url, PHP_URL_PATH);
-            if ($path) {
-                return asset(ltrim($path, '/'));
+
+            // Clean relative prefixes like ../../ or ../
+            $cleanUrl = preg_replace('#^(\.\.\/)+#', '/', $url);
+
+            // Extract media ID if URL contains old public path pattern like /storage/dokumen/21/...
+            if (preg_match('#/(?:storage|media|dokumen)/[^"\'\s>]*?(\d+)/#i', $url, $m)) {
+                $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($m[1]);
+                if ($media) {
+                    return route('catatan.media', \App\Helpers\MediaHasher::encode($media->id));
+                }
             }
-            return asset(ltrim($url, '/'));
+
+            // Check if cleanUrl is an encrypted token like /MjMzODk2NQ or MzIzODk2NQ
+            if (preg_match('#(?:^|/)([A-Za-z0-9_-]{8,40})$#', $cleanUrl, $m)) {
+                $token = $m[1] ?? '';
+                if ($token && \App\Helpers\MediaHasher::decode($token)) {
+                    return route('catatan.media', $token);
+                }
+            }
+
+            if (str_contains($url, 'http://') || str_contains($url, 'https://')) {
+                return $url;
+            }
+
+            return asset(ltrim($cleanUrl, '/'));
         };
 
         $initialHtml = '';
@@ -191,7 +221,10 @@
             } else {
                 foreach ($dokumen->items as $item) {
                     if ($item->type == 'text') {
-                        $initialHtml .= $item->content;
+                        $initialHtml .= preg_replace_callback('/<img[^>]+src=["\']([^"\']+)["\']/i', function ($m) use ($fixImageUrl) {
+                            $newSrc = $fixImageUrl($m[1]);
+                            return str_replace($m[1], $newSrc, $m[0]);
+                        }, $item->content);
                     } elseif ($item->type == 'code') {
                         $lang = e($item->metadata['language'] ?? 'javascript');
                         $initialHtml .= '<pre style="background:#0f172a; color:#f8fafc; padding:16px; border-radius:10px;"><code class="language-' . $lang . '">' . e($item->content) . '</code></pre>';
@@ -199,10 +232,10 @@
                         $caption = e($item->metadata['caption'] ?? '');
                         $imgSrc = $fixImageUrl($item->content);
 
-                        if (empty($item->content) && !empty($item->metadata['media_id'])) {
+                        if (!empty($item->metadata['media_id'])) {
                             $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::find($item->metadata['media_id']);
                             if ($media) {
-                                $imgSrc = asset(parse_url($media->getUrl(), PHP_URL_PATH));
+                                $imgSrc = route('catatan.media', \App\Helpers\MediaHasher::encode($media->id));
                             }
                         }
 
@@ -229,18 +262,18 @@
                     <div class="d-flex align-items-center gap-3">
                         <h4 class="fw-bold mb-0" style="font-size: 19px; letter-spacing: -0.3px;">{{ $dokumen->nama }}</h4>
                         <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3 py-1.5" style="font-size: 11px; font-weight: 700; letter-spacing: 0.5px;">
-                            <i class="bi bi-git me-1"></i>Versi {{ $dokumen->versi }}
+                            <i class="bi bi-git me-2"></i>Versi {{ $dokumen->versi }}
                         </span>
                     </div>
                     <div class="d-flex align-items-center gap-3 mt-2 flex-wrap" style="gap: 12px !important;">
                         <span class="badge bg-primary-subtle text-primary border border-primary-subtle rounded-pill px-3 py-1.5 me-1" style="font-size: 12px; font-weight: 600;">
-                            <i class="bi bi-kanban me-1.5"></i>{{ $dokumen->project->name }}
+                            <i class="bi bi-kanban me-2"></i>{{ $dokumen->project->name }}
                         </span>
                         <span class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-3 py-1.5 me-1" style="font-size: 12px; font-weight: 600;">
-                            <i class="bi bi-tags me-1.5"></i>{{ $dokumen->kategori_label }}
+                            <i class="bi bi-tags me-2"></i>{{ $dokumen->kategori_label }}
                         </span>
                         <span class="badge bg-secondary-subtle text-secondary border border-secondary-subtle rounded-pill px-3 py-1.5" style="font-size: 12px; font-weight: 600;">
-                            <i class="bi bi-person me-1.5"></i>{{ $dokumen->uploader->name }}
+                            <i class="bi bi-person me-2"></i>{{ $dokumen->uploader->name }}
                         </span>
                     </div>
                 </div>

@@ -37,7 +37,7 @@ class DokumenResource extends JsonResource
             'file_info' => [
                 'extension' => $this->getFirstMedia('files')->extension ?? ($this->type === 'article' ? 'ARTICLE' : ($this->type === 'code' ? 'CODE' : 'FILE')),
                 'size' => $this->file_size_label,
-                'url' => $this->getFirstMediaUrl('files'),
+                'url' => $this->getFirstMedia('files') ? route('catatan.media', \App\Helpers\MediaHasher::encode($this->getFirstMedia('files')->id)) : null,
             ],
             'created_at' => $this->created_at->format('d M Y H:i'),
         ];

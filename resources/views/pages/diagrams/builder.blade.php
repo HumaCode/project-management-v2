@@ -1827,6 +1827,7 @@
 
                         nodes.forEach(node => {
                             node.style.cursor = 'move';
+                            node.style.pointerEvents = 'all';
 
                             const startDrag = (e) => {
                                 e.stopPropagation();
@@ -1838,38 +1839,36 @@
                                 
                                 node.style.cursor = 'grabbing';
                                 
-                                let origTransform = node.getAttribute('transform') || '';
-                                let match = origTransform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
-                                let currentX = match ? parseFloat(match[1]) : 0;
-                                let currentY = match ? parseFloat(match[2]) : 0;
+                                let initialTransform = node.getAttribute('transform') || '';
+                                let match = initialTransform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
+                                let initialX = match ? parseFloat(match[1]) : 0;
+                                let initialY = match ? parseFloat(match[2]) : 0;
                                 
                                 let startMouseX = clientX;
                                 let startMouseY = clientY;
                                 let zoom = this.zoom || 1;
                                 
+                                let baseDeltaX = node._delta ? node._delta.x : 0;
+                                let baseDeltaY = node._delta ? node._delta.y : 0;
+                                
                                 const onMove = (moveEvent) => {
                                     const moveX = isTouch ? moveEvent.touches[0].clientX : moveEvent.clientX;
                                     const moveY = isTouch ? moveEvent.touches[0].clientY : moveEvent.clientY;
                                     
-                                    let dx = (moveX - startMouseX) / zoom;
-                                    let dy = (moveY - startMouseY) / zoom;
+                                    let totalDx = (moveX - startMouseX) / zoom;
+                                    let totalDy = (moveY - startMouseY) / zoom;
                                     
-                                    let newX = currentX + dx;
-                                    let newY = currentY + dy;
+                                    let newX = initialX + totalDx;
+                                    let newY = initialY + totalDy;
                                     
                                     if (match) {
-                                        node.setAttribute('transform', origTransform.replace(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/, `translate(${newX.toFixed(2)}, ${newY.toFixed(2)})`));
+                                        node.setAttribute('transform', initialTransform.replace(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/, `translate(${newX.toFixed(2)}, ${newY.toFixed(2)})`));
                                     } else {
-                                        node.setAttribute('transform', `translate(${newX.toFixed(2)}, ${newY.toFixed(2)}) ${origTransform}`.trim());
+                                        node.setAttribute('transform', `translate(${newX.toFixed(2)}, ${newY.toFixed(2)}) ${initialTransform}`.trim());
                                     }
                                     
-                                    node._delta.x += dx;
-                                    node._delta.y += dy;
-                                    
-                                    startMouseX = moveX;
-                                    startMouseY = moveY;
-                                    currentX = newX;
-                                    currentY = newY;
+                                    node._delta.x = baseDeltaX + totalDx;
+                                    node._delta.y = baseDeltaY + totalDy;
                                     
                                     updateAllEdges();
                                 };

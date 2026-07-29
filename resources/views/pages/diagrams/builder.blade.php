@@ -1690,10 +1690,10 @@
                                 }
                             });
                             
-                            // Match label by index 1-to-1 or geometric fallback
+                            // Match label by index or proximity
                             let matchedLabel = labelDataList[edgeIdx] && !labelDataList[edgeIdx].matched ? labelDataList[edgeIdx] : null;
                             if (!matchedLabel) {
-                                let minLabelDist = 200;
+                                let minLabelDist = 250;
                                 labelDataList.forEach(ld => {
                                     if (ld.matched) return;
                                     const dist = Math.hypot(ld.center.x - midX, ld.center.y - midY);
@@ -1708,111 +1708,43 @@
                                 matchedLabel.matched = true;
                             }
                             
-                            // Collect edge decorations (cardinality markers, arrows, circles, paths)
                             const edgeGroup = pathEl.closest('g.edgePath, g.relationship, g[class*="relationship"]') || pathEl.parentElement;
-                            const extraEls = [];
-                            if (edgeGroup) {
-                                const children = Array.from(edgeGroup.querySelectorAll('path, circle, rect, polygon, line, g'));
-                                children.forEach(child => {
-                                    if (child === pathEl || child.contains(pathEl) || child === edgeGroup || child.closest('defs, marker')) return;
-                                    
-                                    let cx = 0, cy = 0;
-                                    let transform = child.getAttribute('transform') || '';
-                                    let match = transform.match(/translate\(([-0-9.]+)[,\s]+([-0-9.]+)\)/);
-                                    let tx = match ? parseFloat(match[1]) : 0;
-                                    let ty = match ? parseFloat(match[2]) : 0;
-                                    try {
-                                        const bbox = child.getBBox();
-                                        cx = tx + bbox.x + bbox.width / 2;
-                                        cy = ty + bbox.y + bbox.height / 2;
-                                    } catch(e) {
-                                        cx = tx; cy = ty;
-                                    }
-
-                                    const distSource = Math.hypot(cx - startX, cy - startY);
-                                    const distTarget = Math.hypot(cx - endX, cy - endY);
-
-                                    extraEls.push({
-                                        el: child,
-                                        origTransform: transform,
-                                        isTarget: distTarget < distSource
-                                    });
-                                });
-                            }
+                            const origEdgeTransform = edgeGroup ? (edgeGroup.getAttribute('transform') || '') : '';
                             
                             edgesData.push({
                                 pathEl,
                                 origD,
+                                edgeGroup,
+                                origEdgeTransform,
                                 sourceNode,
                                 targetNode,
-                                extraEls,
                                 labelGroup: matchedLabel ? matchedLabel.lGroup : null,
-                                origLabelTransform: matchedLabel ? matchedLabel.origTransform : '',
-                                origLabelCenter: matchedLabel ? matchedLabel.center : { x: 0, y: 0 }
+                                origLabelTransform: matchedLabel ? matchedLabel.origTransform : ''
                             });
                         });
-
-                        function updatePathFlexible(pathEl, originalD, sourceDelta, targetDelta) {
-                            if (!originalD) return null;
-                            const matches = Array.from(originalD.matchAll(/([-+]?[0-9]*\.?[0-9]+)/g));
-                            if (matches.length < 2) return null;
-                            
-                            const count = Math.floor(matches.length / 2);
-                            if (count < 1) return null;
-
-                            // If nodes haven't moved, keep original D
-                            if (Math.abs(sourceDelta.x) < 0.1 && Math.abs(sourceDelta.y) < 0.1 &&
-                                Math.abs(targetDelta.x) < 0.1 && Math.abs(targetDelta.y) < 0.1) {
-                                pathEl.setAttribute('d', originalD);
-                                return true;
-                            }
-
-                            let numIdx = 0;
-                            const newD = originalD.replace(/([-+]?[0-9]*\.?[0-9]+)/g, (matchStr) => {
-                                const val = parseFloat(matchStr);
-                                const ptIndex = Math.floor(numIdx / 2);
-                                const isY = (numIdx % 2) === 1;
-                                
-                                const t = count > 1 ? (ptIndex / (count - 1)) : 0;
-                                const delta = isY 
-                                    ? ((1 - t) * sourceDelta.y + t * targetDelta.y)
-                                    : ((1 - t) * sourceDelta.x + t * targetDelta.x);
-                                
-                                numIdx++;
-                                return (val + delta).toFixed(2);
-                            });
-
-                            pathEl.setAttribute('d', newD);
-                            return true;
-                        }
 
                         function updateAllEdges() {
                             edgesData.forEach(edge => {
                                 let sourceDelta = edge.sourceNode ? edge.sourceNode._delta : { x: 0, y: 0 };
                                 let targetDelta = edge.targetNode ? edge.targetNode._delta : { x: 0, y: 0 };
 
-                                updatePathFlexible(edge.pathEl, edge.origD, sourceDelta, targetDelta);
+                                // Calculate smooth midpoint shift for edge and label group
+                                const shiftX = (sourceDelta.x + targetDelta.x) / 2;
+                                const shiftY = (sourceDelta.y + targetDelta.y) / 2;
 
-                                if (edge.extraEls) {
-                                    edge.extraEls.forEach(item => {
-                                        const delta = item.isTarget ? targetDelta : sourceDelta;
-                                        item.el.setAttribute('transform', `${item.origTransform} translate(${delta.x.toFixed(2)}, ${delta.y.toFixed(2)})`.trim());
-                                    });
+                                if (edge.edgeGroup) {
+                                    if (Math.abs(shiftX) < 0.1 && Math.abs(shiftY) < 0.1) {
+                                        edge.edgeGroup.setAttribute('transform', edge.origEdgeTransform);
+                                    } else {
+                                        edge.edgeGroup.setAttribute('transform', `${edge.origEdgeTransform} translate(${shiftX.toFixed(2)}, ${shiftY.toFixed(2)})`.trim());
+                                    }
                                 }
 
                                 if (edge.labelGroup) {
-                                    try {
-                                        const totalLen = edge.pathEl.getTotalLength();
-                                        if (totalLen > 0) {
-                                            const midPt = edge.pathEl.getPointAtLength(totalLen * 0.5);
-                                            const shiftX = midPt.x - edge.origLabelCenter.x;
-                                            const shiftY = midPt.y - edge.origLabelCenter.y;
-                                            edge.labelGroup.setAttribute('transform', `${edge.origLabelTransform} translate(${shiftX.toFixed(2)}, ${shiftY.toFixed(2)})`.trim());
-                                        }
-                                    } catch (e) {
-                                        let midX = (sourceDelta.x + targetDelta.x) / 2;
-                                        let midY = (sourceDelta.y + targetDelta.y) / 2;
-                                        edge.labelGroup.setAttribute('transform', `${edge.origLabelTransform} translate(${midX.toFixed(2)}, ${midY.toFixed(2)})`.trim());
+                                    if (Math.abs(shiftX) < 0.1 && Math.abs(shiftY) < 0.1) {
+                                        edge.labelGroup.setAttribute('transform', edge.origLabelTransform);
+                                    } else {
+                                        edge.labelGroup.setAttribute('transform', `${edge.origLabelTransform} translate(${shiftX.toFixed(2)}, ${shiftY.toFixed(2)})`.trim());
                                     }
                                 }
                             });

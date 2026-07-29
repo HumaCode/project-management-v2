@@ -1374,6 +1374,67 @@
                             this.diagramData.nodes = Array.from(nodesMap.values());
                             this.diagramData.links = links;
                         }
+                    } else if (this.type === 'erd') {
+                        // ─── Parse ERD Mermaid Syntax ───
+                        const entities = [];
+                        const relationships = [];
+
+                        // Strip first line "erDiagram" and any comment/blank lines
+                        const lines = text.split('\n').map(l => l.trim()).filter(l => l && !l.startsWith('%%') && l.toLowerCase() !== 'erdiagram');
+
+                        let currentEntity = null;
+
+                        lines.forEach(line => {
+                            // Entity open: TABLE_NAME { 
+                            const entityOpenMatch = line.match(/^([A-Za-z0-9_]+)\s*\{/);
+                            if (entityOpenMatch && !line.includes('||') && !line.includes('|o') && !line.includes('}o')) {
+                                currentEntity = { name: entityOpenMatch[1], attributes: [] };
+                                return;
+                            }
+
+                            // Entity close: }
+                            if (line === '}') {
+                                if (currentEntity) {
+                                    entities.push(currentEntity);
+                                    currentEntity = null;
+                                }
+                                return;
+                            }
+
+                            // Attribute line: type name [PK] [FK] ["comment"]
+                            if (currentEntity) {
+                                // Match: type name PK,FK or just type name
+                                const attrMatch = line.match(/^([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)\s*(PK)?\s*,?\s*(FK)?/i);
+                                if (attrMatch) {
+                                    currentEntity.attributes.push({
+                                        type: attrMatch[1],
+                                        name: attrMatch[2],
+                                        pk: !!(attrMatch[3] && attrMatch[3].toUpperCase() === 'PK'),
+                                        fk: !!(attrMatch[4] && attrMatch[4].toUpperCase() === 'FK')
+                                    });
+                                    return;
+                                }
+                            }
+
+                            // Relationship line: TABLE1 ||--o{ TABLE2 : "label"
+                            const relMatch = line.match(/^([A-Za-z0-9_]+)\s+(\|\|--o\{|\|\|--\|\||\}o--o\{|\|o--o\{|\|\|--\|\{|\{o--o\{|[|o}]{2}--[|o}]{2})\s+([A-Za-z0-9_]+)\s*:\s*"?([^"]*)"?/);
+                            if (relMatch) {
+                                relationships.push({
+                                    from: relMatch[1],
+                                    to: relMatch[3],
+                                    type: relMatch[2],
+                                    label: relMatch[4] ? relMatch[4].trim() : ''
+                                });
+                                return;
+                            }
+                        });
+
+                        if (entities.length > 0) {
+                            this.diagramData.entities = entities;
+                        }
+                        if (relationships.length > 0) {
+                            this.diagramData.relationships = relationships;
+                        }
                     }
                 },
 

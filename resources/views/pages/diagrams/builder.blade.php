@@ -1602,7 +1602,7 @@
                         const container = document.getElementById('mermaidContainer');
                         if (!container) return;
                         
-                        const rawNodes = Array.from(container.querySelectorAll('g.node, g.cluster, .node, g.entityBox, g[id^="entity-"], g[id^="elem-"], g.entity, .er.entityBox, g.classGroup'));
+                        const rawNodes = Array.from(container.querySelectorAll('g.node, .node, g.entityBox, g[id^="entity-"], g[id^="elem-"], g.entity, .er.entityBox, g.classGroup'));
                         // Filter top-most container elements to prevent parent-child duplicate drag conflicts
                         const nodes = rawNodes.filter(el => {
                             return !rawNodes.some(other => other !== el && other.contains(el));
@@ -1712,7 +1712,7 @@
                             if (edgeGroup) {
                                 const children = Array.from(edgeGroup.querySelectorAll('path, circle, rect, polygon, line, g'));
                                 children.forEach(child => {
-                                    if (child === pathEl || child.contains(pathEl) || child === edgeGroup) return;
+                                    if (child === pathEl || child.contains(pathEl) || child === edgeGroup || child.closest('defs, marker')) return;
                                     
                                     let cx = 0, cy = 0;
                                     let transform = child.getAttribute('transform') || '';
@@ -1930,7 +1930,7 @@
                     // Only start pan on left click
                     if(e.button !== 0) return; 
                     // Prevent canvas panning when clicking/dragging diagram nodes or ERD tables
-                    if (e.target && e.target.closest && e.target.closest('g.node, g.cluster, .node, g.entityBox, g[id*="entity"], g[id*="elem"], g.entity, .er.entityBox, g.classGroup, .mermaid-wrapper g')) {
+                    if (e.target && e.target.closest && e.target.closest('g.node, .node, g.entityBox, g[id*="entity"], g[id*="elem"], g.entity, .er.entityBox, g.classGroup')) {
                         return;
                     }
                     this.isDragging = true;

@@ -36,10 +36,10 @@ services:
       - VITE_PUSHER_APP_CLUSTER=${VITE_PUSHER_APP_CLUSTER:-ap1}
       - MAIL_MAILER=${MAIL_MAILER:-smtp}
       - MAIL_HOST=${MAIL_HOST:-smtp.gmail.com}
-      - MAIL_PORT=${MAIL_PORT:-587}
+      - MAIL_PORT=${MAIL_PORT:-465}
       - MAIL_USERNAME=${MAIL_USERNAME:-temflin1@gmail.com}
       - MAIL_PASSWORD=${MAIL_PASSWORD:-lihbatetbsmpugub}
-      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-tls}
+      - MAIL_ENCRYPTION=${MAIL_ENCRYPTION:-ssl}
       - MAIL_FROM_ADDRESS=${MAIL_FROM_ADDRESS:-temflin1@gmail.com}
       - MAIL_FROM_NAME=${MAIL_FROM_NAME:-Project Management System}
     depends_on:

@@ -1248,7 +1248,12 @@
 
                 parseAndRenderFromCode() {
                     this.parseMermaidToData();
-                    this.renderMermaid();
+                    // For ERD, parseMermaidToData uses $nextTick internally — wait for it before rendering
+                    if (this.type === 'erd') {
+                        this.$nextTick(() => this.renderMermaid());
+                    } else {
+                        this.renderMermaid();
+                    }
                 },
 
                 parseMermaidToData() {
@@ -1431,9 +1436,15 @@
                         });
 
                         if (entities.length > 0) {
-                            this.diagramData.entities = entities;
-                        }
-                        if (relationships.length > 0) {
+                            // Force Alpine.js reactivity by clearing first then setting on next tick
+                            this.diagramData.entities = [];
+                            this.$nextTick(() => {
+                                this.diagramData.entities = entities;
+                                if (relationships.length > 0) {
+                                    this.diagramData.relationships = relationships;
+                                }
+                            });
+                        } else if (relationships.length > 0) {
                             this.diagramData.relationships = relationships;
                         }
                     }

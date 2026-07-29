@@ -97,7 +97,7 @@
 .diagram-title {
     font-size: 1.1rem;
     font-weight: 600;
-    color: var(--white, #fff);
+    color: var(--txt, #0f172a);
     margin-bottom: 5px;
     display: -webkit-box;
     -webkit-line-clamp: 2;
@@ -279,11 +279,11 @@
     background-color: rgba(0, 200, 255, 0.1) !important;
 }
 
-/* Modal Dark Theme */
+/* Modal Theme */
 .diagram-modal {
     background-color: var(--card, #1e293b);
     border: 1px solid var(--bd, #334155);
-    color: var(--white, #fff);
+    color: var(--txt, #fff);
     border-radius: 12px;
 }
 .diagram-modal .modal-header {
@@ -297,3 +297,78 @@
 .diagram-modal .btn-close {
     filter: invert(1) grayscale(100%) brightness(200%);
 }
+
+/* ─── Light Mode Overrides ─── */
+html[data-theme="light"] .diagram-card {
+    background: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05) !important;
+}
+html[data-theme="light"] .diagram-card:hover {
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+    border-color: #00c8ff !important;
+}
+html[data-theme="light"] .diagram-title {
+    color: #0f172a !important;
+}
+html[data-theme="light"] .diagram-project,
+html[data-theme="light"] .diagram-date {
+    color: #64748b !important;
+}
+html[data-theme="light"] .card-create {
+    border-color: #cbd5e1 !important;
+    background: rgba(15, 23, 42, 0.02) !important;
+    color: #64748b !important;
+}
+html[data-theme="light"] .card-create:hover {
+    border-color: #00c8ff !important;
+    color: #008eb3 !important;
+    background: rgba(0, 200, 255, 0.06) !important;
+}
+html[data-theme="light"] .form-select,
+html[data-theme="light"] .form-control {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+}
+html[data-theme="light"] .form-control::placeholder {
+    color: #94a3b8 !important;
+}
+html[data-theme="light"] .input-group-text {
+    background-color: #f8fafc !important;
+    border-color: #cbd5e1 !important;
+    color: #64748b !important;
+}
+html[data-theme="light"] .input-group-text i {
+    color: #64748b !important;
+}
+html[data-theme="light"] .select2-container--default .select2-selection--single {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+}
+html[data-theme="light"] .select2-container--default .select2-selection--single .select2-selection__rendered {
+    color: #0f172a !important;
+}
+html[data-theme="light"] .select2-dropdown {
+    background-color: #ffffff !important;
+    border-color: #cbd5e1 !important;
+    color: #0f172a !important;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
+}
+html[data-theme="light"] .select2-container--default .select2-results__option {
+    color: #0f172a !important;
+}
+html[data-theme="light"] .diagram-modal {
+    background-color: #ffffff !important;
+    border-color: #e2e8f0 !important;
+    color: #0f172a !important;
+}
+html[data-theme="light"] .diagram-modal .modal-header,
+html[data-theme="light"] .diagram-modal .modal-footer {
+    border-color: #e2e8f0 !important;
+    background-color: #f8fafc !important;
+}
+html[data-theme="light"] .diagram-modal .btn-close {
+    filter: none !important;
+}
+

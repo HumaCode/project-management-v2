@@ -87,6 +87,9 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function update(string $id, array $data)
     {
         try {
+            $oldUser = parent::getById($id);
+            $wasInactive = $oldUser && ($oldUser->is_active == 0 || $oldUser->is_active === '0');
+
             if (isset($data['password']) && !empty($data['password'])) {
                 $data['password'] = Hash::make($data['password']);
             } else {
@@ -101,6 +104,20 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
             if ($roleName) {
                 $user->syncRoles($roleName);
+            }
+
+            if ($wasInactive && ($user->is_active == 1 || $user->is_active === '1')) {
+                try {
+                    \Illuminate\Support\Facades\Mail::raw(
+                        "Halo " . $user->name . ",\n\nSelamat! Akun Anda telah disetujui dan diaktifkan oleh Admin.\nAnda sekarang dapat masuk dan menggunakan seluruh fitur di Project Management System.\n\nLink Login: " . url('/login') . "\n\nSalam,\nProject Management Team",
+                        function ($mail) use ($user) {
+                            $mail->to($user->email)
+                                 ->subject('🎉 Akun Anda Telah Disetujui & Diaktifkan!');
+                        }
+                    );
+                } catch (\Exception $e) {
+                    \Log::error('Gagal mengirim email verifikasi ke user: ' . $e->getMessage());
+                }
             }
 
             return $user;

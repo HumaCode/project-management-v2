@@ -53,19 +53,30 @@ class InactiveUserController extends Controller
 
         $user->update($updateData);
 
-        // Send Notification to Admin
+        // Send Notification to Admin & Confirmation to User
         try {
-            $admins = User::role('admin')->get(); // Assuming spatie/permission is used
-            
-            // Fallback if no roles found or role name is different
+            $admins = User::whereHas('roles', function($q) {
+                $q->whereIn('name', ['admin', 'dev']);
+            })->get();
+
             if ($admins->isEmpty()) {
-                $admins = User::where('id', 1)->get(); // Fallback to first user
+                $admins = User::where('id', 1)->get();
             }
 
-            Notification::send($admins, new AccountCompletionNotification($user, $request->bio));
+            if ($admins->isNotEmpty()) {
+                Notification::send($admins, new AccountCompletionNotification($user, $request->bio));
+            }
+
+            // Send Email Confirmation directly to User
+            \Illuminate\Support\Facades\Mail::raw(
+                "Halo " . $user->name . ",\n\nTerima kasih telah melengkapi data profil pendaftaran Anda.\n\nData pendaftaran Anda telah kami terima dan saat ini dalam proses verifikasi oleh Admin (1x24 jam kerja).\nKami akan memberi tahu Anda via email setelah akun Anda disetujui.\n\nSalam,\nProject Management Team",
+                function ($mail) use ($user) {
+                    $mail->to($user->email)
+                         ->subject('📌 Pendaftaran Akun Diterima - Menunggu Verifikasi');
+                }
+            );
         } catch (\Exception $e) {
-            // Log error but don't fail the request
-            \Log::error('Gagal mengirim notifikasi admin: ' . $e->getMessage());
+            \Log::error('Gagal mengirim notifikasi: ' . $e->getMessage());
         }
 
         return response()->json([

@@ -23,6 +23,98 @@ $(function () {
     }
     initSelect2();
 
+    // Flatpickr Init
+    var addFp, editFp;
+    // Build custom Year Dropdown for Flatpickr
+    function buildYearDropdown(instance) {
+        if (!instance || !instance.calendarContainer) return;
+        var container = instance.calendarContainer;
+        var numInputWrapper = container.querySelector('.numInputWrapper');
+        if (!numInputWrapper) return;
+
+        var currentYear = instance.currentYear || new Date().getFullYear();
+        var yearSelect = container.querySelector('.flatpickr-year-dropdown');
+
+        var startYear = currentYear - 2;
+        var endYear = currentYear + 3;
+
+        if (!yearSelect) {
+            yearSelect = document.createElement('select');
+            yearSelect.className = 'flatpickr-year-dropdown';
+
+            for (var y = startYear; y <= endYear; y++) {
+                var opt = document.createElement('option');
+                opt.value = y;
+                opt.textContent = y;
+                yearSelect.appendChild(opt);
+            }
+
+            numInputWrapper.parentNode.insertBefore(yearSelect, numInputWrapper);
+            numInputWrapper.style.display = 'none';
+
+            yearSelect.addEventListener('change', function (e) {
+                var val = parseInt(e.target.value, 10);
+                if (!isNaN(val)) {
+                    instance.changeYear(val);
+                }
+            });
+
+            yearSelect.addEventListener('mousedown', function (e) {
+                e.stopPropagation();
+            });
+        } else {
+            yearSelect.innerHTML = '';
+            for (var yr = startYear; yr <= endYear; yr++) {
+                var option = document.createElement('option');
+                option.value = yr;
+                option.textContent = yr;
+                yearSelect.appendChild(option);
+            }
+        }
+
+        yearSelect.value = currentYear;
+    }
+
+    function initFlatpickr() {
+        if (typeof flatpickr !== 'undefined') {
+            var fpConfig = {
+                locale: (typeof flatpickr.l10ns !== 'undefined' && flatpickr.l10ns.id) ? flatpickr.l10ns.id : 'default',
+                dateFormat: 'Y-m-d',
+                altInput: true,
+                altFormat: 'j F Y',
+                allowInput: false,
+                disableMobile: true,
+                animate: true,
+                monthSelectorType: 'dropdown',
+                static: true,
+                onReady: function (selectedDates, dateStr, instance) {
+                    buildYearDropdown(instance);
+                },
+                onOpen: function (selectedDates, dateStr, instance) {
+                    buildYearDropdown(instance);
+                },
+                onMonthChange: function (selectedDates, dateStr, instance) {
+                    buildYearDropdown(instance);
+                },
+                onYearChange: function (selectedDates, dateStr, instance) {
+                    buildYearDropdown(instance);
+                }
+            };
+            if (document.querySelector('#add_date')) {
+                addFp = flatpickr('#add_date', fpConfig);
+            }
+            if (document.querySelector('#edit_date')) {
+                editFp = flatpickr('#edit_date', fpConfig);
+            }
+        }
+    }
+    // Prevent Flatpickr mousedown preventDefault from blocking native select dropdowns
+    $(document).on('mousedown', '.flatpickr-monthDropdown-months, .flatpickr-year-dropdown', function (e) {
+        e.stopPropagation();
+    });
+
+    initFlatpickr();
+
     // State
     window.tableState = {
         search: '',
@@ -218,6 +310,43 @@ $(function () {
         $('#delModal').modal('show');
     });
 
+    // Media Preview Modal Function
+    window.openMediaPreview = function (url, fileName, type) {
+        const $modal = $('#mediaPreviewModal');
+        const $title = $('#mediaPreviewTitle');
+        const $download = $('#mediaPreviewDownload');
+        const $body = $('#mediaPreviewBody');
+
+        $download.attr('href', url).attr('download', fileName);
+
+        if (type === 'image') {
+            $title.html('<i class="bi bi-image" style="color:var(--cyan)"></i>&nbsp; Preview Gambar: ' + fileName);
+            $body.html('<img src="' + url + '" style="max-width:100%;max-height:72vh;object-fit:contain;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,0.5)">');
+        } else if (type === 'pdf') {
+            $title.html('<i class="bi bi-file-earmark-pdf-fill" style="color:#ef4444"></i>&nbsp; Preview PDF: ' + fileName);
+            $body.html('<iframe src="' + url + '#toolbar=1" style="width:100%;height:72vh;border:none;border-radius:10px"></iframe>');
+        } else {
+            window.open(url, '_blank');
+            return;
+        }
+
+        $modal.modal('show');
+    };
+
+    $(document).on('show.bs.modal', '#mediaPreviewModal', function () {
+        $(this).css('z-index', 1060);
+        setTimeout(function () {
+            $('.modal-backdrop').last().css('z-index', 1055);
+        }, 0);
+    });
+
+    $(document).on('hidden.bs.modal', '#mediaPreviewModal', function () {
+        $('#mediaPreviewBody').empty();
+        if ($('.modal.show').length > 0) {
+            $('body').addClass('modal-open');
+        }
+    });
+
     // View modal populate (Now from AJAX context)
     $(document).on('click', '.btn-view', function () {
         var d = $(this).data();
@@ -241,7 +370,7 @@ $(function () {
                             attHtml += `
                                 <div class="preview-card img-card">
                                     <div class="preview-card-left">
-                                        <img src="${att.url}" class="preview-card-thumb" onclick="window.open('${att.url}', '_blank')">
+                                        <img src="${att.url}" class="preview-card-thumb" style="cursor:pointer" onclick="window.openMediaPreview('${att.url}', '${att.file_name}', 'image')">
                                         <div class="preview-card-details">
                                             <div class="preview-card-name" title="${att.file_name}">${att.file_name}</div>
                                             <div class="preview-card-meta">
@@ -251,7 +380,7 @@ $(function () {
                                         </div>
                                     </div>
                                     <div class="preview-card-actions">
-                                        <a href="${att.url}" target="_blank" class="btn-preview-link"><i class="bi bi-eye"></i> Buka Gambar</a>
+                                        <button type="button" class="btn-preview-link" onclick="window.openMediaPreview('${att.url}', '${att.file_name}', 'image')"><i class="bi bi-eye"></i> Buka Gambar</button>
                                     </div>
                                 </div>
                             `;
@@ -259,7 +388,7 @@ $(function () {
                             attHtml += `
                                 <div class="preview-card pdf-card">
                                     <div class="preview-card-left">
-                                        <div class="preview-card-icon-box pdf" onclick="window.open('${att.url}', '_blank')">
+                                        <div class="preview-card-icon-box pdf" style="cursor:pointer" onclick="window.openMediaPreview('${att.url}', '${att.file_name}', 'pdf')">
                                             <i class="bi bi-file-earmark-pdf-fill"></i>
                                         </div>
                                         <div class="preview-card-details">
@@ -271,7 +400,7 @@ $(function () {
                                         </div>
                                     </div>
                                     <div class="preview-card-actions">
-                                        <a href="${att.url}" target="_blank" class="btn-preview-link pdf-link"><i class="bi bi-eye"></i> Lihat PDF</a>
+                                        <button type="button" class="btn-preview-link pdf-link" onclick="window.openMediaPreview('${att.url}', '${att.file_name}', 'pdf')"><i class="bi bi-eye"></i> Lihat PDF</button>
                                     </div>
                                 </div>
                             `;
@@ -279,7 +408,7 @@ $(function () {
                             attHtml += `
                                 <div class="preview-card file-card">
                                     <div class="preview-card-left">
-                                        <div class="preview-card-icon-box file" onclick="window.open('${att.url}', '_blank')">
+                                        <div class="preview-card-icon-box file" style="cursor:pointer" onclick="window.open('${att.url}', '_blank')">
                                             <i class="bi bi-file-earmark-arrow-down-fill"></i>
                                         </div>
                                         <div class="preview-card-details">
@@ -305,6 +434,7 @@ $(function () {
                 $('#viewMeta').html(`
                     <div class="view-meta-item"><i class="bi bi-tags-fill"></i>${item.category}</div>
                     <div class="view-meta-item"><i class="bi bi-kanban-fill"></i>${item.project_name || '-'}</div>
+                    <div class="view-meta-item"><i class="bi bi-calendar-event"></i>${item.date_formatted || '-'}</div>
                     <div class="view-meta-item"><i class="bi bi-flag-fill"></i>${item.priority}</div>
                     <div class="view-meta-item"><i class="bi bi-person-fill"></i>${item.user.name}</div>
                     <div class="view-meta-item"><i class="bi bi-calendar3"></i>${item.created_at}</div>
@@ -335,6 +465,11 @@ $(function () {
                 $('#edit_category').val(item.category);
                 $('#edit_priority').val(item.priority);
                 $('#edit_project_id').val(item.project_id || '').trigger('change');
+                if (editFp) {
+                    editFp.setDate(item.date || '', true);
+                } else {
+                    $('#edit_date').val(item.date || '');
+                }
                 
                 if (editEditor) {
                     editEditor.setData(item.content || '');
@@ -502,6 +637,9 @@ $(function () {
         if (addEditor) {
             addEditor.setData('');
         }
+        if (addFp) {
+            addFp.clear();
+        }
     });
 
     // Edit modal populate
@@ -511,6 +649,7 @@ $(function () {
         
         // Reset form and show loading
         $('#form_edit')[0].reset();
+        if (editFp) editFp.clear();
         if (editEditor) editEditor.setData('');
         
         $.get(`/catatan/${id}`, function(res) {
@@ -521,6 +660,11 @@ $(function () {
                 $('#edit_category').val(item.category);
                 $('#edit_priority').val(item.priority);
                 $('#edit_project_id').val(item.project_id || '').trigger('change');
+                if (editFp) {
+                    editFp.setDate(item.date || '', true);
+                } else {
+                    $('#edit_date').val(item.date || '');
+                }
                 
                 if (editEditor) {
                     editEditor.setData(item.content || '');
@@ -714,6 +858,7 @@ $(function () {
                 $('#form_add')[0].reset();
                 $('#add_attachments_preview').empty();
                 if (addEditor) addEditor.setData('');
+                if (addFp) addFp.clear();
                 $('.select2').val(null).trigger('change');
                 if (typeof window.loadData === 'function') window.loadData();
             })
@@ -736,6 +881,7 @@ $(function () {
                 $('#edit_new_attachments_preview').empty();
                 $('#edit_attachments_list').empty();
                 if (editEditor) editEditor.setData('');
+                if (editFp) editFp.clear();
                 $('.select2').val(null).trigger('change');
                 if (typeof window.loadData === 'function') window.loadData();
             })

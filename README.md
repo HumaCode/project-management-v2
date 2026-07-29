@@ -8,24 +8,33 @@
 ![Mermaid.js](https://img.shields.io/badge/Mermaid.js-10.6-FF3670?style=for-the-badge&logo=mermaid&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
-Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan **TinyMCE 7 Full Suite Document Builder**, **Visual Interactive Diagram Builder**, **Penjana Laporan PDF (DomPDF + Spatie Media Library)**, serta sistem manajemen tim & hak akses (Spatie) berestetika **Glassmorphism Modern**.
+Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan **Modul Catatan & Berkas Privat Terenkripsi**, **TinyMCE 7 Full Suite Document Builder**, **Visual Interactive Diagram Builder**, **Penjana Laporan PDF (DomPDF + Spatie Media Library)**, serta sistem manajemen tim & hak akses (Spatie) berestetika **Glassmorphism Modern**.
 
 ---
 
 ## 🚀 Fitur Unggulan
 
-### 📝 1. Rich Text Document Builder (TinyMCE 7)
+### 📌 1. Modul Catatan & Lampiran Privat Terenkripsi
+* **Private Storage Security:** Berkas lampiran catatan disimpan secara privat di `storage/app/private/catatan/...` via Spatie Media Library `local` disk untuk menjamin keamanan dokumen sensitif.
+* **Encrypted Media URLs:** Menggunakan enkripsi token `Crypt::encryptString()` pada parameter URL route `/catatan/media/{encrypted_id}` untuk mencegah serangan *ID Enumeration* / peretasan ID berkas mentah.
+* **Interactive Media Preview Modal:** Modal pratinjau media popup (*Nested Modal*) yang mendukung tampilan **Gambar** (fit container) dan **Dokumen PDF** (viewer `<iframe>` interaktif) secara langsung tanpa berpindah halaman.
+* **Dynamic Custom Flatpickr Datepicker:**
+  * Kompatibilitas penuh **Mode Terang (Light Theme)** dan **Mode Gelap (Dark Theme)**.
+  * Bidang tanggal `date` dengan tata letak ikon kalender di sebelah kiri input box dan penyesuaian lebar presisi 100% sejajar dengan dropdown proyek terkait.
+  * Selector bulan & tahun berbentuk *Pill Dropdown Badge* dengan rentang tahun dinamis berbasis perulangan `for` (`startYear = currentYear - 2` hingga `endYear = currentYear + 3`).
+
+### 📝 2. Rich Text Document Builder (TinyMCE 7)
 * **Word & Notion-Style Experience:** Pengalaman mengetik satu kanvas terpadu yang praktis, fleksibel, dan modern.
 * **Full Suite Toolbar & Menubar:** Mendukung format *Headings (H1-H6)*, *Bold/Italic/Underline/Strikethrough*, *Text/Background Color Picker*, *Lists*, *Table Builder*, *Code Sample Snippets*, *Accordion Widget*, dan *Emoticons*.
 * **Spatie Media Library Integration:** Upload gambar via *drag & drop* atau dialog file yang terintegrasi langsung dengan koleksi Spatie Media Library (`builder_images`), aman dari pembersihan otomatis.
 * **Responsive Height Calculation:** Kanvas editor menyesuaikan tinggi resolusi layar (*dynamic viewport height calc*) untuk kenyamanan mengetik maksimal.
 
-### 📄 2. Penjana & Pratinjau Laporan PDF (DomPDF + Spatie)
+### 📄 3. Penjana & Pratinjau Laporan PDF (DomPDF + Spatie)
 * **Live PDF Preview Stream:** Pratinjau dokumen laporan proyek secara *real-time* via `/laporan/preview`.
 * **Automatic Base64 HTML Image Converter:** Konversi otomatis tag `<img>` dan path gambar dari Rich Text HTML ke Base64 Data URI untuk rendering gambar PDF yang presisi tanpa ketergantungan jaringan.
 * **Drag & Drop Reorderable Canvas:** Penyusunan aset dokumen dengan fitur *drag & drop sortable*, margin yang lapang, dan tampilan kartu responsif mode terang & gelap.
 
-### 📊 3. Visual Interactive Diagram Builder
+### 📊 4. Visual Interactive Diagram Builder
 * **2-Way Realtime Sync:** Sinkronisasi dua arah otomatis antara **Form Visual** dan **Editor Kode Mermaid.js**.
 * **Interactive Drag & Drop Nodes:** Node langkah diagram dapat digeser secara kustom dengan mouse. Ujung garis panah & kepala panah terkunci secara geometris (*Geometric Anchor Proximity*) serta bergerak meluncur secara real-time.
 * **Direct Smooth & Elastic Curves:** Lintasan garis panah melengkung/lurus secara elastis (*Rubber-Band Scaling*) dan bebas dari gelombang S-curve yang mengganggu.
@@ -33,7 +42,7 @@ Platform manajemen proyek terpadu berbasis **Laravel 12**, dilengkapi dengan **T
 * **Target Focus & Zoom Controls:** Tombol fokus diagram bergaya Google Maps (`crosshair`), kontrol pan & zoom responsif.
 * **High-Res PNG Export:** Fitur ekspor gambar diagram berkualitas tinggi.
 
-### 👥 4. Manajemen Pengguna & Tim (RBAC)
+### 👥 5. Manajemen Pengguna & Tim (RBAC)
 * Hak akses berbasis peran (*Role-Based Access Control*) menggunakan `spatie/laravel-permission`.
 * Integrasi **Google OAuth Single Sign-On (SSO)** via `laravel/socialite`.
 * Sidebar bernavigasi halus dengan fitur **Hover Auto-Expand** pada posisi *collapsed*.

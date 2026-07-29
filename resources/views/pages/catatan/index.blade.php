@@ -3,11 +3,14 @@
 
     @push('css')
         <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/user.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/catatan.css') }}">
+        <link rel="stylesheet" href="{{ asset('assets/auth/backend/css/catatan.css') }}?v={{ time() }}">
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
     @endpush
 
     @push('js')
         <script src="https://cdn.ckeditor.com/ckeditor5/41.1.0/classic/ckeditor.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+        <script src="https://cdn.jsdelivr.net/npm/flatpickr/dist/l10n/id.js"></script>
         <script>
             window.catatanUrl = "{{ $dataUrl }}";
             window.storeUrl = "{{ $storeUrl }}";
@@ -153,5 +156,6 @@
         @include('pages.catatan.partials.modal-edit')
         @include('pages.catatan.partials.modal-show')
         @include('pages.catatan.partials.modal-delete')
+        @include('pages.catatan.partials.modal-preview')
     @endpush
 </x-master-layout>

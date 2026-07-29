@@ -36,7 +36,7 @@
                                 <option value="rendah">Rendah</option>
                             </select>
                         </div>
-                        <div class="col-12">
+                        <div class="col-12 col-md-6">
                             <label class="fm-lbl">Project Terkait</label>
                             <select name="project_id" id="edit_project_id" class="fmsel select2">
                                 <option value="">-- Tidak ada --</option>
@@ -44,6 +44,13 @@
                                     <option value="{{ $project->id }}">{{ $project->name }}</option>
                                 @endforeach
                             </select>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <label class="fm-lbl">Tanggal Catatan</label>
+                            <div class="position-relative">
+                                <i class="bi bi-calendar-event position-absolute" style="left:12px;top:50%;transform:translateY(-50%);color:var(--muted);pointer-events:none;z-index:5;font-size:15px"></i>
+                                <input type="text" name="date" id="edit_date" class="fmi flatpickr-date" style="padding-left:36px" placeholder="Pilih tanggal..." readonly />
+                            </div>
                         </div>
                     </div>
                     <label class="fm-lbl mb-1">Isi Catatan<span class="req">*</span></label>

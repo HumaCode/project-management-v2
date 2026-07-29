@@ -67,7 +67,7 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
         if (!empty($attachments) && is_array($attachments)) {
             foreach ($attachments as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
-                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments');
+                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments', 'local');
                 }
             }
         }
@@ -95,7 +95,7 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
         if (!empty($attachments) && is_array($attachments)) {
             foreach ($attachments as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
-                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments');
+                    $catatan->addMedia($file)->toMediaCollection('catatan_attachments', 'local');
                 }
             }
         }

@@ -26,9 +26,14 @@ class Catatan extends Model implements HasMedia
         'title',
         'category',
         'priority',
+        'date',
         'content',
         'project_id',
         'user_id',
+    ];
+
+    protected $casts = [
+        'date' => 'date:Y-m-d',
     ];
 
     protected $appends = ['created_at_human'];
@@ -52,5 +57,14 @@ class Catatan extends Model implements HasMedia
     public function project(): BelongsTo
     {
         return $this->belongsTo(Project::class);
+    }
+
+    /**
+     * Register media collections for Catatan.
+     */
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('catatan_attachments')
+            ->useDisk('local');
     }
 }

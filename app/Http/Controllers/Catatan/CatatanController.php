@@ -170,4 +170,41 @@ class CatatanController extends Controller
             return ResponseHelper::error($e->getMessage(), 500);
         }
     }
+
+    /**
+     * Securely serve media attachments from private storage.
+     */
+    public function showMedia($mediaId)
+    {
+        try {
+            try {
+                $id = \Illuminate\Support\Facades\Crypt::decryptString($mediaId);
+            } catch (\Exception $e) {
+                $id = $mediaId;
+            }
+
+            $media = \Spatie\MediaLibrary\MediaCollections\Models\Media::findOrFail($id);
+
+            if (!auth()->check()) {
+                abort(403);
+            }
+
+            $path = $media->getPath();
+
+            if (!file_exists($path)) {
+                abort(404);
+            }
+
+            if (str_starts_with($media->mime_type, 'image/') || $media->mime_type === 'application/pdf') {
+                return response()->file($path, [
+                    'Content-Type' => $media->mime_type,
+                    'Content-Disposition' => 'inline; filename="' . $media->file_name . '"',
+                ]);
+            }
+
+            return response()->download($path, $media->file_name);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+    }
 }

@@ -25,6 +25,7 @@ class StoreCatatanRequest extends FormRequest
             'title' => 'required|string|max:255',
             'category' => 'required|string|in:Personal,Project,Meeting,Technical,Task,Penting',
             'priority' => 'required|string|in:tinggi,sedang,rendah',
+            'date' => 'nullable|date',
             'project_id' => 'nullable|exists:projects,id',
             'user_id' => 'nullable|exists:users,id',
             'content' => 'required|string',

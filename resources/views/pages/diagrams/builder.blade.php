@@ -1403,14 +1403,15 @@
 
                             // Attribute line: type name [PK] [FK] ["comment"]
                             if (currentEntity) {
-                                // Match: type name PK,FK or just type name
-                                const attrMatch = line.match(/^([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)\s*(PK)?\s*,?\s*(FK)?/i);
+                                // Match: type name [optional keys/comment]
+                                const attrMatch = line.match(/^([A-Za-z0-9_]+)\s+([A-Za-z0-9_]+)(.*)?$/i);
                                 if (attrMatch) {
+                                    const keysRaw = attrMatch[3] || '';
                                     currentEntity.attributes.push({
                                         type: attrMatch[1],
                                         name: attrMatch[2],
-                                        pk: !!(attrMatch[3] && attrMatch[3].toUpperCase() === 'PK'),
-                                        fk: !!(attrMatch[4] && attrMatch[4].toUpperCase() === 'FK')
+                                        pk: /\bPK\b/i.test(keysRaw),
+                                        fk: /\bFK\b/i.test(keysRaw)
                                     });
                                     return;
                                 }

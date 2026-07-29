@@ -1657,9 +1657,9 @@
                             };
                         });
 
-                        // Match each edge path to closest sourceNode, targetNode, and edgeLabel geometrically
+                        // Match each edge path to closest sourceNode, targetNode, and edgeLabel
                         const edgesData = [];
-                        edgePaths.forEach(pathEl => {
+                        edgePaths.forEach((pathEl, edgeIdx) => {
                             const origD = pathEl.getAttribute('d');
                             if (!origD) return;
                             
@@ -1690,17 +1690,19 @@
                                 }
                             });
                             
-                            // Find closest text label near line midpoint
-                            let matchedLabel = null;
-                            let minLabelDist = 150; // 150px proximity threshold
-                            labelDataList.forEach(ld => {
-                                if (ld.matched) return;
-                                const dist = Math.hypot(ld.center.x - midX, ld.center.y - midY);
-                                if (dist < minLabelDist) {
-                                    minLabelDist = dist;
-                                    matchedLabel = ld;
-                                }
-                            });
+                            // Match label by index 1-to-1 or geometric fallback
+                            let matchedLabel = labelDataList[edgeIdx] && !labelDataList[edgeIdx].matched ? labelDataList[edgeIdx] : null;
+                            if (!matchedLabel) {
+                                let minLabelDist = 200;
+                                labelDataList.forEach(ld => {
+                                    if (ld.matched) return;
+                                    const dist = Math.hypot(ld.center.x - midX, ld.center.y - midY);
+                                    if (dist < minLabelDist) {
+                                        minLabelDist = dist;
+                                        matchedLabel = ld;
+                                    }
+                                });
+                            }
                             
                             if (matchedLabel) {
                                 matchedLabel.matched = true;
@@ -1752,45 +1754,36 @@
 
                         function updatePathFlexible(pathEl, originalD, sourceDelta, targetDelta) {
                             if (!originalD) return null;
-                            const numberMatches = Array.from(originalD.matchAll(/([-+]?[0-9]*\.?[0-9]+)/g));
-                            if (numberMatches.length < 4) return null;
+                            const matches = Array.from(originalD.matchAll(/([-+]?[0-9]*\.?[0-9]+)/g));
+                            if (matches.length < 2) return null;
+                            
+                            const count = Math.floor(matches.length / 2);
+                            if (count < 1) return null;
 
-                            // Original start and end points
-                            const origStartX = parseFloat(numberMatches[0][0]);
-                            const origStartY = parseFloat(numberMatches[1][0]);
-                            const origEndX = parseFloat(numberMatches[numberMatches.length - 2][0]);
-                            const origEndY = parseFloat(numberMatches[numberMatches.length - 1][0]);
-
-                            // Current start and end points
-                            const currStartX = origStartX + sourceDelta.x;
-                            const currStartY = origStartY + sourceDelta.y;
-                            const currEndX = origEndX + targetDelta.x;
-                            const currEndY = origEndY + targetDelta.y;
-
-                            // If nodes haven't moved, keep initial layout curve
+                            // If nodes haven't moved, keep original D
                             if (Math.abs(sourceDelta.x) < 0.1 && Math.abs(sourceDelta.y) < 0.1 &&
                                 Math.abs(targetDelta.x) < 0.1 && Math.abs(targetDelta.y) < 0.1) {
                                 pathEl.setAttribute('d', originalD);
-                                return { origStartX, origStartY, origEndX, origEndY, currStartX, currStartY, currEndX, currEndY };
+                                return true;
                             }
 
-                            // Calculate direct clean smooth curve when dragged by user
-                            const dx = currEndX - currStartX;
-                            const dy = currEndY - currStartY;
-                            
-                            const cp1x = currStartX + dx * 0.35;
-                            const cp1y = currStartY + dy * 0.15;
-                            const cp2x = currStartX + dx * 0.65;
-                            const cp2y = currStartY + dy * 0.85;
+                            let numIdx = 0;
+                            const newD = originalD.replace(/([-+]?[0-9]*\.?[0-9]+)/g, (matchStr) => {
+                                const val = parseFloat(matchStr);
+                                const ptIndex = Math.floor(numIdx / 2);
+                                const isY = (numIdx % 2) === 1;
+                                
+                                const t = count > 1 ? (ptIndex / (count - 1)) : 0;
+                                const delta = isY 
+                                    ? ((1 - t) * sourceDelta.y + t * targetDelta.y)
+                                    : ((1 - t) * sourceDelta.x + t * targetDelta.x);
+                                
+                                numIdx++;
+                                return (val + delta).toFixed(2);
+                            });
 
-                            const newD = `M ${currStartX.toFixed(2)} ${currStartY.toFixed(2)} C ${cp1x.toFixed(2)} ${cp1y.toFixed(2)}, ${cp2x.toFixed(2)} ${cp2y.toFixed(2)}, ${currEndX.toFixed(2)} ${currEndY.toFixed(2)}`;
-                            
                             pathEl.setAttribute('d', newD);
-
-                            return {
-                                origStartX, origStartY, origEndX, origEndY,
-                                currStartX, currStartY, currEndX, currEndY
-                            };
+                            return true;
                         }
 
                         function updateAllEdges() {
@@ -1798,9 +1791,9 @@
                                 let sourceDelta = edge.sourceNode ? edge.sourceNode._delta : { x: 0, y: 0 };
                                 let targetDelta = edge.targetNode ? edge.targetNode._delta : { x: 0, y: 0 };
 
-                                const endpoints = updatePathFlexible(edge.pathEl, edge.origD, sourceDelta, targetDelta);
+                                updatePathFlexible(edge.pathEl, edge.origD, sourceDelta, targetDelta);
 
-                                if (edge.extraEls && endpoints) {
+                                if (edge.extraEls) {
                                     edge.extraEls.forEach(item => {
                                         const delta = item.isTarget ? targetDelta : sourceDelta;
                                         item.el.setAttribute('transform', `${item.origTransform} translate(${delta.x.toFixed(2)}, ${delta.y.toFixed(2)})`.trim());

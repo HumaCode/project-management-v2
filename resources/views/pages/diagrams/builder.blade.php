@@ -1830,6 +1830,7 @@
 
                             const startDrag = (e) => {
                                 e.stopPropagation();
+                                e.preventDefault();
                                 
                                 const isTouch = e.type === 'touchstart';
                                 const clientX = isTouch ? e.touches[0].clientX : e.clientX;
@@ -1929,6 +1930,10 @@
                 startPan(e) {
                     // Only start pan on left click
                     if(e.button !== 0) return; 
+                    // Prevent canvas panning when clicking/dragging diagram nodes or ERD tables
+                    if (e.target && e.target.closest && e.target.closest('g.node, g.cluster, .node, g.entityBox, g[id*="entity"], g[id*="elem"], g.entity, .er.entityBox, g.classGroup, .mermaid-wrapper g')) {
+                        return;
+                    }
                     this.isDragging = true;
                     this.startX = e.clientX - this.panX;
                     this.startY = e.clientY - this.panY;

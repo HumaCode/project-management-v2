@@ -187,14 +187,20 @@
                     </button>
                 </div>
 
-                @if(($cms_settings['enable_google_login'] ?? '1') == '1')
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 
-                <div class="social-row" style="grid-template-columns: 1fr;">
-                    <a href="{{ route('auth.google') }}" class="btn-social"><i class="bi bi-google"></i><span>Daftar
-                            dengan Google</span></a>
+                <div class="social-row" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
+                    <a href="{{ route('auth.sso') }}" id="btnSso" class="btn-social" style="background: linear-gradient(135deg, #0F6E56, #0B4A3B); color: #ffffff; border: none; font-weight: 600; text-decoration: none;" onclick="handleSsoClick(this)">
+                        <i class="bi bi-shield-lock-fill" style="color: #5DCAA5; font-size: 16px;"></i>
+                        <span>SSO HumaCode</span>
+                    </a>
+                    @if(($cms_settings['enable_google_login'] ?? '1') == '1')
+                    <a href="{{ route('auth.google') }}" class="btn-social" onclick="handleSsoClick(this)">
+                        <i class="bi bi-google"></i>
+                        <span>Google</span>
+                    </a>
+                    @endif
                 </div>
-                @endif
 
                 @if(($cms_settings['allow_registration'] ?? '1') == '1')
                 <div class="register-row">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></div>
@@ -205,4 +211,18 @@
         </div>
 
     </div>
+
+    <script>
+        function handleSsoClick(el) {
+            el.style.pointerEvents = 'none';
+            el.style.opacity = '0.88';
+            el.innerHTML = '<div style="display:inline-block; width:16px; height:16px; margin-right:8px; vertical-align:middle; animation: ssoSpin 0.75s linear infinite;"><svg width="16" height="16" viewBox="0 0 22 22" fill="none"><circle cx="11" cy="11" r="9" stroke="rgba(255,255,255,0.3)" stroke-width="3" /><path d="M11 2a9 9 0 0 1 9 9" stroke="#fff" stroke-width="3" stroke-linecap="round" /></svg></div><span>Sedang proses...</span>';
+        }
+    </script>
+    <style>
+        @keyframes ssoSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+    </style>
 </x-guest-layout>

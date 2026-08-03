@@ -10,11 +10,15 @@ use App\Http\Controllers\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Auth\RegisteredUserController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use App\Http\Controllers\Auth\GoogleController;
+use App\Http\Controllers\Auth\SsoController;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Auth\OtpLoginController;
 
 Route::middleware('guest')->group(function () {
+    Route::get('auth/sso', [SsoController::class, 'redirectToSso'])->name('auth.sso');
+    Route::get('auth/sso/callback', [SsoController::class, 'handleSsoCallback'])->name('auth.sso.callback');
+
     Route::post('login/otp/send', [OtpLoginController::class, 'sendOtp'])
         ->middleware('throttle:3,1')
         ->name('login.otp.send');

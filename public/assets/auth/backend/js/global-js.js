@@ -433,8 +433,8 @@ $(document).ready(function () {
                 url: "/logout",
                 type: "POST",
                 success: function (response) {
-                    // Berhasil logout, arahkan ke halaman login atau home
-                    window.location.href = "/login";
+                    // Berhasil logout, arahkan ke URL redirect SSO atau login
+                    window.location.href = (response && response.redirect) ? response.redirect : "/login";
                 },
                 error: function (xhr) {
                     // Jika ada error, kembalikan tombol ke semula

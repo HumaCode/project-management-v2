@@ -53,7 +53,7 @@ class AuthenticatedSessionController extends Controller
     /**
      * Destroy an authenticated session.
      */
-    public function destroy(Request $request): RedirectResponse
+    public function destroy(Request $request): RedirectResponse|\Illuminate\Http\JsonResponse
     {
         Auth::guard('web')->logout();
 
@@ -61,6 +61,16 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        return redirect('/');
+        $ssoLogoutUrl = rtrim(env('SSO_HOST', 'http://localhost:8000'), '/') . '/sso/logout?redirect_uri=' . urlencode(route('login'));
+
+        if ($request->wantsJson() || $request->ajax()) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Logout berhasil',
+                'redirect' => $ssoLogoutUrl,
+            ]);
+        }
+
+        return redirect($ssoLogoutUrl);
     }
 }

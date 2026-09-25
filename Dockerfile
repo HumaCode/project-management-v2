@@ -19,6 +19,8 @@ RUN install-php-extensions \
     gd \
     intl \
     pdo_mysql \
+    pdo_pgsql \
+    pgsql \
     zip \
     opcache \
     bcmath \

@@ -85,7 +85,7 @@ class DashboardRepository implements DashboardRepositoryInterface
     {
         $user = auth()->user();
         $query = DB::table('projects')
-            ->select(DB::raw('YEAR(created_at) as year'), DB::raw('MONTH(created_at) as month'), DB::raw('count(*) as count'))
+            ->select(DB::raw('EXTRACT(YEAR FROM created_at) as year'), DB::raw('EXTRACT(MONTH FROM created_at) as month'), DB::raw('count(*) as count'))
             ->where('created_at', '>=', now()->subMonths(5)->startOfMonth());
 
         if ($user && !$user->hasRole(['admin', 'dev'])) {
@@ -101,10 +101,10 @@ class DashboardRepository implements DashboardRepositoryInterface
             });
         }
 
-        $stats = $query->groupBy('year', 'month')
+        $stats = $query->groupBy(DB::raw('EXTRACT(YEAR FROM created_at)'), DB::raw('EXTRACT(MONTH FROM created_at)'))
             ->get()
             ->keyBy(function($item) {
-                return $item->year . '-' . $item->month;
+                return (int)$item->year . '-' . (int)$item->month;
             });
 
         // Fill missing months

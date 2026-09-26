@@ -37,7 +37,7 @@
     <div class="text-center py-5 text-muted">Belum ada aktivitas tercatat.</div>
 @endforelse
 
-@if ($recent_activities->hasPages())
+@if (method_exists($recent_activities, 'hasPages') && $recent_activities->hasPages())
     <div class="mt-4 mb-2 dashboard-pagination-wrapper">
         <div class="text-center mb-2" style="font-size: 11px; color: var(--muted); font-family: var(--mono);">
             Menampilkan {{ $recent_activities->firstItem() }} - {{ $recent_activities->lastItem() }} dari {{ $recent_activities->total() }} aktivitas

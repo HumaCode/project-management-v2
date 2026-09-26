@@ -56,9 +56,16 @@
                     </div>
                 </div>
                 <div class="dd-body">
-                    <div class="dd-item"><i class="bi bi-person-circle"></i><span>Profil Saya</span></div>
-                    <div class="dd-item"><i class="bi bi-gear-wide-connected"></i><span>Pengaturan</span>
-                    </div>
+                    @can('menu profil')
+                        <a href="{{ route('profil.index') }}" class="dd-item">
+                            <i class="bi bi-person-circle"></i><span>Profil Saya</span>
+                        </a>
+                    @endcan
+                    @can('menu settings')
+                        <a href="{{ route('settings.index') }}" class="dd-item">
+                            <i class="bi bi-gear-wide-connected"></i><span>Pengaturan</span>
+                        </a>
+                    @endcan
                     <div class="dd-item">
                         <i class="bi bi-bell-fill"></i><span>Notifikasi</span>
                         <span

@@ -96,6 +96,10 @@ return [
             'prefix_indexes' => true,
             'search_path' => 'public',
             'sslmode' => env('DB_SSLMODE', 'prefer'),
+            'dump' => [
+                'dump_binary_path' => env('DB_DUMP_PATH', 'C:/Program Files/PostgreSQL/18/bin'),
+                'add_extra_option' => '--restrict-key=pmsbackup2026',
+            ],
         ],
 
         'sqlsrv' => [

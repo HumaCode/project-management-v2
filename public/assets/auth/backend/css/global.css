@@ -1865,6 +1865,7 @@ html {
     position: relative;
     overflow: hidden;
     transition: color var(--dur) var(--ease);
+    text-decoration: none;
 }
 
 .dd-item::before {
@@ -1875,6 +1876,7 @@ html {
     transform: scaleX(0);
     transform-origin: left;
     transition: transform 0.2s var(--ease);
+    pointer-events: none;
 }
 
 .dd-item:hover {

@@ -21,6 +21,8 @@ class Backup extends Model implements HasMedia
 
     protected $table = 'system_backup_histories';
 
+    protected $keyType = 'string';
+
     protected $fillable = [
         'name',
         'type',

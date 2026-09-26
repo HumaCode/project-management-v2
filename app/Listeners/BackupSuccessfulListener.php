@@ -59,8 +59,8 @@ class BackupSuccessfulListener
             // Hapus file asli dari disk backup (opsional, karena sudah dipindah ke media)
             // $disk->delete($relativePath);
 
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Backup Listener Error: ' . $e->getMessage());
+        } catch (\Throwable $e) {
+            \Illuminate\Support\Facades\Log::error('Backup Listener Error: ' . $e->getMessage() . "\n" . $e->getTraceAsString());
         }
     }
 

@@ -75,7 +75,7 @@
     </tbody>
 </table>
 
-@if ($active_projects->hasPages())
+@if (method_exists($active_projects, 'hasPages') && $active_projects->hasPages())
     <div class="mt-4 mb-2 dashboard-pagination-wrapper">
         <div class="text-center mb-2" style="font-size: 11px; color: var(--muted); font-family: var(--mono);">
             Menampilkan {{ $active_projects->firstItem() }} - {{ $active_projects->lastItem() }} dari {{ $active_projects->total() }} project

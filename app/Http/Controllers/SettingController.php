@@ -54,6 +54,35 @@ class SettingController extends Controller
      */
     private function getBackupList(): array
     {
+        // Auto-sync files from backup disk in case they were generated directly
+        try {
+            $backupName = config('backup.backup.name', 'Laravel');
+            $backupDestination = \Spatie\Backup\BackupDestination\BackupDestination::create('local', $backupName);
+            $disk = \Illuminate\Support\Facades\Storage::disk('local');
+
+            foreach ($backupDestination->backups() as $item) {
+                $filename = basename($item->path());
+                if (!\App\Models\Backup::where('name', $filename)->exists()) {
+                    $absPath = $disk->path($item->path());
+                    $backup = \App\Models\Backup::create([
+                        'name' => $filename,
+                        'type' => 'manual',
+                        'size' => $this->formatBytes($item->sizeInBytes()),
+                        'status' => 'success',
+                        'user_id' => auth()->id(),
+                    ]);
+
+                    if (file_exists($absPath)) {
+                        $backup->addMedia($absPath)
+                               ->preservingOriginal()
+                               ->toMediaCollection('backup_files');
+                    }
+                }
+            }
+        } catch (\Throwable $e) {
+            // Silently continue if directory scan encounters issues
+        }
+
         $backups = \App\Models\Backup::latest()->get();
         
         return $backups->map(function ($bk) {
@@ -347,14 +376,50 @@ class SettingController extends Controller
     public function runBackup(): JsonResponse
     {
         try {
-            // Jalankan artisan command di background
-            \Illuminate\Support\Facades\Artisan::call('backup:run', ['--only-db' => true]);
+            $exitCode = \Illuminate\Support\Facades\Artisan::call('backup:run', ['--only-db' => true]);
+
+            if ($exitCode !== 0) {
+                $output = \Illuminate\Support\Facades\Artisan::output();
+                return response()->json([
+                    'status' => 'error',
+                    'message' => 'Gagal membuat backup: ' . ($output ?: 'Terjadi kesalahan sistem.')
+                ], 500);
+            }
+
+            // Sync or record newest backup if not yet recorded by listener
+            $backupName = config('backup.backup.name', 'Laravel');
+            $backupDestination = \Spatie\Backup\BackupDestination\BackupDestination::create('local', $backupName);
+            $newestBackup = $backupDestination->newestBackup();
+
+            if ($newestBackup) {
+                $relativePath = $newestBackup->path();
+                $filename = basename($relativePath);
+
+                if (!\App\Models\Backup::where('name', $filename)->exists()) {
+                    $disk = \Illuminate\Support\Facades\Storage::disk('local');
+                    $absolutePath = $disk->path($relativePath);
+
+                    $backup = \App\Models\Backup::create([
+                        'name' => $filename,
+                        'type' => 'manual',
+                        'size' => $this->formatBytes($disk->size($relativePath)),
+                        'status' => 'success',
+                        'user_id' => auth()->id(),
+                    ]);
+
+                    if (file_exists($absolutePath)) {
+                        $backup->addMedia($absolutePath)
+                               ->preservingOriginal()
+                               ->toMediaCollection('backup_files');
+                    }
+                }
+            }
 
             return response()->json([
                 'status' => 'success',
                 'message' => 'Backup database berhasil dibuat'
             ]);
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal membuat backup: ' . $e->getMessage()
@@ -365,22 +430,29 @@ class SettingController extends Controller
     /**
      * Download a backup file.
      */
-    public function downloadBackup(int $id)
+    public function downloadBackup($id)
     {
         $backup = \App\Models\Backup::findOrFail($id);
         $media = $backup->getFirstMedia('backup_files');
 
-        if (!$media || !file_exists($media->getPath())) {
-            abort(404, 'File backup tidak ditemukan');
+        if ($media && file_exists($media->getPath())) {
+            return response()->download($media->getPath(), $media->file_name);
         }
 
-        return response()->download($media->getPath(), $media->file_name);
+        // Fallback to disk if media is not copied yet
+        $backupName = config('backup.backup.name', 'Laravel');
+        $diskPath = storage_path("app/private/{$backupName}/" . $backup->name);
+        if (file_exists($diskPath)) {
+            return response()->download($diskPath, $backup->name);
+        }
+
+        abort(404, 'File backup tidak ditemukan');
     }
 
     /**
      * Delete a backup file.
      */
-    public function deleteBackup(int $id): JsonResponse
+    public function deleteBackup($id): JsonResponse
     {
         try {
             $backup = \App\Models\Backup::findOrFail($id);

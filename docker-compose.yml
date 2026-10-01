@@ -7,8 +7,8 @@ services:
     container_name: pm_v2_app
     restart: always
     ports:
-      # Port 8090 di-bind ke 127.0.0.1 agar disalurkan via Reverse Proxy 1Panel (OpenResty/Nginx)
-      - "127.0.0.1:${APP_PORT:-8090}:80"
+      # Port 8097 di-bind ke 127.0.0.1 agar disalurkan via Reverse Proxy 1Panel (OpenResty/Nginx)
+      - "127.0.0.1:${APP_PORT:-8097}:80"
     volumes:
       - .:/app
     environment:
@@ -52,8 +52,8 @@ services:
     container_name: pm_v2_db
     restart: always
     ports:
-      # Port host 5433 (default) agar tidak bentrok dengan PostgreSQL lokal (port 5432) jika sedang berjalan
-      - "127.0.0.1:${DB_EXPOSE_PORT:-5433}:5432"
+      # Port host 5434 (default) agar tidak bentrok dengan PostgreSQL/MySQL lokal/container lain
+      - "127.0.0.1:${DB_EXPOSE_PORT:-5434}:5432"
     environment:
       - POSTGRES_DB=${DB_DATABASE:-project_management_v2}
       - POSTGRES_USER=${DB_USERNAME:-postgres}

@@ -17,7 +17,7 @@ class PermissionRepository extends BaseRepository implements PermissionRepositor
 
     public function getAll(?string $search, ?string $limit, bool $execute)
     {
-        $query = $this->model->query(); // Gunakan $this->model dari BaseRepository
+        $query = $this->model->query()->select('id', 'name', 'guard_name', 'created_at', 'updated_at');
 
         if ($search) {
             $query->search($search);

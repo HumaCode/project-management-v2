@@ -24,12 +24,20 @@ class SettingController extends Controller
     {
         $settings = $this->settingService->getAll();
         
-        // Hitung pengaturan per grup
+        // Hitung pengaturan per grup secara efisien dalam 1 query teragregasi
+        $groupCounts = \App\Models\Setting::selectRaw('
+                `group`,
+                COUNT(*) as count
+            ')
+            ->whereIn('group', ['profile', 'security', 'email', 'maintenance'])
+            ->groupBy('group')
+            ->pluck('count', 'group');
+
         $counts = [
-            'profile' => \App\Models\Setting::where('group', 'profile')->count(),
-            'security' => \App\Models\Setting::where('group', 'security')->count(),
-            'email' => \App\Models\Setting::where('group', 'email')->count(),
-            'maintenance' => \App\Models\Setting::where('group', 'maintenance')->count(),
+            'profile' => (int) ($groupCounts['profile'] ?? 0),
+            'security' => (int) ($groupCounts['security'] ?? 0),
+            'email' => (int) ($groupCounts['email'] ?? 0),
+            'maintenance' => (int) ($groupCounts['maintenance'] ?? 0),
         ];
         
         // Get media

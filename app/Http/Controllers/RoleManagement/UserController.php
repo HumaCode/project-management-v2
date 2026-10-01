@@ -44,7 +44,7 @@ class UserController extends Controller
      */
     public function index()
     {
-        // Gate::authorize('read ' . $this->aksesPermission);
+        Gate::authorize('read ' . $this->aksesPermission);
 
         $data = [
             'title' => $this->title,
@@ -85,10 +85,12 @@ class UserController extends Controller
                 $validated['row_per_page'],
             );
 
+            $stats = $this->userService->getUserStatistics();
+
             return ResponseHelper::jsonResponse(
                 true,
                 UserMessages::RETRIEVED_SUCCESS,
-                PaginateResource::make($users, UserResource::class),
+                PaginateResource::make($users, UserResource::class)->additional(['stats' => $stats]),
                 200
             );
         } catch (\Exception $e) {

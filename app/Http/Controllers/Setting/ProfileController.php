@@ -33,20 +33,25 @@ class ProfileController extends Controller
         $userId = user('id');
         $user = auth()->user();
 
-        // Mengumpulkan statistik real-time proyek, task, dokumen, & tim user ini (dinamis & sesuai anggota)
-        $projectQuery = \App\Models\Project::where(function ($q) use ($userId) {
-            $q->where('created_by', $userId)
-                ->orWhereHas('team.members', function ($sq) use ($userId) {
-                    $sq->where('users.id', $userId);
-                })
-                ->orWhereHas('pics', function ($sq) use ($userId) {
-                    $sq->where('users.id', $userId);
-                });
-        });
+        $projectIds = \App\Models\Project::query()
+            ->where(function ($q) use ($userId) {
+                $q->where('created_by', $userId)
+                    ->orWhereHas('team.members', function ($sq) use ($userId) {
+                        $sq->where('users.id', $userId);
+                    })
+                    ->orWhereHas('pics', function ($sq) use ($userId) {
+                        $sq->where('users.id', $userId);
+                    });
+            })
+            ->pluck('id');
 
-        $userProjectsCount = (clone $projectQuery)->count();
-        $completedTasksCount = (clone $projectQuery)->where('status', 'done')->count();
-        $userDocumentsCount = \App\Models\Dokumen::whereIn('project_id', $projectQuery->select('id'))->count();
+        $userProjectsCount = $projectIds->count();
+        $completedTasksCount = $userProjectsCount > 0 
+            ? \App\Models\Project::whereIn('id', $projectIds)->where('status', 'done')->count()
+            : 0;
+        $userDocumentsCount = $userProjectsCount > 0 
+            ? \App\Models\Dokumen::whereIn('project_id', $projectIds)->count()
+            : 0;
         $userTeamsCount = $user->teams()->count();
 
         $activities = \Spatie\Activitylog\Models\Activity::latest()
@@ -54,13 +59,24 @@ class ProfileController extends Controller
             ->where('causer_type', \App\Models\User::class)
             ->paginate(6, ['*'], 'act_page');
 
-        // Mengumpulkan statistik real-time kontribusi & tindakan user ini
+        // Aggregated activity stats in a single SQL query
+        $activityRaw = \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)
+            ->where('causer_type', \App\Models\User::class)
+            ->selectRaw('
+                COUNT(*) as total,
+                SUM(CASE WHEN event = "created" THEN 1 ELSE 0 END) as created_count,
+                SUM(CASE WHEN event = "updated" THEN 1 ELSE 0 END) as updated_count,
+                SUM(CASE WHEN event = "deleted" THEN 1 ELSE 0 END) as deleted_count,
+                SUM(CASE WHEN event IN ("login", "logout") THEN 1 ELSE 0 END) as auth_count
+            ')
+            ->first();
+
         $activityStats = [
-            'total' => \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)->where('causer_type', \App\Models\User::class)->count(),
-            'created' => \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)->where('causer_type', \App\Models\User::class)->where('event', 'created')->count(),
-            'updated' => \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)->where('causer_type', \App\Models\User::class)->where('event', 'updated')->count(),
-            'deleted' => \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)->where('causer_type', \App\Models\User::class)->where('event', 'deleted')->count(),
-            'auth' => \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)->where('causer_type', \App\Models\User::class)->whereIn('event', ['login', 'logout'])->count(),
+            'total'   => (int) ($activityRaw->total ?? 0),
+            'created' => (int) ($activityRaw->created_count ?? 0),
+            'updated' => (int) ($activityRaw->updated_count ?? 0),
+            'deleted' => (int) ($activityRaw->deleted_count ?? 0),
+            'auth'    => (int) ($activityRaw->auth_count ?? 0),
         ];
 
         // Mengumpulkan daftar sesi login aktif di database

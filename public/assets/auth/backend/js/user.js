@@ -49,6 +49,15 @@
                 const meta = res.data.meta;
                 window.tableState.last_page = meta.last_page;
 
+                // Update stat cards dynamically if stats payload is available
+                if (res.data && res.data.stats) {
+                    const stats = res.data.stats;
+                    if (stats.countNewUser !== undefined) $('#statNewUser').text(stats.countNewUser);
+                    if (stats.countAllUser !== undefined) $('#statAllUser').text(stats.countAllUser);
+                    if (stats.countAllUserActive !== undefined) $('#statActiveUser').text(stats.countAllUserActive);
+                    if (stats.countAllUserInactive !== undefined) $('#statInactiveUser').text(stats.countAllUserInactive);
+                }
+
                 renderTable(rows, meta);
                 window.renderInfo(meta);
                 window.renderPagination(meta);

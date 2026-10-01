@@ -6,12 +6,13 @@ use App\Interface\KategoriDokumen\KategoriDokumenRepositoryInterface;
 use App\Models\KategoriDokumen;
 use App\Models\Dokumen;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class KategoriDokumenRepository implements KategoriDokumenRepositoryInterface
 {
     public function getAll(?string $search, int $rowPerPage)
     {
-        $query = KategoriDokumen::with('creator');
+        $query = KategoriDokumen::with('creator:id,name');
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -25,7 +26,7 @@ class KategoriDokumenRepository implements KategoriDokumenRepositoryInterface
 
     public function findById(string $id)
     {
-        return KategoriDokumen::with('creator')->findOrFail($id);
+        return KategoriDokumen::with('creator:id,name')->findOrFail($id);
     }
 
     public function create(array $data)
@@ -62,7 +63,7 @@ class KategoriDokumenRepository implements KategoriDokumenRepositoryInterface
 
     public function all()
     {
-        return KategoriDokumen::orderBy('name')->get();
+        return KategoriDokumen::select('id', 'name', 'slug', 'icon', 'color')->orderBy('name')->get();
     }
 
     public function countAll(): int
@@ -72,9 +73,11 @@ class KategoriDokumenRepository implements KategoriDokumenRepositoryInterface
 
     public function countUsedInDocuments(): int
     {
-        // Mencari kategori yang slug-nya ada di kolom 'kategori' tabel dokumens
-        return KategoriDokumen::whereIn('slug', function($query) {
-            $query->select('kategori')->from('dokumens');
+        // Gunakan WHERE EXISTS yang lebih cepat pada indeks SQL
+        return KategoriDokumen::whereExists(function ($query) {
+            $query->select(DB::raw(1))
+                  ->from('dokumens')
+                  ->whereColumn('dokumens.kategori', 'kategori_dokumens.slug');
         })->count();
     }
 }

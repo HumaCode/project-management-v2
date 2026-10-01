@@ -26,7 +26,10 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
         }
         if ($limit) $query->take((int)$limit);
 
-        $query->orderBy('id', 'desc')->with(['permissions', 'users']);
+        $query->orderBy('id', 'desc')->with([
+            'permissions:id,name,guard_name', 
+            'users:id,name'
+        ]);
 
         return $execute ? $query->get() : $query;
     }
@@ -146,17 +149,11 @@ class RoleRepository extends BaseRepository implements RoleRepositoryInterface
 
     public function getCountUser()
     {
-        return $this->model->where('is_active', '1')->withCount('users')->get()->pluck('users_count')->sum();
+        return \Illuminate\Support\Facades\DB::table('model_has_roles')->distinct()->count('model_id');
     }
 
     public function getPermissions()
     {
-        return $this->model->with('permissions')
-            ->get()
-            ->pluck('permissions')
-            ->flatten()
-            ->pluck('name')
-            ->unique()
-            ->count(); // <-- Tambahkan ini di akhir
+        return \App\Models\Shield\Permission::count();
     }
 }

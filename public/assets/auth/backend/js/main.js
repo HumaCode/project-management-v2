@@ -338,8 +338,10 @@ function handleDelete(dataTableId, onSuccess) {
 
                         // Cek sukses/gagal dari response
                         if (res.success) {
-                            if (typeof loadData === "function") {
-                                loadData(); // Jika ini memanggil handleDelete() lagi, .off() di atas akan mengamankannya
+                            if (typeof window.loadData === "function") {
+                                window.loadData();
+                            } else if (typeof loadData === "function") {
+                                loadData();
                             } else {
                                 setTimeout(() => location.reload(), 1000);
                             }

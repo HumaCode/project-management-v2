@@ -16,12 +16,7 @@ class UserService implements UserServiceInterface
 
     public function getUserStatistics(): array
     {
-        return [
-            'countAllUser'         => $this->userRepository->countAllUser(),
-            'countAllUserActive'   => $this->userRepository->countAllUserActive(),
-            'countAllUserInactive' => $this->userRepository->countAllUserInactive(),
-            'countNewUser'         => $this->userRepository->countNewUser(),
-        ];
+        return $this->userRepository->getUserStatistics();
     }
 
     public function getPaginatedUsers(?string $search, ?string $status, ?string $type, ?int $perPage)

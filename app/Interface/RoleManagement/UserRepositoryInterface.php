@@ -15,5 +15,6 @@ interface UserRepositoryInterface extends BaseRepositoryInterface
     public function reject(string $id);
 
     public function resetPassword(string $id, array $data);
+    public function getUserStatistics(): array;
     public function getUsersByRole(string $role);
 }

@@ -21,7 +21,11 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
 
     public function getAll(?string $search, ?string $limit, ?string $status, ?string $type, bool $execute)
     {
-        $query = $this->model->query(); // Gunakan $this->model dari BaseRepository
+        $query = $this->model->query()
+            ->with([
+                'roles:id,name',
+                'media',
+            ]);
 
         if ($search) {
             $query->search($search);
@@ -31,14 +35,8 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         }
 
         // --- FILTER TYPE (ROLE) ---
-        // Cek jika $type ada isinya dan bukan 'all'
         if (! empty($type) && $type !== 'all') {
-            // Gunakan scope bawaan Spatie untuk memfilter user berdasarkan nama role
             $query->role($type);
-
-            // Catatan: Jika kamu masih mempertahankan function scopeRoleType()
-            // di model User dari obrolan sebelumnya, kamu juga bisa memakai:
-            // $query->roleType($type);
         }
 
         if ($limit) {
@@ -235,6 +233,27 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
     public function getRoleActive()
     {
         return Role::where('is_active', '1')->get(['id', 'name', 'is_active']);
+    }
+
+    public function getUserStatistics(): array
+    {
+        $sevenDaysAgo = now()->subDays(7);
+
+        $stats = $this->model
+            ->selectRaw('
+                COUNT(*) as total_users,
+                SUM(CASE WHEN is_active = "1" THEN 1 ELSE 0 END) as active_users,
+                SUM(CASE WHEN is_active = "0" THEN 1 ELSE 0 END) as inactive_users,
+                SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as new_users
+            ', [$sevenDaysAgo])
+            ->first();
+
+        return [
+            'countAllUser'         => (int) ($stats->total_users ?? 0),
+            'countAllUserActive'   => (int) ($stats->active_users ?? 0),
+            'countAllUserInactive' => (int) ($stats->inactive_users ?? 0),
+            'countNewUser'         => (int) ($stats->new_users ?? 0),
+        ];
     }
 
     public function countAllUser()

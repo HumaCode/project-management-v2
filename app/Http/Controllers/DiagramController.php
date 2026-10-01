@@ -13,11 +13,17 @@ class DiagramController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $projectsQuery = Project::orderBy('name');
+        $projectsQuery = Project::select('id', 'name')->orderBy('name');
         
         if (!$user->hasRole(['dev', 'admin'])) {
-            $projectsQuery->whereHas('pics', function($q) use ($user) {
-                $q->where('users.id', $user->id);
+            $projectsQuery->where(function($q) use ($user) {
+                $q->where('created_by', $user->id)
+                  ->orWhereHas('team.members', function($mq) use ($user) {
+                      $mq->where('users.id', $user->id);
+                  })
+                  ->orWhereHas('pics', function($pq) use ($user) {
+                      $pq->where('users.id', $user->id);
+                  });
             });
         }
         
@@ -28,34 +34,43 @@ class DiagramController extends Controller
     public function getAllPaginated(Request $request)
     {
         $user = auth()->user();
-        $query = Diagram::with(['project', 'creator']);
+        $query = Diagram::with([
+            'project:id,name', 
+            'creator:id,name'
+        ]);
 
         // Limit visibility based on role
         if (!$user->hasRole(['dev', 'admin'])) {
             $query->whereHas('project', function($q) use ($user) {
-                $q->whereHas('pics', function($q2) use ($user) {
-                    $q2->where('users.id', $user->id);
-                });
+                $q->where('created_by', $user->id)
+                  ->orWhereHas('team.members', function($mq) use ($user) {
+                      $mq->where('users.id', $user->id);
+                  })
+                  ->orWhereHas('pics', function($pq) use ($user) {
+                      $pq->where('users.id', $user->id);
+                  });
             });
         }
 
-        if ($request->has('search') && $request->search != '') {
+        if ($request->filled('search')) {
             $search = $request->search;
-            $query->where('name', 'like', "%{$search}%")
-                  ->orWhereHas('project', function($q) use ($search) {
-                      $q->where('name', 'like', "%{$search}%");
-                  });
+            $query->where(function($sq) use ($search) {
+                $sq->where('name', 'like', "%{$search}%")
+                   ->orWhereHas('project', function($pq) use ($search) {
+                       $pq->where('name', 'like', "%{$search}%");
+                   });
+            });
         }
 
-        if ($request->has('project_id') && $request->project_id != '') {
+        if ($request->filled('project_id')) {
             $query->where('project_id', $request->project_id);
         }
 
-        if ($request->has('type') && $request->type != '') {
+        if ($request->filled('type')) {
             $query->where('type', $request->type);
         }
 
-        $diagrams = $query->orderBy('created_at', 'desc')->paginate($request->per_page ?? 10);
+        $diagrams = $query->orderBy('created_at', 'desc')->paginate($request->per_page ?? 12);
 
         return response()->json([
             'status' => 'success',

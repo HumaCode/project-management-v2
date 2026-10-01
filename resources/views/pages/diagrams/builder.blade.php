@@ -108,6 +108,30 @@
                 overflow: visible !important;
             }
 
+            /* Perapihan Garis Relasi & Arrow Mermaid */
+            .mermaid-wrapper .edgePath .path,
+            .mermaid-wrapper path.flowchart-link {
+                stroke-width: 2px !important;
+                stroke-linecap: round !important;
+                stroke-linejoin: round !important;
+                transition: stroke 0.2s ease, stroke-width 0.2s ease;
+            }
+            .mermaid-wrapper .edgeLabel {
+                background-color: var(--card, #1e293b) !important;
+                border-radius: 6px !important;
+                padding: 2px 8px !important;
+                font-size: 11px !important;
+                font-weight: 600 !important;
+            }
+            html[data-theme="light"] .mermaid-wrapper .edgeLabel {
+                background-color: #ffffff !important;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.08) !important;
+            }
+            .mermaid-wrapper .edgeLabel rect {
+                rx: 6px !important;
+                ry: 6px !important;
+            }
+
             .node-card {
                 background: rgba(255, 255, 255, 0.015);
                 border: 1px solid var(--bd) !important;
@@ -1132,9 +1156,11 @@
                         },
                         securityLevel: 'loose',
                         flowchart: { 
-                            nodeSpacing: 70,
-                            rankSpacing: 70,
-                            htmlLabels: true
+                            nodeSpacing: 50,
+                            rankSpacing: 50,
+                            curve: 'basis',
+                            htmlLabels: true,
+                            padding: 15
                         }
                     });
                 },

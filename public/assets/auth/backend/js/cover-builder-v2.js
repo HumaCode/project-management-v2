@@ -35,16 +35,29 @@ const CoverBuilder = {
             $('#objectControls, #textSpecificControls').hide();
         });
 
+        $('#coverBgColor').on('input change', function() {
+            CoverBuilder.setBgColor(this.value);
+        });
+
+        $('#objColor').on('input change', function() {
+            CoverBuilder.setObjectColor(this.value);
+        });
+
         CoverBuilder.addText('JUDUL LAPORAN PROYEK', true);
     },
 
     updateControls(e) {
         $('#objectControls').show();
-        const active = e.selected[0];
-        if (active && active.type === 'textbox') {
-            $('#textSpecificControls').show();
-        } else {
-            $('#textSpecificControls').hide();
+        const active = e.selected ? e.selected[0] : CoverBuilder.canvas.getActiveObject();
+        if (active) {
+            if (active.fill && typeof active.fill === 'string') {
+                $('#objColor').val(active.fill);
+            }
+            if (active.type === 'textbox') {
+                $('#textSpecificControls').show();
+            } else {
+                $('#textSpecificControls').hide();
+            }
         }
     },
 
@@ -387,7 +400,12 @@ const CoverBuilder = {
     },
 
     setBgColor(color) {
-        CoverBuilder.canvas.setBackgroundColor(color, CoverBuilder.canvas.renderAll.bind(CoverBuilder.canvas));
+        if (CoverBuilder.canvas.backgroundImage) {
+            CoverBuilder.canvas.setBackgroundImage(null);
+        }
+        CoverBuilder.canvas.setBackgroundColor(color, () => {
+            CoverBuilder.canvas.renderAll();
+        });
     },
 
     setObjectColor(color) {

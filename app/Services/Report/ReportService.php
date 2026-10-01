@@ -24,10 +24,27 @@ class ReportService implements ReportServiceInterface
 
             $project = Project::findOrFail($projectId);
 
-            // Prepare documents for PDF
+            // Prepare documents for PDF with batch eager loading to prevent N+1
+            $docIds = array_column($items, 'id');
+            $docItemsMap = collect($items)->keyBy('id');
+            $docsCollection = Dokumen::with(['items', 'media'])->whereIn('id', $docIds)->get()->keyBy('id');
+
+            // Pre-fetch all media IDs needed by docItems in one batch
+            $allMediaIds = [];
+            foreach ($docsCollection as $doc) {
+                foreach ($doc->items as $docItem) {
+                    if ($docItem->type === 'image' && !empty($docItem->metadata['media_id'])) {
+                        $allMediaIds[] = $docItem->metadata['media_id'];
+                    }
+                }
+            }
+            $mediaMap = !empty($allMediaIds) 
+                ? \Spatie\MediaLibrary\MediaCollections\Models\Media::whereIn('id', array_unique($allMediaIds))->get()->keyBy('id')
+                : collect();
+
             $documents = [];
             foreach ($items as $item) {
-                $doc = Dokumen::with(['items'])->find($item['id']);
+                $doc = $docsCollection->get($item['id']);
                 if ($doc) {
                     $doc->custom_description = $item['desc'] ?? $doc->keterangan;
                     $media = $doc->getFirstMedia('files');
@@ -44,7 +61,7 @@ class ReportService implements ReportServiceInterface
                     foreach($doc->items as $docItem) {
                         if ($docItem->type === 'image') {
                             $mediaId = $docItem->metadata['media_id'] ?? null;
-                            $itemMedia = $mediaId ? \Spatie\MediaLibrary\MediaCollections\Models\Media::find($mediaId) : null;
+                            $itemMedia = $mediaId ? $mediaMap->get($mediaId) : null;
                             if ($itemMedia && file_exists($itemMedia->getPath())) {
                                 $ext = pathinfo($itemMedia->getPath(), PATHINFO_EXTENSION);
                                 $docItem->file_path = 'data:image/' . $ext . ';base64,' . base64_encode(file_get_contents($itemMedia->getPath()));
@@ -91,7 +108,7 @@ class ReportService implements ReportServiceInterface
     public function getHistory(Request $request)
     {
         $user = auth()->user();
-        $query = Laporan::with(['project', 'user'])->latest();
+        $query = Laporan::with(['project', 'user', 'media'])->latest();
 
         // Access Control Logic
         if (!$user->hasRole(['admin', 'dev'])) {

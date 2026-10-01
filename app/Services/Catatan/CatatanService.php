@@ -28,7 +28,9 @@ class CatatanService implements CatatanServiceInterface
     public function storeCatatan(array $data)
     {
         return DB::transaction(function () use ($data) {
-            return $this->catatanRepository->create($data);
+            $catatan = $this->catatanRepository->create($data);
+            $this->clearCatatanCache();
+            return $catatan;
         });
     }
 
@@ -40,14 +42,26 @@ class CatatanService implements CatatanServiceInterface
     public function updateCatatan(string $id, array $data)
     {
         return DB::transaction(function () use ($id, $data) {
-            return $this->catatanRepository->update($id, $data);
+            $catatan = $this->catatanRepository->update($id, $data);
+            $this->clearCatatanCache();
+            return $catatan;
         });
     }
 
     public function deleteCatatan(string $id)
     {
         return DB::transaction(function () use ($id) {
-            return $this->catatanRepository->delete($id);
+            $result = $this->catatanRepository->delete($id);
+            $this->clearCatatanCache();
+            return $result;
         });
+    }
+
+    private function clearCatatanCache(): void
+    {
+        $user = auth()->user();
+        if ($user) {
+            \Illuminate\Support\Facades\Cache::forget("catatan_stats_user_{$user->id}");
+        }
     }
 }

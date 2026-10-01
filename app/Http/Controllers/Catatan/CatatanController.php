@@ -59,11 +59,25 @@ class CatatanController extends Controller
             'dataUrl' => route($this->dataUrl),
             'dataTableId' => $this->dataTableId,
             'storeUrl' => route($this->storeUrl),
+            'statsUrl' => route('catatan.stats'),
             'projects' => $projects,
             'users' => $users,
         ], $stats);
 
         return view($this->indexView, $data);
+    }
+
+    /**
+     * Get statistics for live AJAX update.
+     */
+    public function getStats()
+    {
+        try {
+            $stats = $this->catatanService->getIndexData();
+            return ResponseHelper::success('Statistik catatan berhasil diambil', $stats);
+        } catch (\Exception $e) {
+            return ResponseHelper::error($e->getMessage(), 500);
+        }
     }
 
     /**

@@ -67,6 +67,7 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
         if (!empty($attachments) && is_array($attachments)) {
             foreach ($attachments as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    $file = convertToWebp($file);
                     $catatan->addMedia($file)->toMediaCollection('catatan_attachments', 'local');
                 }
             }
@@ -95,6 +96,7 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
         if (!empty($attachments) && is_array($attachments)) {
             foreach ($attachments as $file) {
                 if ($file instanceof \Illuminate\Http\UploadedFile) {
+                    $file = convertToWebp($file);
                     $catatan->addMedia($file)->toMediaCollection('catatan_attachments', 'local');
                 }
             }
@@ -106,27 +108,36 @@ class CatatanRepository extends BaseRepository implements CatatanRepositoryInter
     public function getStatistics()
     {
         $user = auth()->user();
-        $cacheKey = "catatan_stats_user_{$user->id}";
+        $query = $this->model->newQuery();
 
-        return \Illuminate\Support\Facades\Cache::remember($cacheKey, now()->addMinutes(15), function () use ($user) {
-            $query = $this->model->newQuery();
+        if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
+            $query->where(function($q) use ($user) {
+                $q->whereHas('project.team.members', function($mq) use ($user) {
+                    $mq->where('users.id', $user->id);
+                })->orWhereHas('project', function($pq) use ($user) {
+                    $pq->where('created_by', $user->id);
+                })->orWhere('user_id', $user->id);
+            });
+        }
 
-            if ($user && !$user->hasRole('dev') && !$user->hasRole('admin')) {
-                $query->where(function($q) use ($user) {
-                    $q->whereHas('project.team.members', function($mq) use ($user) {
-                        $mq->where('users.id', $user->id);
-                    })->orWhereHas('project', function($pq) use ($user) {
-                        $pq->where('created_by', $user->id);
-                    })->orWhere('user_id', $user->id);
-                });
-            }
+        $startOfWeek = now()->startOfWeek()->toDateTimeString();
 
-            return [
-                'total_catatan' => (clone $query)->count(),
-                'total_high_priority' => (clone $query)->where('priority', 'tinggi')->count(),
-                'total_categories' => (clone $query)->distinct('category')->count('category'),
-                'total_projects_related' => (clone $query)->whereNotNull('project_id')->distinct('project_id')->count('project_id'),
-            ];
-        });
+        $stats = $query->selectRaw("
+            COUNT(*) as total_catatan,
+            COUNT(CASE WHEN priority = 'tinggi' THEN 1 END) as total_high_priority,
+            COUNT(DISTINCT category) as total_categories,
+            COUNT(DISTINCT project_id) as total_projects_related,
+            COUNT(CASE WHEN created_at >= ? THEN 1 END) as catatan_minggu_ini,
+            COUNT(CASE WHEN priority = 'tinggi' AND created_at >= ? THEN 1 END) as high_priority_minggu_ini
+        ", [$startOfWeek, $startOfWeek])->first();
+
+        return [
+            'total_catatan' => (int) ($stats->total_catatan ?? 0),
+            'total_high_priority' => (int) ($stats->total_high_priority ?? 0),
+            'total_categories' => (int) ($stats->total_categories ?? 0),
+            'total_projects_related' => (int) ($stats->total_projects_related ?? 0),
+            'catatan_minggu_ini' => (int) ($stats->catatan_minggu_ini ?? 0),
+            'high_priority_minggu_ini' => (int) ($stats->high_priority_minggu_ini ?? 0),
+        ];
     }
 }

@@ -14,6 +14,7 @@
         <script>
             window.catatanUrl = "{{ $dataUrl }}";
             window.storeUrl = "{{ $storeUrl }}";
+            window.statsUrl = "{{ $statsUrl }}";
             window.tableId = "{{ $dataTableId }}";
         </script>
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>
@@ -37,8 +38,6 @@
             </div>
         </div>
 
-
-
     </div>
 
     <!-- Stat Cards -->
@@ -46,23 +45,23 @@
         <div class="sc">
             <div class="sc-ico c"><i class="bi bi-journal-text"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_catatan }}">{{ $total_catatan }}</div>
+                <div class="sc-val count-up" id="statTotalCatatan" data-target="{{ $total_catatan }}">{{ $total_catatan }}</div>
                 <div class="sc-lbl">Total Catatan</div>
-                <div class="sc-tr up"><i class="bi bi-arrow-up-short"></i>+0 minggu ini</div>
+                <div class="sc-tr up"><i class="bi bi-arrow-up-short"></i>+<span id="valCatatanMingguIni">{{ $catatan_minggu_ini ?? 0 }}</span> minggu ini</div>
             </div>
         </div>
         <div class="sc">
             <div class="sc-ico r"><i class="bi bi-exclamation-triangle-fill"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_high_priority }}">{{ $total_high_priority }}</div>
+                <div class="sc-val count-up" id="statTotalHighPriority" data-target="{{ $total_high_priority }}">{{ $total_high_priority }}</div>
                 <div class="sc-lbl">Prioritas Tinggi</div>
-                <div class="sc-tr dn"><i class="bi bi-arrow-up-short"></i>+0 minggu ini</div>
+                <div class="sc-tr dn"><i class="bi bi-arrow-up-short"></i>+<span id="valHighPriorityMingguIni">{{ $high_priority_minggu_ini ?? 0 }}</span> minggu ini</div>
             </div>
         </div>
         <div class="sc">
             <div class="sc-ico g"><i class="bi bi-tags-fill"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_categories }}">{{ $total_categories }}</div>
+                <div class="sc-val count-up" id="statTotalCategories" data-target="{{ $total_categories }}">{{ $total_categories }}</div>
                 <div class="sc-lbl">Kategori</div>
                 <div class="sc-tr neu"><i class="bi bi-dash"></i>semua aktif</div>
             </div>
@@ -70,7 +69,7 @@
         <div class="sc">
             <div class="sc-ico w"><i class="bi bi-kanban-fill"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_projects_related }}">{{ $total_projects_related }}</div>
+                <div class="sc-val count-up" id="statTotalProjectsRelated" data-target="{{ $total_projects_related }}">{{ $total_projects_related }}</div>
                 <div class="sc-lbl">Project Terkait</div>
                 <div class="sc-tr neu"><i class="bi bi-dash"></i>aktif</div>
             </div>

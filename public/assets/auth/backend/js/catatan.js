@@ -4,6 +4,25 @@ $(function () {
         AOS.init({ once: true, easing: 'ease-out-cubic', duration: 500, offset: 20 });
     }
 
+    window.reloadStats = function() {
+        if (!window.statsUrl) return;
+        $.ajax({
+            url: window.statsUrl,
+            method: 'GET',
+            success: function(res) {
+                if (res.success && res.data) {
+                    const d = res.data;
+                    $('#statTotalCatatan').text(d.total_catatan).attr('data-target', d.total_catatan);
+                    $('#statTotalHighPriority').text(d.total_high_priority).attr('data-target', d.total_high_priority);
+                    $('#statTotalCategories').text(d.total_categories).attr('data-target', d.total_categories);
+                    $('#statTotalProjectsRelated').text(d.total_projects_related).attr('data-target', d.total_projects_related);
+                    if (d.catatan_minggu_ini !== undefined) $('#valCatatanMingguIni').text(d.catatan_minggu_ini);
+                    if (d.high_priority_minggu_ini !== undefined) $('#valHighPriorityMingguIni').text(d.high_priority_minggu_ini);
+                }
+            }
+        });
+    };
+
     // Select2 Init
     function initSelect2() {
         $('.select2').each(function() {
@@ -775,6 +794,7 @@ $(function () {
                 if(res.success) {
                     $('#delModal').modal('hide');
                     if (typeof window.loadData === 'function') window.loadData();
+                    if (typeof window.reloadStats === 'function') window.reloadStats();
                     if (typeof SCA !== 'undefined') SCA.success('Berhasil', res.message, true);
                 }
             },
@@ -907,6 +927,7 @@ $(function () {
                 if (addFp) addFp.clear();
                 $('.select2').val(null).trigger('change');
                 if (typeof window.loadData === 'function') window.loadData();
+                if (typeof window.reloadStats === 'function') window.reloadStats();
             })
             .init();
     }
@@ -930,6 +951,7 @@ $(function () {
                 if (editFp) editFp.clear();
                 $('.select2').val(null).trigger('change');
                 if (typeof window.loadData === 'function') window.loadData();
+                if (typeof window.reloadStats === 'function') window.reloadStats();
             })
             .init();
     }

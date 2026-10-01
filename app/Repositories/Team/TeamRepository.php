@@ -11,7 +11,12 @@ class TeamRepository implements TeamRepositoryInterface
 {
     public function getAll(?string $search, int $rowPerPage)
     {
-        $query = Team::with(['creator', 'members.media', 'members.roles']);
+        $query = Team::with([
+            'creator:id,name', 
+            'members:id,name,username,email,avatar', 
+            'members.media', 
+            'members.roles:id,name'
+        ]);
 
         if ($search) {
             $query->where(function ($q) use ($search) {
@@ -25,7 +30,12 @@ class TeamRepository implements TeamRepositoryInterface
 
     public function findById(string $id)
     {
-        return Team::with(['creator', 'members.media', 'members.roles'])->findOrFail($id);
+        return Team::with([
+            'creator:id,name', 
+            'members:id,name,username,email,avatar', 
+            'members.media', 
+            'members.roles:id,name'
+        ])->findOrFail($id);
     }
 
     public function create(array $data)
@@ -86,16 +96,12 @@ class TeamRepository implements TeamRepositoryInterface
 
     public function countTeams(): int
     {
-        return Cache::remember('team_count_total', now()->addMinutes(15), function () {
-            return Team::count();
-        });
+        return Team::count();
     }
 
     public function countDistinctMembers(): int
     {
-        return Cache::remember('team_member_count_distinct', now()->addMinutes(15), function () {
-            return DB::table('team_user')->distinct()->count('user_id');
-        });
+        return DB::table('team_user')->distinct()->count('user_id');
     }
 
     public function clearCache(): void

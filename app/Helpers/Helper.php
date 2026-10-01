@@ -144,3 +144,77 @@ if (!function_exists('urlMenu')) {
         });
     }
 }
+
+if (!function_exists('convertToWebp')) {
+    /**
+     * Mengubah file gambar yang diunggah menjadi format WebP tanpa mengurangi kualitas secara kasar.
+     *
+     * @param \Illuminate\Http\UploadedFile $file
+     * @param int $quality Quality 0-100 (Default 90 untuk visual jernih/tidak pecah)
+     * @return \Illuminate\Http\UploadedFile
+     */
+    function convertToWebp(\Illuminate\Http\UploadedFile $file, int $quality = 90): \Illuminate\Http\UploadedFile
+    {
+        $mime = $file->getMimeType();
+        if (!str_starts_with($mime, 'image/')) {
+            return $file;
+        }
+
+        // Jika sudah webp, tidak perlu konversi ulang
+        if ($mime === 'image/webp') {
+            return $file;
+        }
+
+        $filePath = $file->getRealPath();
+        $image = false;
+
+        switch ($mime) {
+            case 'image/jpeg':
+            case 'image/jpg':
+                $image = @imagecreatefromjpeg($filePath);
+                break;
+            case 'image/png':
+                $image = @imagecreatefrompng($filePath);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                    imagealphablending($image, true);
+                    imagesavealpha($image, true);
+                }
+                break;
+            case 'image/gif':
+                $image = @imagecreatefromgif($filePath);
+                if ($image) {
+                    imagepalettetotruecolor($image);
+                }
+                break;
+            case 'image/bmp':
+            case 'image/x-ms-bmp':
+                $image = @imagecreatefrombmp($filePath);
+                break;
+        }
+
+        if (!$image) {
+            return $file;
+        }
+
+        $tempPath = sys_get_temp_dir() . '/' . Str::random(40) . '.webp';
+        
+        // Simpan sebagai WebP dengan kualitas tinggi
+        if (imagewebp($image, $tempPath, $quality)) {
+            imagedestroy($image);
+            $originalName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '.webp';
+            
+            return new \Illuminate\Http\UploadedFile(
+                $tempPath,
+                $originalName,
+                'image/webp',
+                null,
+                true // test mode / local temporary file
+            );
+        }
+
+        imagedestroy($image);
+        return $file;
+    }
+}
+

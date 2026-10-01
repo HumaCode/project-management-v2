@@ -34,6 +34,7 @@
             window.urlEdit = @json($editUrl ?? '#');
             window.urlShow = @json($showUrl ?? '#');
             window.urlDestroy = @json($destroyUrl ?? '#');
+            window.urlStats = "{{ route('dokumen.stats') }}";
             window.urlBuilderBase = "{{ url('dokumen') }}";
         </script>
         <script src="{{ asset('assets/auth/backend/js/custom-table.js') }}"></script>
@@ -63,23 +64,23 @@
         <div class="sc c">
             <div class="sc-ico c"><i class="bi bi-files"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_dokumen }}">{{ $total_dokumen }}</div>
+                <div class="sc-val count-up" id="statTotalDokumen" data-target="{{ $total_dokumen }}">{{ $total_dokumen }}</div>
                 <div class="sc-lbl">Total Dokumen</div>
-                <div class="sc-tr up"><i class="bi bi-arrow-up-short"></i>+8 bulan ini</div>
+                <div class="sc-tr up"><i class="bi bi-arrow-up-short"></i>+<span id="valDokumenBaruBulanIni">{{ $new_this_month ?? 0 }}</span> bulan ini</div>
             </div>
         </div>
         <div class="sc g">
             <div class="sc-ico g"><i class="bi bi-hdd-fill"></i></div>
             <div>
-                <div class="sc-val">{{ $total_size }}</div>
-                <div class="sc-lbl">Digunakan (MB)</div>
-                <div class="sc-tr neu"><i class="bi bi-dash"></i>dari 500 MB</div>
+                <div class="sc-val" id="statTotalSize">{{ $total_size }}</div>
+                <div class="sc-lbl">Digunakan</div>
+                <div class="sc-tr neu"><i class="bi bi-dash"></i>total ukuran file</div>
             </div>
         </div>
         <div class="sc w">
             <div class="sc-ico w"><i class="bi bi-tags-fill"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $total_kategori }}">{{ $total_kategori }}</div>
+                <div class="sc-val count-up" id="statTotalKategori" data-target="{{ $total_kategori }}">{{ $total_kategori }}</div>
                 <div class="sc-lbl">Kategori</div>
                 <div class="sc-tr neu"><i class="bi bi-dash"></i>semua aktif</div>
             </div>
@@ -87,9 +88,9 @@
         <div class="sc r">
             <div class="sc-ico r"><i class="bi bi-arrow-repeat"></i></div>
             <div>
-                <div class="sc-val count-up" data-target="{{ $new_this_month }}">{{ $new_this_month }}</div>
+                <div class="sc-val count-up" id="statNewThisMonth" data-target="{{ $new_this_month }}">{{ $new_this_month }}</div>
                 <div class="sc-lbl">Revisi Bulan Ini</div>
-                <div class="sc-tr dn"><i class="bi bi-arrow-up-short"></i>+3 minggu ini</div>
+                <div class="sc-tr dn" id="statRevisiMingguIni"><i class="bi bi-arrow-up-short"></i>+<span id="valRevisiMingguIni">{{ $revisi_minggu_ini ?? 0 }}</span> minggu ini</div>
             </div>
         </div>
     </div>

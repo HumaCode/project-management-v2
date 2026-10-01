@@ -14,6 +14,29 @@ $(function() {
         per_page: 10
     };
 
+    window.reloadStats = function() {
+        if (!window.urlStats) return;
+        $.ajax({
+            url: window.urlStats,
+            method: 'GET',
+            success: function(res) {
+                if (res.success && res.data) {
+                    const d = res.data;
+                    $('#statTotalDokumen').text(d.total_dokumen).attr('data-target', d.total_dokumen);
+                    $('#statTotalSize').text(d.total_size);
+                    $('#statTotalKategori').text(d.total_kategori).attr('data-target', d.total_kategori);
+                    $('#statNewThisMonth').text(d.new_this_month).attr('data-target', d.new_this_month);
+                    if (d.new_this_month !== undefined) {
+                        $('#valDokumenBaruBulanIni').text(d.new_this_month);
+                    }
+                    if (d.revisi_minggu_ini !== undefined) {
+                        $('#valRevisiMingguIni').text(d.revisi_minggu_ini);
+                    }
+                }
+            }
+        });
+    };
+
     // 2. Global Load Data Function
     window.loadData = function() {
         if (typeof renderLoading === 'function') renderLoading();
@@ -76,11 +99,13 @@ $(function() {
             $('#fileName').html('PDF, DOCX, XLSX, PPTX, ZIP, PNG &mdash; Maks. 50 MB');
 
             window.loadData();
+            window.reloadStats();
         }).init();
 
         handleFormSubmit("#formEditDokumen").onSuccess(function(res) {
             $('#editModal').modal('hide');
             window.loadData();
+            window.reloadStats();
         }).init();
     }
 
@@ -169,6 +194,7 @@ $(function() {
 
                 if (res.success) {
                     window.loadData();
+                    window.reloadStats();
                 }
             },
             error: function(err) {
@@ -267,7 +293,11 @@ $(function() {
                     $('#formEditDokumen').attr('action', `${window.urlBuilderBase}/${d.id}`);
                     $('#editNama').val(d.nama);
                     $('#editVersi').val(d.versi);
-                    $('#editTanggal').val(d.tanggal_upload_raw || '');
+                    if ($('#editTanggal')[0] && $('#editTanggal')[0]._flatpickr) {
+                        $('#editTanggal')[0]._flatpickr.setDate(d.tanggal_upload_raw || '', true);
+                    } else {
+                        $('#editTanggal').val(d.tanggal_upload_raw || '');
+                    }
                     $('#editKeterangan').val(d.keterangan);
                     
                     $('#sel2TypeEdit').val(d.type).trigger('change');

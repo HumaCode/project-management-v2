@@ -104,6 +104,7 @@ Route::middleware(['auth'])->group(function () {
             Route::resource('projects', \App\Http\Controllers\Project\ProjectController::class);
 
             Route::get('dokumen', [\App\Http\Controllers\Dokumen\DokumenController::class, 'index'])->name('dokumen.index');
+            Route::get('dokumen/stats', [\App\Http\Controllers\Dokumen\DokumenController::class, 'getStatistics'])->name('dokumen.stats');
             Route::post('dokumen', [\App\Http\Controllers\Dokumen\DokumenController::class, 'store'])->name('dokumen.store');
             Route::get('dokumen/pagination', [\App\Http\Controllers\Dokumen\DokumenController::class, 'getAllPaginated'])->name('dokumen.pagination');
             Route::get('dokumen/{id}', [\App\Http\Controllers\Dokumen\DokumenController::class, 'show'])->name('dokumen.show');

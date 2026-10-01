@@ -118,6 +118,10 @@
     padding-left: 12px;
 }
 .modal .select2-container--default .select2-selection--single .select2-selection__arrow { height: 40px; }
+.select2-container--default .select2-selection--single .select2-selection__clear {
+    margin-right: 8px !important;
+    font-weight: bold;
+}
 
 /* SELECT2 TOOLBAR */
 .tbar { flex-wrap: wrap !important; gap: 12px; }

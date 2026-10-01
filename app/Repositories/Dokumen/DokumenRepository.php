@@ -84,9 +84,10 @@ class DokumenRepository extends BaseRepository implements DokumenRepositoryInter
 
             return [
                 'total_dokumen' => $dokumenQuery->count(),
-                'total_kategori' => $dokumenQuery->distinct('kategori')->count('kategori'),
+                'total_kategori' => (clone $dokumenQuery)->distinct('kategori')->count('kategori'),
                 'total_size' => $totalMb . ' MB',
-                'new_this_month' => $dokumenQuery->whereMonth('created_at', now()->month)->count(),
+                'new_this_month' => (clone $dokumenQuery)->whereMonth('created_at', now()->month)->whereYear('created_at', now()->year)->count(),
+                'revisi_minggu_ini' => (clone $dokumenQuery)->where('updated_at', '>=', now()->startOfWeek())->count(),
             ];
         });
     }

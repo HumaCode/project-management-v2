@@ -60,6 +60,16 @@ class DokumenController extends Controller
         return view('pages.dokumen.index', $data);
     }
 
+    public function getStatistics(): JsonResponse
+    {
+        try {
+            $stats = $this->dokumenService->getDokumenStatistics();
+            return ResponseHelper::jsonResponse(true, 'Statistik berhasil dimuat', $stats, 200);
+        } catch (\Exception $e) {
+            return ResponseHelper::jsonResponse(false, $e->getMessage(), null, 500);
+        }
+    }
+
     /**
      * Ambil data dokumen yang terpaginasi via AJAX.
      */
@@ -195,7 +205,9 @@ class DokumenController extends Controller
                 'image' => 'required|image|max:10240', // max 10MB
             ]);
 
-            $media = $dokumen->addMedia($request->file('image'))
+            $file = convertToWebp($request->file('image'));
+
+            $media = $dokumen->addMedia($file)
                 ->toMediaCollection('builder_temp_images', 'local');
 
             $encryptedUrl = route('catatan.media', \App\Helpers\MediaHasher::encode($media->id));

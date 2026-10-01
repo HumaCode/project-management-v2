@@ -10,11 +10,13 @@
                     <div class="m-bd">
                         <!-- Drop zone -->
                         <div class="drop-zone" id="dropZone">
-                            <div id="previewContainer" style="display:none; margin-bottom:15px; position: relative;">
-                                <img id="imagePreview" src="" style="max-height:120px; border-radius:12px; border: 2px solid var(--cyan); box-shadow: 0 5px 15px rgba(0,0,0,0.3);">
-                                <button type="button" id="btnRemovePreview" style="position:absolute; top:-10px; right:calc(50% - 75px); background:var(--red); color:white; border:none; border-radius:50%; width:24px; height:24px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; z-index:10;">
-                                    <i class="bi bi-x"></i>
-                                </button>
+                            <div id="previewContainer" style="display:none; margin-bottom:12px; margin-top: 5px;">
+                                <div style="position: relative; display: inline-block; max-width: 100%;">
+                                    <img id="imagePreview" src="" style="max-height:150px; max-width: 100%; border-radius:12px; border: 2px solid var(--cyan, #0284c7); box-shadow: 0 8px 24px rgba(0,0,0,0.3); display: block;">
+                                    <button type="button" id="btnRemovePreview" title="Hapus Gambar" style="position:absolute; top:8px; right:8px; background:#ef4444; color:#ffffff !important; border:2px solid #ffffff; border-radius:50%; width:28px; height:28px; display:flex; align-items:center; justify-content:center; cursor:pointer; z-index:20; box-shadow: 0 4px 10px rgba(0,0,0,0.4); padding:0; outline:none;">
+                                        <i class="bi bi-x-lg" style="color:#ffffff !important; font-size:14px; font-weight:bold; display:flex; align-items:center; justify-content:center; width:100%; height:100%; margin:0;"></i>
+                                    </button>
+                                </div>
                             </div>
                             <div id="dropZoneContent">
                                 <i class="bi bi-cloud-arrow-up-fill"></i>
@@ -84,7 +86,7 @@
                             <div class="col-12 col-md-6">
                                 <div class="fm-row mb-0">
                                     <label class="fm-lbl">TANGGAL UPLOAD</label>
-                                    <input type="date" name="tanggal_upload" class="fmi" style="color-scheme:dark" value="{{ date('Y-m-d') }}"/>
+                                    <x-datepicker name="tanggal_upload" id="addTanggalUpload" value="{{ date('Y-m-d') }}" />
                                 </div>
                             </div>
                             <div class="col-12">

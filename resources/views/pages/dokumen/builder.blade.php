@@ -62,8 +62,9 @@
     @endpush
 
     @push('js')
-        <!-- Official TinyMCE 7 CDN with User API Key -->
+        <!-- Official TinyMCE 7 CDN with User API Key & Fallback -->
         <script src="https://cdn.tiny.cloud/1/re1hyyagcsptel9z6bg836dptpkbrbpua7kjc4rgae0ap8kj/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/tinymce/7.6.0/tinymce.min.js"></script>
         <script>
             $(function() {
                 // Auto collapse sidebar on Document Builder page load for maximum editor width
@@ -76,48 +77,61 @@
                 const isDark = $('html').attr('data-theme') === 'dark';
                 const dynamicHeight = Math.max(650, $(window).height() - 210);
 
-                // Initialize TinyMCE 7 Full Suite Editor
-                tinymce.init({
-                    selector: '#documentEditor',
-                    plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table code help wordcount codesample accordion emoticons directionality',
-                    toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample accordion emoticons | removeformat fullscreen code preview',
-                    menubar: 'file edit view insert format table tools help',
-                    height: dynamicHeight,
-                    relative_urls: false,
-                    remove_script_host: false,
-                    convert_urls: true,
-                    branding: false,
-                    promotion: false,
-                    skin: isDark ? 'oxide-dark' : 'oxide',
-                    content_css: isDark ? 'dark' : 'default',
-                    content_style: 'body { font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.8; padding: 25px 35px; color: ' + (isDark ? '#f8fafc' : '#0f172a') + '; } img { max-width: 100%; height: auto; border-radius: 10px; margin: 12px 0; } pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 10px; font-family: "JetBrains Mono", monospace; }',
-                    images_upload_handler: function (blobInfo, progress) {
-                        return new Promise(function (resolve, reject) {
-                            const formData = new FormData();
-                            formData.append('image', blobInfo.blob(), blobInfo.filename());
-                            formData.append('_token', "{{ csrf_token() }}");
-
-                            $.ajax({
-                                url: "{{ route('dokumen.builder.upload', $dokumen->id) }}",
-                                method: 'POST',
-                                data: formData,
-                                processData: false,
-                                contentType: false,
-                                success: function(res) {
-                                    if (res.success) {
-                                        resolve(res.data.url);
-                                        SCA.toast({ type: "success", title: "Berhasil!", message: "Gambar berhasil disisipkan." });
-                                    } else {
-                                        reject(res.message || "Gagal mengunggah gambar");
-                                    }
-                                },
-                                error: function(err) {
-                                    reject(err.responseJSON?.message || "Gagal mengunggah gambar");
-                                }
-                            });
-                        });
+                function initTinyMCE() {
+                    if (typeof tinymce === 'undefined') {
+                        setTimeout(initTinyMCE, 200);
+                        return;
                     }
-                });
+
+                    // Initialize TinyMCE 7 Full Suite Editor
+                    tinymce.init({
+                        selector: '#documentEditor',
+                        plugins: 'advlist autolink lists link image charmap preview anchor searchreplace visualblocks code fullscreen insertdatetime media table help wordcount codesample accordion emoticons directionality',
+                        toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | forecolor backcolor | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | link image media table codesample accordion emoticons | removeformat fullscreen code preview',
+                        menubar: 'file edit view insert format table tools help',
+                        height: dynamicHeight,
+                        relative_urls: false,
+                        remove_script_host: false,
+                        convert_urls: true,
+                        branding: false,
+                        promotion: false,
+                        extended_valid_elements: '*[*]',
+                        valid_children: '+body[style|script]',
+                        custom_elements: 'style,script',
+                        verify_html: false,
+                        skin: isDark ? 'oxide-dark' : 'oxide',
+                        content_css: isDark ? 'dark' : 'default',
+                        content_style: 'body { font-family: Inter, system-ui, sans-serif; font-size: 15px; line-height: 1.8; padding: 25px 35px; color: ' + (isDark ? '#f8fafc' : '#0f172a') + '; } img { max-width: 100%; height: auto; border-radius: 10px; margin: 12px 0; } pre { background: #0f172a; color: #f8fafc; padding: 16px; border-radius: 10px; font-family: "JetBrains Mono", monospace; }',
+                        images_upload_handler: function (blobInfo, progress) {
+                            return new Promise(function (resolve, reject) {
+                                const formData = new FormData();
+                                formData.append('image', blobInfo.blob(), blobInfo.filename());
+                                formData.append('_token', "{{ csrf_token() }}");
+
+                                $.ajax({
+                                    url: "{{ route('dokumen.builder.upload', $dokumen->id) }}",
+                                    method: 'POST',
+                                    data: formData,
+                                    processData: false,
+                                    contentType: false,
+                                    success: function(res) {
+                                        if (res.success) {
+                                            resolve(res.data.url);
+                                            SCA.toast({ type: "success", title: "Berhasil!", message: "Gambar berhasil disisipkan." });
+                                        } else {
+                                            reject(res.message || "Gagal mengunggah gambar");
+                                        }
+                                    },
+                                    error: function(err) {
+                                        reject(err.responseJSON?.message || "Gagal mengunggah gambar");
+                                    }
+                                });
+                            });
+                        }
+                    });
+                }
+
+                initTinyMCE();
             });
 
             $('.btn-save-all').on('click', function() {

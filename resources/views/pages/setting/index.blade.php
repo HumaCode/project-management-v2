@@ -202,6 +202,23 @@
                 </div>
             </div>
 
+            <!-- SSO HumaCode -->
+            <div class="cat-card cc-cyan" onclick="showPane('pane-sso')" data-target="pane-sso" data-aos="fade-up" data-aos-delay="150">
+                <div class="cat-ico-wrap ci-cyan"><i class="bi bi-shield-lock"></i></div>
+                <div class="cat-title">SSO HumaCode</div>
+                <div class="cat-desc">Konfigurasi otentikasi Single Sign-On (SSO) OAuth2 dengan server HumaCode.</div>
+                <div class="cat-tags">
+                    <span class="cat-tag">SSO Host</span>
+                    <span class="cat-tag">Client ID</span>
+                    <span class="cat-tag">Client Secret</span>
+                    <span class="cat-tag">Redirect URI</span>
+                </div>
+                <div class="cat-footer">
+                    <span class="cat-count">{{ $counts['sso'] ?? 0 }} pengaturan</span>
+                    <div class="cat-arrow"><i class="bi bi-arrow-right"></i></div>
+                </div>
+            </div>
+
             <!-- Backup & Maintenance -->
             <div class="cat-card cc-purple" onclick="showPane('pane-backup')" data-target="pane-backup" data-aos="fade-up" data-aos-delay="180">
                 <div class="cat-ico-wrap ci-purple"><i class="bi bi-database-fill-gear"></i></div>
@@ -638,6 +655,90 @@
                     </div>
                     <div class="save-row">
                         <button type="submit" class="btn-save" id="btnSaveEmail"><span><i class="bi bi-floppy-fill"></i> Simpan SMTP</span></button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!-- ══════════════════════════════════════════════
+         PANE: SSO HUMACODE
+    ══════════════════════════════════════════════ -->
+    <div class="detail-pane" id="pane-sso">
+        <div class="back-bar"><i class="bi bi-arrow-left"></i> Kembali ke Pengaturan</div>
+        <div class="det-hd" style="--det-grad:linear-gradient(90deg,transparent,var(--cyan),transparent)">
+            <div class="det-hd-ico ci-cyan"><i class="bi bi-shield-lock"></i></div>
+            <div>
+                <div class="det-hd-title">Pengaturan SSO HumaCode</div>
+                <div class="det-hd-sub">Konfigurasi otentikasi Single Sign-On (SSO) OAuth2 dengan HumaCode Server</div>
+            </div>
+            <span class="det-hd-badge" style="color:var(--cyan)"><i class="bi bi-circle-fill" style="font-size:6px;color:var(--ok);margin-right:4px"></i>OAuth2</span>
+        </div>
+
+        <form id="formSso">
+            @csrf
+            <div class="sec-card" data-aos="fade-up">
+                <div class="sec-card-hd">
+                    <div class="sec-card-title"><i class="bi bi-shield-check"></i> Integrasi Otentikasi HumaCode</div>
+                </div>
+                <div class="sec-card-body">
+                    <div class="sw-row mb-4">
+                        <div class="sw-left">
+                            <div class="sw-title">Aktifkan SSO HumaCode</div>
+                            <div class="sw-sub">Tampilkan tombol login SSO di halaman login dan izinkan otentikasi OAuth2</div>
+                        </div>
+                        <label class="sw-wrap sw-ok">
+                            <input type="checkbox" name="sso_enabled" value="1" {{ ($settings['sso_enabled'] ?? '1') == '1' ? 'checked' : '' }} />
+                            <span class="sw-track"></span>
+                        </label>
+                    </div>
+
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">SSO HOST / SERVER URL</label>
+                                <div class="fi-wrap">
+                                    <i class="bi bi-globe fi-ico"></i>
+                                    <input type="text" name="sso_host" id="ssoHostInput" class="fi" value="{{ $settings['sso_host'] ?? env('SSO_HOST', 'http://localhost:8000') }}" placeholder="http://localhost:8000" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">REDIRECT URI</label>
+                                <div class="fi-wrap">
+                                    <i class="bi bi-arrow-return-right fi-ico"></i>
+                                    <input type="text" name="sso_redirect_uri" class="fi" value="{{ $settings['sso_redirect_uri'] ?? env('SSO_REDIRECT_URI', url('/auth/sso/callback')) }}" placeholder="{{ url('/auth/sso/callback') }}" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">CLIENT ID</label>
+                                <div class="fi-wrap">
+                                    <i class="bi bi-key fi-ico"></i>
+                                    <input type="text" name="sso_client_id" class="fi" value="{{ $settings['sso_client_id'] ?? env('SSO_CLIENT_ID', '') }}" placeholder="Masukkan OAuth Client ID" />
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="fg">
+                                <label class="fl">CLIENT SECRET</label>
+                                <div class="fi-wrap">
+                                    <i class="bi bi-lock fi-ico"></i>
+                                    <input type="password" name="sso_client_secret" class="fi" value="{{ $settings['sso_client_secret'] ?? env('SSO_CLIENT_SECRET', '') }}" placeholder="Masukkan OAuth Client Secret" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="save-row d-flex align-items-center justify-content-between gap-3 mt-4">
+                        <button type="button" class="btn-test" id="btnTestSso" style="height: 42px; padding: 0 20px;">
+                            <i class="bi bi-wifi"></i> Tes Koneksi SSO
+                        </button>
+                        <button type="submit" class="btn-save" id="btnSaveSso">
+                            <span><i class="bi bi-check-lg"></i> Simpan Pengaturan SSO</span>
+                        </button>
                     </div>
                 </div>
             </div>

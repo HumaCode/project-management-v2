@@ -61,16 +61,25 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
-        $ssoLogoutUrl = rtrim(env('SSO_HOST', 'http://localhost:8000'), '/') . '/sso/logout?redirect_uri=' . urlencode(route('login'));
+        // Cek apakah SSO diaktifkan di pengaturan sistem
+        $settingService = app(\App\Services\SettingService::class);
+        $ssoEnabled = $settingService->get('sso_enabled', '1') == '1';
+
+        if ($ssoEnabled) {
+            $ssoHost = $settingService->get('sso_host', env('SSO_HOST', 'http://localhost:8000'));
+            $redirectUrl = rtrim($ssoHost, '/') . '/sso/logout?redirect_uri=' . urlencode(route('login'));
+        } else {
+            $redirectUrl = route('login');
+        }
 
         if ($request->wantsJson() || $request->ajax()) {
             return response()->json([
                 'status' => 'success',
                 'message' => 'Logout berhasil',
-                'redirect' => $ssoLogoutUrl,
+                'redirect' => $redirectUrl,
             ]);
         }
 
-        return redirect($ssoLogoutUrl);
+        return redirect($redirectUrl);
     }
 }

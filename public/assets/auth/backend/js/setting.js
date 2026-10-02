@@ -76,6 +76,46 @@ $(function () {
         });
     });
 
+    $('#formSso').on('submit', function (e) {
+        e.preventDefault();
+        saveSettings(this, '#btnSaveSso', "/settings/sso");
+    });
+
+    $('#btnTestSso').on('click', function () {
+        const btn = $(this);
+        const originalHtml = btn.html();
+        const ssoHost = $('#ssoHostInput').val();
+
+        if (!ssoHost) {
+            SCA.toast({ type: 'warning', title: 'Peringatan', message: 'Masukkan SSO Host terlebih dahulu' });
+            return;
+        }
+
+        btn.prop('disabled', true).html('<i class="bi bi-arrow-repeat spin"></i> Menghubungkan...');
+
+        $.ajax({
+            url: "/settings/sso/test",
+            method: "POST",
+            data: {
+                _token: $('meta[name="csrf-token"]').attr('content'),
+                sso_host: ssoHost
+            },
+            success: function (res) {
+                if (res.status === 'success') {
+                    SCA.toast({ type: 'success', title: 'Berhasil', message: res.message });
+                }
+            },
+            error: function (err) {
+                let msg = "Gagal terhubung ke SSO Host";
+                if (err.responseJSON && err.responseJSON.message) msg = err.responseJSON.message;
+                SCA.toast({ type: 'danger', title: 'Error', message: msg });
+            },
+            complete: function () {
+                btn.prop('disabled', false).html(originalHtml);
+            }
+        });
+    });
+
     $('#formMaintenance').on('submit', function (e) {
         e.preventDefault();
         saveSettings(this, '#btnSaveMaintenance', "/settings/maintenance");

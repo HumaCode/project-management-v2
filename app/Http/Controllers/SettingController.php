@@ -29,7 +29,7 @@ class SettingController extends Controller
                 "group",
                 COUNT(*) as count
             ')
-            ->whereIn('group', ['profile', 'security', 'email', 'maintenance'])
+            ->whereIn('group', ['profile', 'security', 'email', 'sso', 'maintenance'])
             ->groupBy('group')
             ->pluck('count', 'group');
 
@@ -37,6 +37,7 @@ class SettingController extends Controller
             'profile' => (int) ($groupCounts['profile'] ?? 0),
             'security' => (int) ($groupCounts['security'] ?? 0),
             'email' => (int) ($groupCounts['email'] ?? 0),
+            'sso' => (int) ($groupCounts['sso'] ?? 0),
             'maintenance' => (int) ($groupCounts['maintenance'] ?? 0),
         ];
         
@@ -247,6 +248,60 @@ class SettingController extends Controller
             return response()->json([
                 'status' => 'error',
                 'message' => 'Gagal memperbarui SMTP: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Update SSO settings.
+     */
+    public function updateSso(Request $request): JsonResponse
+    {
+        try {
+            $data = $request->except(['_token']);
+            $data['sso_enabled'] = $request->has('sso_enabled') ? '1' : '0';
+
+            foreach ($data as $key => $val) {
+                $this->settingService->set($key, $val, 'sso');
+            }
+
+            return response()->json([
+                'status' => 'success',
+                'message' => 'Konfigurasi SSO HumaCode berhasil diperbarui'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal memperbarui SSO: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Test connection to SSO server.
+     */
+    public function testSso(Request $request): JsonResponse
+    {
+        $ssoHost = $request->input('sso_host', 'http://localhost:8000');
+        
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(5)->get(rtrim($ssoHost, '/'));
+
+            if ($response->successful() || $response->status() === 302 || $response->status() === 404) {
+                return response()->json([
+                    'status' => 'success',
+                    'message' => 'Koneksi ke server SSO HumaCode berhasil terhubung!'
+                ]);
+            }
+
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Server SSO memberikan respon status: ' . $response->status()
+            ], 400);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Gagal terhubung ke SSO Host: ' . $e->getMessage()
             ], 500);
         }
     }

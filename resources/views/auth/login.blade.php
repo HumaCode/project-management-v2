@@ -187,20 +187,29 @@
                     </button>
                 </div>
 
+                @php
+                    $ssoEnabled = ($cms_settings['sso_enabled'] ?? '0') == '1';
+                    $googleEnabled = ($cms_settings['enable_google_login'] ?? '1') == '1';
+                @endphp
+
+                @if($ssoEnabled || $googleEnabled)
                 <div class="divider"><span>atau lanjutkan dengan</span></div>
 
                 <div class="social-row" style="grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px;">
-                    <a href="{{ route('auth.sso') }}" id="btnSso" class="btn-social" style="background: linear-gradient(135deg, #0F6E56, #0B4A3B); color: #ffffff; border: none; font-weight: 600; text-decoration: none;" onclick="handleSsoClick(this)">
-                        <i class="bi bi-shield-lock-fill" style="color: #5DCAA5; font-size: 16px;"></i>
+                    @if($ssoEnabled)
+                    <a href="{{ route('auth.sso') }}" id="btnSso" class="btn-social btn-sso-custom" onclick="handleSsoClick(this)">
+                        <i class="bi bi-shield-lock-fill"></i>
                         <span>SSO HumaCode</span>
                     </a>
-                    @if(($cms_settings['enable_google_login'] ?? '1') == '1')
+                    @endif
+                    @if($googleEnabled)
                     <a href="{{ route('auth.google') }}" class="btn-social" onclick="handleSsoClick(this)">
                         <i class="bi bi-google"></i>
                         <span>Google</span>
                     </a>
                     @endif
                 </div>
+                @endif
 
                 @if(($cms_settings['allow_registration'] ?? '1') == '1')
                 <div class="register-row">Belum punya akun? <a href="{{ route('register') }}">Daftar di sini</a></div>

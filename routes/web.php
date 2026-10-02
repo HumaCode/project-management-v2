@@ -159,6 +159,8 @@ Route::middleware(['auth'])->group(function () {
             Route::post('settings/app', [\App\Http\Controllers\SettingController::class, 'updateApp'])->name('settings.update-app');
             Route::post('settings/email', [\App\Http\Controllers\SettingController::class, 'updateEmail'])->name('settings.update-mail');
             Route::post('settings/email/test', [\App\Http\Controllers\SettingController::class, 'sendTestMail'])->name('settings.send-test-mail');
+            Route::post('settings/sso', [\App\Http\Controllers\SettingController::class, 'updateSso'])->name('settings.update-sso');
+            Route::post('settings/sso/test', [\App\Http\Controllers\SettingController::class, 'testSso'])->name('settings.test-sso');
             Route::post('settings/maintenance', [\App\Http\Controllers\SettingController::class, 'updateMaintenance'])->name('settings.update-maintenance');
             Route::get('settings/clear-cache', [\App\Http\Controllers\SettingController::class, 'clearCache'])->name('settings.clear-cache');
 

@@ -24,9 +24,9 @@ class SettingController extends Controller
     {
         $settings = $this->settingService->getAll();
         
-        // Hitung pengaturan per grup secara efisien dalam 1 query teragregasi
+        // Hitung pengaturan per grup secara efisien dalam 1 query teragregasi (kompatibel MySQL & PostgreSQL)
         $groupCounts = \App\Models\Setting::selectRaw('
-                `group`,
+                "group",
                 COUNT(*) as count
             ')
             ->whereIn('group', ['profile', 'security', 'email', 'maintenance'])

@@ -240,12 +240,12 @@ class UserRepository extends BaseRepository implements UserRepositoryInterface
         $sevenDaysAgo = now()->subDays(7);
 
         $stats = $this->model
-            ->selectRaw('
+            ->selectRaw("
                 COUNT(*) as total_users,
-                SUM(CASE WHEN is_active = "1" THEN 1 ELSE 0 END) as active_users,
-                SUM(CASE WHEN is_active = "0" THEN 1 ELSE 0 END) as inactive_users,
+                SUM(CASE WHEN is_active = '1' THEN 1 ELSE 0 END) as active_users,
+                SUM(CASE WHEN is_active = '0' THEN 1 ELSE 0 END) as inactive_users,
                 SUM(CASE WHEN created_at >= ? THEN 1 ELSE 0 END) as new_users
-            ', [$sevenDaysAgo])
+            ", [$sevenDaysAgo])
             ->first();
 
         return [

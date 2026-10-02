@@ -59,16 +59,16 @@ class ProfileController extends Controller
             ->where('causer_type', \App\Models\User::class)
             ->paginate(6, ['*'], 'act_page');
 
-        // Aggregated activity stats in a single SQL query
+        // Aggregated activity stats in a single SQL query (compatible with MySQL & PostgreSQL)
         $activityRaw = \Spatie\Activitylog\Models\Activity::where('causer_id', $userId)
             ->where('causer_type', \App\Models\User::class)
-            ->selectRaw('
+            ->selectRaw("
                 COUNT(*) as total,
-                SUM(CASE WHEN event = "created" THEN 1 ELSE 0 END) as created_count,
-                SUM(CASE WHEN event = "updated" THEN 1 ELSE 0 END) as updated_count,
-                SUM(CASE WHEN event = "deleted" THEN 1 ELSE 0 END) as deleted_count,
-                SUM(CASE WHEN event IN ("login", "logout") THEN 1 ELSE 0 END) as auth_count
-            ')
+                SUM(CASE WHEN event = 'created' THEN 1 ELSE 0 END) as created_count,
+                SUM(CASE WHEN event = 'updated' THEN 1 ELSE 0 END) as updated_count,
+                SUM(CASE WHEN event = 'deleted' THEN 1 ELSE 0 END) as deleted_count,
+                SUM(CASE WHEN event IN ('login', 'logout') THEN 1 ELSE 0 END) as auth_count
+            ")
             ->first();
 
         $activityStats = [
